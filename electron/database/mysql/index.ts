@@ -1,5 +1,4 @@
-// import mysql from 'mysql'
-const mysql = require('mysql2')
+import mysql, { RowDataPacket } from 'mysql2'
 
 export function initMysql() {
   var connection = mysql.createConnection({
@@ -11,12 +10,14 @@ export function initMysql() {
   });
 
   connection.connect();
-  // console.log('mysql', connection.query)
-  connection.query('SELECT * FROM user', function (error, results, fields) {
+
+  connection.query('SELECT * FROM user', function (error, results:RowDataPacket[], fields) {
     if (error) {
       console.log('error', error);
     }
-    console.log('results: ', results.length);
+    if(results.length) {
+      console.log('results: ', results.length);
+    }
   });
 }
 

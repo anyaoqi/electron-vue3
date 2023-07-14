@@ -1,7 +1,7 @@
 import allowCrossDomain from "./utils/allowCrossDomain"
 import userRouter from "./routes/user"
 // import { initDatabase } from '../database/index'
-import { initMysql } from '../database/mysql/index'
+import { initDatabase } from '../database/index'
 import type { Express } from "express"
 export let expressApp: Express
 
@@ -10,8 +10,7 @@ const initApp = () => {
   const express = require("express")
   expressApp = express()
 
-  // initDatabase()
-  initMysql()
+  initDatabase()
   
   // 跨域
   expressApp.use(allowCrossDomain)
