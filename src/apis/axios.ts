@@ -8,7 +8,7 @@ import type {
 
 // 创建请求实例
 const instance:AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8888', // 设置统一的请求前缀
+  baseURL: 'http://localhost:5354', // 设置统一的请求前缀
   timeout: 10000, // 设置统一的超时时长
 })
 
@@ -31,7 +31,7 @@ instance.interceptors.request.use(
 // 响应拦截
 instance.interceptors.response.use(
   (response:AxiosResponse<any, any>) => {
-    return  response
+    return  response.data
   },
   (err:any ) => {
     return Promise.reject(err.response)

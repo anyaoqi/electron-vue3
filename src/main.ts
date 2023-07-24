@@ -1,12 +1,10 @@
 import { createApp } from 'vue'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import '@/styles/style.scss'
-import '@/styles/common.scss'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue' // element-ui 字体图标组件
+import "font-awesome/css/font-awesome.min.css"  // 字体图标库
+import '@/styles/index.scss' // 公共样式和初始化样式
 import App from './App.vue'
 import router  from '@/router/index'
-import pinia from '@/store'
-
-
+import pinia from '@/pinia'
 
 const app = createApp(App)
 app.use(router)

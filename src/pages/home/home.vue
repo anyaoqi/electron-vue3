@@ -4,6 +4,7 @@ const name = 'hello'
 
 <template>
   <div>{{ name }}</div>
+  23232322
 </template>
 
 <style lang="scss" scoped>
