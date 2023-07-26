@@ -22,7 +22,7 @@ export default defineConfig({
         onstart(options) {
           // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete, 
           // instead of restarting the entire Electron App.
-          options.reload()
+          options.startup()
         },
       },
     ]),
@@ -43,6 +43,10 @@ export default defineConfig({
       {
         find: '@',                                   // 别名
         replacement: resolve(__dirname, 'src'),      // 别名对应地址
+      },
+      {
+        find: '@@',                                   // 别名
+        replacement: resolve(__dirname, 'electron'),      // 别名对应地址
       },
     ]
   },

@@ -29,6 +29,7 @@
 * 字体图标：[font-awesome](https://fontawesome.dashgame.com/)
 * UI框架：[Element-plus](https://element-plus.org/zh-CN/component/button.html)
 * mysql插件: [mysql2](https://github.com/sidorares/node-mysql2/tree/master/documentation/zh-cn)
+* 本地数据库：[sqlite](http://www.sqlite.net.cn/index.html)
 
 ## 目录介绍
 

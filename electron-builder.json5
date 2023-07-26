@@ -3,7 +3,8 @@
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "data-supermarket",
+  "productName": "商超数据管理系统",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -11,6 +12,13 @@
   "files": [
     "dist-electron",
     "dist"
+  ],
+  "extraResources": [
+    {
+        // 拷贝静态文件到指定位置,否则打包之后出现找不到资源的问题.将整个resources目录拷贝到 发布的根目录下
+        "from": "public",
+        "to": "./assets"
+    }
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
@@ -23,7 +31,7 @@
       {
         "target": "nsis",
         "arch": [
-          "x64"
+          "x64",
         ]
       }
     ],

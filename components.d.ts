@@ -8,10 +8,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElForm: typeof import('element-plus/es')['ElForm']
+    ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElInput: typeof import('element-plus/es')['ElInput']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    ElTag: typeof import('element-plus/es')['ElTag']
     LayoutBarMenu: typeof import('./src/components/LayoutBarMenu/LayoutBarMenu.vue')['default']
     LayoutHeader: typeof import('./src/components/LayoutHeader/LayoutHeader.vue')['default']
     LayoutMain: typeof import('./src/components/LayoutMain/LayoutMain.vue')['default']
