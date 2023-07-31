@@ -6,7 +6,7 @@ import databaseEvents from '../database/eventServer'
 import sqliteEvents from '../database/sqlite3/events'
 
 export interface eventType {
-  [key: string]: (params: any) => any
+  [key: string]: (params: any, params2?: any) => any
 }
 
 
@@ -28,10 +28,10 @@ export function bindHandleEvents() {
   const eventArr:eventType[] = [commonEvents, databaseEvents, sqliteEvents]
   eventArr.forEach(events => {
     for (const eventName in events) {
-      ipcMain.handle(eventName, (_event, params) => {
+      ipcMain.handle(eventName, (_event, params, params2) => {
         const fn = events[eventName]
         if(fn && typeof fn==='function') {
-          return events[eventName](params)
+          return events[eventName](params, params2)
         } else {
           return '非函数，不可执行'
         }

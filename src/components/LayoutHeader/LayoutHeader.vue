@@ -1,3 +1,11 @@
+<script lang="ts" setup>
+import { useNow, useDateFormat, useNetwork } from '@vueuse/core'
+
+const formatted = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
+const { isOnline } = useNetwork()
+const version = APP_VERSION
+</script>
+
 <template>
   <div class="header-wrapper">
     <div class="header-left">
@@ -5,13 +13,13 @@
     </div>
     <div class="header-right">
       <span class="header-item app-version">
-        <el-tag>v-1.0.0</el-tag>
+        <el-tag size="large">版本号：{{ version }}</el-tag>
       </span>
       <span class="header-item net-state">
         <i class="fa fa-wifi"></i>
-        <span class="">已连接</span>
+        <span class="">{{ isOnline ? '已连接' : '未连接'}}</span>
       </span>
-      <span class="header-item now-date">2023-05-08</span>
+      <span class="header-item now-date">{{ formatted }}</span>
     </div>
   </div>
 </template>
@@ -56,7 +64,7 @@
         display: block;
         width: 1px;
         height: 18px;
-        background-color: #ada7a7;
+        background-color: #fff;
         position: absolute;
         bottom: 0;
         right: 0;
@@ -66,6 +74,11 @@
         i {
           margin-right: 5px;
         }
+      }
+    }
+    .header-item:last-child {
+      &::after {
+        display: none;
       }
     }
   }

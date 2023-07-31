@@ -2,9 +2,17 @@ import { app, BrowserWindow, Menu, ipcMain } from 'electron'
 import path from 'node:path'
 import { bindHandleEvents } from './events'
 import appConfig from './config/app.config'
+import { updateHandle } from './versionUpdate'
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
+
+// 测试打包
+// Object.defineProperty(app, 'isPackaged', {
+//   get() {
+//     return true;
+//   }
+// });
 
 // 是否打开控制台
 const openDevTools = import.meta.env.DEV ?  true : appConfig.debug;
@@ -40,7 +48,10 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
- 
+  // 软件升级监听绑定
+  updateHandle('http://127.0.0.1:5500',(updateParams) => {
+    win?.webContents.send('updateMessage', updateParams)
+  })
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -57,6 +68,7 @@ app.on('window-all-closed', () => {
   win = null
 })
 ipcMain.handle('getConfig', () => appConfig)
+
 // 当Electron 初始化完成
 app.whenReady().then(() => {
   // 绑定进程间通信事件

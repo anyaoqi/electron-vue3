@@ -7,7 +7,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -35,7 +35,8 @@
     "src/**/*.tsx", 
     "src/**/*.vue", 
     "electron",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "ElMessageBox"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

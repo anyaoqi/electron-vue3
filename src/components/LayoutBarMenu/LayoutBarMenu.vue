@@ -3,18 +3,19 @@
     <el-menu-item index="4-1">
       <template #title>
         <el-icon><message /></el-icon>
-        <router-link to="/home">数据抽取配置</router-link>
+        <router-link to="/dataExtraction">数据抽取配置</router-link>
       </template>
     </el-menu-item>
     <el-menu-item index="4-2">
       <template #title>
         <el-icon><message /></el-icon>
-        <router-link to="/login">数据对照配置</router-link>
+        <router-link to="/dataComparison">数据对照配置</router-link>
       </template>
     </el-menu-item>
     <el-menu-item index="4-3">
       <template #title>
-        <el-icon><setting /></el-icon>上报数据查询
+        <el-icon><setting /></el-icon>
+        <router-link to="/dataReporting">上报数据查询</router-link>
       </template>
     </el-menu-item>
   </el-menu>

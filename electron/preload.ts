@@ -110,7 +110,9 @@ declare global {
 // 公共方法
 contextBridge.exposeInMainWorld('electronAPI', {
   ...getInvokeEvents(commonEvents),
-  getConfig: () => ipcRenderer.invoke('getConfig')
+  getConfig: () => ipcRenderer.invoke('getConfig'),
+  onUpdateMessage: (callback: any) => ipcRenderer.on('updateMessage', callback),
+  reUpdateMessage: (callback: any) => ipcRenderer.removeListener('updateMessage', callback)
 })
 
 // 服务数据库对接api

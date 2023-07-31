@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-const name = 'hello'
 </script>
 
 <template>
-  <div>{{ name }}</div>
-  23232322
+  <div>
+    数据上报
+  </div>
 </template>
 
 <style lang="scss" scoped>
+  
 </style>

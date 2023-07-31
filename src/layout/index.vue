@@ -13,11 +13,14 @@ import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
     <LayoutBarMenu />
   </el-scrollbar>
   <div class="layout-main">
-    <LayoutMain />
+    <div class="page-container">
+      <LayoutMain />
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+$layout-left-width: 230px;
 .layout-header {
   position: sticky;
   width: 100%;
@@ -28,15 +31,20 @@ import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
   bottom: 0;
   left: 0;
   z-index: 10;
-  width: calc((100vw - 1362px) / 2 + 234px);
+  box-sizing: border-box;
+  width: $layout-left-width;
   background-color: #fff;
-  padding: 0;
   overflow-y: auto;
   transform: translate(0);
   transition: background-color 0.2s,opacity .25s,transform .5s cubic-bezier(.19,1,.22,1);
   border-right: solid 1px #dcdfe6;
 }
 .layout-main {
-  padding-left: 254px;
+  padding-left: $layout-left-width;
+  .page-container {
+    padding: 0px 18px;
+    overflow: auto;
+    height: calc(100vh - 55px);
+  }
 }
 </style>

@@ -30,9 +30,6 @@ const onSubmit = () => {
   <div class="page-login">
     <div class="login-form-wrapper">
       <h2 class="title">{{ title }}</h2>
-      <p>appPath:{{ config.appPath }}</p>
-      <p>openConfigPath:{{ config.openConfigPath }}</p>
-      <p>{{ config.openDevTools }}</p>
       <el-form :loginForm="loginForm" label-width="80px">
         <el-form-item label="用户名">
           <el-input v-model="loginForm.username"></el-input>
