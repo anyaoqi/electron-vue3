@@ -2,6 +2,10 @@
 import LayoutBarMenu from '@/components/LayoutBarMenu/LayoutBarMenu.vue'
 import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
+import DialogDbConfig from '@/components/DialogDbConfig/DialogDbConfig.vue';
+import { useHookDialog } from '@/hooks'
+
+const { setDialogVisable } = useHookDialog()
 </script>
 
 <template>
@@ -11,12 +15,16 @@ import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
   </header>
   <el-scrollbar class="layout-scrollbar">
     <LayoutBarMenu />
+    <div class="fixed-bottom">
+      <el-button type="primary" plain @click="setDialogVisable(true)">数据库连接</el-button>
+    </div>
   </el-scrollbar>
   <div class="layout-main">
     <div class="page-container">
       <LayoutMain />
     </div>
   </div>
+  <DialogDbConfig />
 </template>
 
 <style scoped lang="scss">
@@ -33,6 +41,7 @@ $layout-left-width: 230px;
   z-index: 10;
   box-sizing: border-box;
   width: $layout-left-width;
+  height: calc(100% - 55px);
   background-color: #fff;
   overflow-y: auto;
   transform: translate(0);
@@ -44,7 +53,16 @@ $layout-left-width: 230px;
   .page-container {
     padding: 0px 18px;
     overflow: auto;
-    height: calc(100vh - 55px);
+    max-height: calc(100vh - 56px);
   }
+}
+.fixed-bottom {
+  position: absolute;
+  bottom: 0;
+  padding: 20px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 </style>

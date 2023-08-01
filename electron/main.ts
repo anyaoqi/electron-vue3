@@ -71,8 +71,8 @@ ipcMain.handle('getConfig', () => appConfig)
 
 // 当Electron 初始化完成
 app.whenReady().then(() => {
-  // 绑定进程间通信事件
-  bindHandleEvents()
   // 创建主窗口
   createWindow()
+  // 绑定进程间通信事件
+  bindHandleEvents()
 })

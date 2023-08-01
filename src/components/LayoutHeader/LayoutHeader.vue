@@ -1,9 +1,25 @@
 <script lang="ts" setup>
 import { useNow, useDateFormat, useNetwork } from '@vueuse/core'
+import { useHookLogin } from '@/hooks'
 
 const formatted = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
 const { isOnline } = useNetwork()
 const version = APP_VERSION
+
+const { logout } = useHookLogin()
+const handleLogout = () => {
+  ElMessageBox.confirm(
+    `是否确认退出？`,
+    '提示',
+    {
+      confirmButtonText: '退出',
+      cancelButtonText: '取消',
+      type: 'info',
+    },
+  ).then(() => {
+    logout()
+  })
+}
 </script>
 
 <template>
@@ -20,6 +36,9 @@ const version = APP_VERSION
         <span class="">{{ isOnline ? '已连接' : '未连接'}}</span>
       </span>
       <span class="header-item now-date">{{ formatted }}</span>
+      <span class="header-item btn-logout" @click="handleLogout">
+        <i class="fa fa-sign-out"></i>
+      </span>
     </div>
   </div>
 </template>
@@ -74,6 +93,9 @@ const version = APP_VERSION
         i {
           margin-right: 5px;
         }
+      }
+      &.btn-logout {
+        cursor: pointer;
       }
     }
     .header-item:last-child {

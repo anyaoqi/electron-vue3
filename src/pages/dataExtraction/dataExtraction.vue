@@ -1,38 +1,16 @@
 <script lang="ts" setup>
-import { ref, reactive, toRefs } from 'vue'
+import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
+import DataSource from '@/components/DataSource/DataSource.vue'
+import DataPreview from '@/components/DataPreview/DataPreview.vue'
+import DataColumn from '@/components/DataColumn/DataColumn.vue'
 
 const activeTab = ref('one')
 const actionBtn = ref('btn1')
-const sqlContent = ref('')
-const dataTable = reactive({
-  columns: [
-      {
-          "key": "name",
-          "dataKey": "name",
-          "title": "名称",
-          "width": 150
-      },
-      {
-          "key": "age",
-          "dataKey": "age",
-          "title": "年龄",
-          "width": 150
-      },
-  ],
-  data: [
-    {
-        "id": "row-0",
-        "parentId": null,
-        "name": "高启强",
-        "age": "32",
-    }
-  ]
-})
-const { columns, data } = toRefs(dataTable)
 
-const handleTabClick = (tab: TabsPaneContext, event: Event) => {
-
+const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
+  console.log(_tab.paneName);
+  
 }
 const getBtnType = (name:string) => {
   return actionBtn.value === name ? 'primary' : ''
@@ -40,9 +18,6 @@ const getBtnType = (name:string) => {
 const handleBtnClick = (name: string) => {
   actionBtn.value = name
 }
-
-
-
 </script>
 
 <template>
@@ -68,28 +43,14 @@ const handleBtnClick = (name: string) => {
   <div class="page-content">
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleTabClick">
       <el-tab-pane label="数据源设定" name="one">
-        <p class="desc">
-          请编写查询脚本,编写完成后可通过
-          <el-button type="primary" plain size="small">预览视图</el-button>
-          测试脚本会否可用！
-        </p>
-        <el-input
-          v-model="sqlContent"
-          :rows="22"
-          type="textarea"
-          placeholder="Please input"
-        />
+        <DataSource  />
       </el-tab-pane>
       <el-tab-pane label="数据预览" name="two">
-        <el-table-v2
-          :columns="columns"
-          :data="data"
-          :width="1300"
-          :height="500"
-          fixed
-        />
+        <DataPreview />
       </el-tab-pane>
-      <el-tab-pane label="接口对照" name="three">接口对照</el-tab-pane>
+      <el-tab-pane label="接口对照" name="three">
+        <DataColumn />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>

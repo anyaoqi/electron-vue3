@@ -30,6 +30,8 @@
 * UI框架：[Element-plus](https://element-plus.org/zh-CN/component/button.html)
 * mysql插件: [mysql2](https://github.com/sidorares/node-mysql2/tree/master/documentation/zh-cn)
 * 本地数据库：[sqlite](http://www.sqlite.net.cn/index.html)
+* 版本更新：[electron-updater](https://www.electron.build/configuration/configuration)
+* 工具库：[vueuse](https://www.vueusejs.com/)
 
 ## 目录介绍
 
@@ -53,6 +55,8 @@
 * **release** Electron打包输出
 * **dist** Vue打包输出
 * **vite.config.ts** Vite配置
+* **electron-builder.json5** 打包配置
+* **tsconfig.json** TypeScript配置
 
 ## 项目命令
 

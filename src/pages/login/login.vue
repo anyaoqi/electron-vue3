@@ -1,18 +1,17 @@
 <script lang="ts" setup>
 import { reactive, toRefs, inject } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from '@/pinia/index'
+import { useHookLogin } from '@/hooks'
 
 const config:any = inject('config')
-const router = useRouter()
-const store = useStore()
 const loginForm = reactive({
   username: '',
   password: '',
 })
 
 const title:string = config.title
+const { login } = useHookLogin()
 
+// 登录
 const onSubmit = () => {
   const { username, password } = toRefs(loginForm)
   if(username.value && password.value){
@@ -20,8 +19,7 @@ const onSubmit = () => {
       message: '登录成功！',
       type: 'success'
     })
-    store.setLogin(true)
-    router.push('/')
+    login()
   }
 }
 </script>
@@ -48,6 +46,11 @@ const onSubmit = () => {
 </template>
 
 <style lang="scss" scoped>
+.page-login {
+  width: 100vw;
+  height: 100vh;
+  background-color: $color-primary;
+}
 .login-form-wrapper {
   position: absolute;
   top: 50%;
@@ -55,7 +58,7 @@ const onSubmit = () => {
   transform: translate(-50%, -50%);
   width: 350px;
   padding: 30px 30px 30px 15px;
-  // background-color: #409eff;
+  background-color: $color-white;;
   border: 1px solid #ccc;
   border-radius: 6px;
   .title {
