@@ -1,18 +1,73 @@
-# Vue 3 + TypeScript + Vite
+# 衡阳烟草POS系统
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 项目描述
 
-## Recommended IDE Setup
+商超数据对接，包含数据抽取、数据对照等功能，将商超数据库中的数据抽取到本地数据库，然后再通过接口上传到烟草服务器
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## 技术框架
 
-## Type Support For `.vue` Imports in TS
+### **基础框架：[electron-vite-vue](https://github.com/electron-vite/electron-vite-vue)**
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+    官网地址：https://electron-vite.github.io/
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+    github地址：https://github.com/electron-vite/electron-vite-vue
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+### 技术栈
+
+* [Vue3](https://cn.vuejs.org/)
+* [Vue-router](https://router.vuejs.org/zh/)
+* [Pinia](https://pinia.vuejs.org/zh/getting-started.html)
+* [Axios](https://www.axios-http.cn/)
+* [Sqlite3](https://github.com/TryGhost/node-sqlite3)
+* [Vite](https://cn.vitejs.dev/)
+* [Electron](https://www.electronjs.org/zh/docs/latest/)
+* [Sass](https://www.sass.hk/)
+* [TypeScript](https://www.tslang.cn/index.html)
+
+### 其他技术
+
+* 字体图标：[font-awesome](https://fontawesome.dashgame.com/)
+* UI框架：[Element-plus](https://element-plus.org/zh-CN/component/button.html)
+* mysql插件: [mysql2](https://github.com/sidorares/node-mysql2/tree/master/documentation/zh-cn)
+* 本地数据库：[sqlite](http://www.sqlite.net.cn/index.html)
+* 版本更新：[electron-updater](https://www.electron.build/configuration/configuration)
+* 工具库：[vueuse](https://www.vueusejs.com/)
+
+## 目录介绍
+
+* **electron** 主进程
+  * electron\database 数据库相关
+  * electron\events  事件处理
+  * electron\preload.ts  预加载文件
+  * electron\main.ts  主进程入口
+* **src** 渲染进程
+  * src\layout  布局
+  * src\pages  页面
+  * src\components 公共组件
+  * src\router  路由
+  * src\pinia  状态管理
+  * src\styles  全局样式
+  * src\types   类型管理
+  * src\apis  接口
+  * src\utils  常用工具
+* **config** 全局配置
+* **public** 静态资源
+* **release** Electron打包输出
+* **dist** Vue打包输出
+* **vite.config.ts** Vite配置
+* **electron-builder.json5** 打包配置
+* **tsconfig.json** TypeScript配置
+
+## 项目命令
+
+#### 启动：npm run dev
+
+开发环境启动项目
+
+#### 打包：npm run build
+
+生产环境打包项目
+
+#### 预览：npm run preview
+
+打包后在浏览器中预览查看项目

@@ -5,9 +5,10 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -25,7 +26,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*":["src/*"]
+      "@/*":["src/*"],
+      "@@/*":["electron/*"],
     }
   },
   "include": [
@@ -34,7 +36,8 @@
     "src/**/*.tsx", 
     "src/**/*.vue", 
     "electron",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "ElMessageBox"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
