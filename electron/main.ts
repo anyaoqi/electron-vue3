@@ -3,7 +3,7 @@ import path from 'node:path'
 import { bindHandleEvents } from './events'
 import appConfig from './config/app.config'
 import { updateHandle } from './versionUpdate'
-
+import { initDatabase } from './database/index'
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
@@ -13,6 +13,9 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.D
 //     return true;
 //   }
 // });
+
+// 初始化数据库
+initDatabase()
 
 // 是否打开控制台
 const openDevTools = import.meta.env.DEV ?  true : appConfig.debug;

@@ -1,33 +1,40 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, toRaw } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useHookDialog } from '@/hooks/index'
+import type { iDatabaseConfig } from '@/types/databaseType'
+import { useDbConfig } from '@/hooks'
+
+const { config, setConfig } = useDbConfig()
+const { dialogVisable, setDialogVisable } = useHookDialog()
+
 // 表单Ref对象
 const formRef = ref<FormInstance>()
-// 表单类型
-interface formType  {
-  dbType: string
-  username: string
-  password: string
-  host: string
-  port: number,
-  dbName: string
-}
+
 // 表单
-const form = reactive<formType>({
-  dbType: 'mysql',
-  username: '',
+const form = reactive<iDatabaseConfig>({
+  type: 'mysql',
+  user: '',
   password: '',
   host: '',
-  port: 3360,
-  dbName: ''
+  port: 3306,
+  database: '',
+  ...config.value,
 })
+if(import.meta.env.DEV) {
+  form.type = "mysql"
+  form.host = "172.50.80.188"
+  form.user = "root"
+  form.password = "Hsrc@20230612"
+  form.port = 3306
+  form.database = "tobacco"
+}
 // 表单校验规则
-const formRules = reactive<FormRules<formType>>({
-  dbType: [
+const formRules = reactive<FormRules<iDatabaseConfig>>({
+  type: [
     {  required: true, message: '请选择数据库类型', trigger: 'blur' },
   ],
-  username: [
+  user: [
     {  required: true, message: '请输入用户名', trigger: 'blur' },
   ],
   password: [
@@ -39,33 +46,39 @@ const formRules = reactive<FormRules<formType>>({
   port: [
     {  required: true, message: '请输入端口号', trigger: 'blur' },
   ],
-  dbName: [
+  database: [
     {  required: true, message: '请输入数据名称', trigger: 'blur' },
   ],
 })
-// 数据库类型
-const dbTypeList = [
-  {
-    label: 'Mysql',
-    value: 'mysql'
-  }
-]
+// 支持的数据库列表
+enum databaseList {
+  mysql = "Mysql",
+}
 
-const { dialogVisable, setDialogVisable } = useHookDialog()
 // 连接数据库
+const connectDatabase = () => {
+  // 这里传参需要通过toRaw转换为普通的js对象，reactive对象无法传参
+  window.serverAPI.connectDatabase(toRaw(form)).then(() => {
+    setConfig(form)
+    ElMessage.success('连接成功')
+    setDialogVisable(false)
+  }).catch((err: any) => {
+    ElMessage.error('连接数据库失败:', err)
+  })
+}
+
+// 提交数据库配置 进行数据库连接
 const handleConfirm = async () => {
   if (!formRef.value) return
 
-  await formRef.value.validate((valid, fields) => {
+  await formRef.value.validate((valid) => {
     if (valid) {
-      ElMessage.success('连接成功')
-      setDialogVisable(false)
-    } else {
-      console.log('error submit!', fields)
+      connectDatabase()
     }
   })
 }
-// 取消连接
+
+// 关闭弹框
 const handleCancel = () => {
   setDialogVisable(false)
 }
@@ -73,7 +86,9 @@ const handleCancel = () => {
 
 <template>
    <Teleport to="body">
-    <el-dialog v-model="dialogVisable"
+    <el-dialog 
+      v-model="dialogVisable"
+      :close-on-click-modal="false"
       title="连接设置"
       width="30%"
     >
@@ -86,17 +101,17 @@ const handleCancel = () => {
         @submit.native.prevent="handleConfirm"
         >
         <el-form-item label="数据提供者" prop="dbType">
-          <el-select v-model="form.dbType">
+          <el-select v-model="form.type">
             <el-option 
-              v-for="dbType in dbTypeList"
-              :key="dbType.value"
-              :label="dbType.label"
-              :value="dbType.value"
+              v-for="(value, key) in databaseList"
+              :key="key"
+              :value="key"
+              :label="value"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username"></el-input>
+        <el-form-item label="用户名" prop="user">
+          <el-input v-model="form.user"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" type="password"></el-input>
@@ -107,8 +122,8 @@ const handleCancel = () => {
         <el-form-item label="端口号" prop="port">
           <el-input v-model="form.port"></el-input>
         </el-form-item>
-        <el-form-item label="数据库" prop="dbName">
-          <el-input v-model="form.dbName"></el-input>
+        <el-form-item label="数据库" prop="database">
+          <el-input v-model="form.database"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button @click="handleCancel">取消</el-button>

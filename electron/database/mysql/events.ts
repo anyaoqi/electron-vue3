@@ -1,16 +1,23 @@
-import { RowDataPacket } from 'mysql2'
-import { initMysql } from './index'
-
+import { initMysql, query } from './index'
+import type { dbConfigType } from './index'
 export default {
-  getUsers: () => {
+  connectDatabase: ({host, user, password, port, database}: dbConfigType) => {
     return new Promise((resolve, reject) => {
-      initMysql().query('SELECT * FROM user', function (error, results:RowDataPacket[]) {
-        if(!error) {
-          resolve(results)
-        } else {
-          reject(error)
-        }
-      });
+      initMysql({
+        host,
+        user,
+        password,
+        port,
+        database
+      }).then(() => {
+        resolve(true)
+      }).catch(err => {
+        reject(err)
+      })
     })
+  },
+  getShopInfos: (sql: string) => {
+    // return query('SELECT * FROM shop_infos')
+    return query(sql)
   }
 }

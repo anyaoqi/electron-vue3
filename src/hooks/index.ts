@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useStore } from '@/pinia/index'
 import { useRouter } from 'vue-router'
+import { iDatabaseConfig } from '@/types/databaseType'
 const store = useStore()
 
 /**
@@ -33,4 +34,16 @@ export const useHookLogin = () => {
     router.push('/login')
   }
   return { isLogin, login, logout }
+}
+
+/**
+ * 数据库配置相关操作
+ * @returns { config,  setConfig }
+ */
+export const useDbConfig = () => {
+  const config = computed(() => store.dbConfig)
+  const setConfig = (config: iDatabaseConfig) => {
+    store.setDbConfig(config)
+  }
+  return { config, setConfig }
 }

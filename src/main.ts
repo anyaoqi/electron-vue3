@@ -12,10 +12,9 @@ app.use(pinia)
 
 // 获取全局配置 通过provide注入到全局，使用的时候通过Inject引入
 window.electronAPI.getConfig().then((config: object) => {
-  console.log('渲染进程获取到全局配置', config);
+  console.log('注册全局配置', config);
   app.provide('config', config)
 })
-
 // element-ui图标：注册全局组件
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)

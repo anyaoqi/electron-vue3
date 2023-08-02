@@ -18,6 +18,15 @@ const getBtnType = (name:string) => {
 const handleBtnClick = (name: string) => {
   actionBtn.value = name
 }
+
+// 预览视图
+const previewData = (sql: string) => {
+  window.serverAPI.getShopInfos(sql).then((data: any) => {
+    console.log('data', data);
+  }).catch((err: any) => {
+    console.log(err);
+  })
+}
 </script>
 
 <template>
@@ -43,7 +52,7 @@ const handleBtnClick = (name: string) => {
   <div class="page-content">
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleTabClick">
       <el-tab-pane label="数据源设定" name="one">
-        <DataSource  />
+        <DataSource @previewData="previewData"  />
       </el-tab-pane>
       <el-tab-pane label="数据预览" name="two">
         <DataPreview />
