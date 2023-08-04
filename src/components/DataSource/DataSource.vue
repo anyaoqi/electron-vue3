@@ -10,7 +10,7 @@ const emit = defineEmits<{
   previewData: [sql: string]
 }>()
 
-const sqlContent = ref('')
+const sqlContent = ref('SELECT * FROM shop_infos')
 
 // 预览视图
 const previewData = () => {

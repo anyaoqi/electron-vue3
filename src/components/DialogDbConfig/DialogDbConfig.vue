@@ -2,7 +2,7 @@
 import { reactive, ref, toRaw } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useHookDialog } from '@/hooks/index'
-import type { iDatabaseConfig } from '@/types/databaseType'
+import type { iDatabaseConfig } from '@/types'
 import { useDbConfig } from '@/hooks'
 
 const { config, setConfig } = useDbConfig()
@@ -12,15 +12,8 @@ const { dialogVisable, setDialogVisable } = useHookDialog()
 const formRef = ref<FormInstance>()
 
 // 表单
-const form = reactive<iDatabaseConfig>({
-  type: 'mysql',
-  user: '',
-  password: '',
-  host: '',
-  port: 3306,
-  database: '',
-  ...config.value,
-})
+const form = reactive<iDatabaseConfig>(config.value)
+
 if(import.meta.env.DEV) {
   form.type = "mysql"
   form.host = "172.50.80.188"
@@ -68,10 +61,9 @@ const connectDatabase = () => {
 }
 
 // 提交数据库配置 进行数据库连接
-const handleConfirm = async () => {
-  if (!formRef.value) return
-
-  await formRef.value.validate((valid) => {
+const handleConfirm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, _fields) => {
     if (valid) {
       connectDatabase()
     }
@@ -98,7 +90,7 @@ const handleCancel = () => {
         label-width="120px"
         :model="form" 
         :rules="formRules" 
-        @submit.native.prevent="handleConfirm"
+        @submit.native.prevent="handleConfirm(formRef)"
         >
         <el-form-item label="数据提供者" prop="dbType">
           <el-select v-model="form.type">

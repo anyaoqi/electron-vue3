@@ -1,35 +1,30 @@
 <script lang="ts" setup>
-import { reactive, toRefs } from 'vue'
+import { computed } from 'vue'
 
-const dataTable = reactive({
-  columns: [
-      {
-          "key": "name",
-          "dataKey": "name",
-          "title": "名称",
-          "width": 150
-      },
-      {
-          "key": "age",
-          "dataKey": "age",
-          "title": "年龄",
-          "width": 150
-      },
-  ],
-  data: [
-    {
-        "id": "row-0",
-        "parentId": null,
-        "name": "高启强",
-        "age": "32",
-    }
-  ]
-})
-const { columns, data } = toRefs(dataTable)
+// 定义字段类型接口
+interface columnsType {
+  "key": string,
+  "dataKey": string,
+  "title": string,
+  "width"?: number
+}
+// 定义dataTable类型接口
+export interface dataTableType {
+  columns: columnsType[],
+  data: any[]
+}
+// 定义Props
+const props = defineProps<{
+  dataTable: dataTableType
+}>()
+
+const columns = computed(() => props.dataTable.columns)
+const data = computed(() => props.dataTable.data)
 </script>
 
 <template>
   <el-table-v2
+    header-class="table-header"
     :columns="columns"
     :data="data"
     :width="1300"
@@ -39,5 +34,15 @@ const { columns, data } = toRefs(dataTable)
 </template>
 
 <style lang="scss" scoped>
-  
+:deep(.el-table-v2__header-cell) {
+  font-weight: bold;
+  color: $color-black;
+}
+:deep(.el-tabs__header is-top) {
+  margin-bottom: 5px;
+}
+.table-header {
+  background: $color-primary;
+ 
+}
 </style>

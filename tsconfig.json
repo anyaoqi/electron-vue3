@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": true,
 
     /* element-plus */
-    // "types": ["element-plus/global"],
+    "types": ["element-plus/global"],
 
     "baseUrl": ".",
     "paths": {

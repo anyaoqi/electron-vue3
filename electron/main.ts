@@ -1,9 +1,9 @@
-import { app, BrowserWindow, Menu, ipcMain } from 'electron'
+import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import path from 'node:path'
 import { bindHandleEvents } from './events'
 import appConfig from './config/app.config'
 import { updateHandle } from './versionUpdate'
-import { initDatabase } from './database/index'
+import { initDatabase, closeDatabase } from './database/index'
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
@@ -62,10 +62,31 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'))
   }
+
+  // 窗口关闭
+  win.on('close', (e) => {
+    e.preventDefault()
+    // 窗口关闭提示弹框
+    win && dialog.showMessageBox(win, {
+      type: 'info',
+      title: '提示',
+      message: '确认退出？',
+      buttons: ['确认', '取消'], //选择按钮，点击确认则下面的idx为0，取消为1
+      cancelId: 1, //这个的值是如果直接把提示框×掉返回的值，这里设置成和“取消”按钮一样的值，下面的idx也会是1
+    }).then((idx) => {
+      if(idx.response != 1) {
+        app.exit()
+      } // 取消关闭
+    })
+  })
 }
 // 禁用默认菜单
 Menu.setApplicationMenu(null)
 
+app.on('will-quit', () => {
+  // 关闭所有数据库连接
+  closeDatabase()
+})
 // 当所有的窗口都被关闭时触发
 app.on('window-all-closed', () => {
   win = null

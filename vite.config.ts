@@ -50,7 +50,7 @@ export default defineConfig({
       {
         find: '@@',                                   // 别名
         replacement: resolve(__dirname, 'electron'),      // 别名对应地址
-      },
+      }
     ]
   },
   css: {

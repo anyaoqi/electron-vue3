@@ -1,14 +1,14 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useStore } from '@/pinia/index'
-import { useRouter } from 'vue-router'
-import { iDatabaseConfig } from '@/types/databaseType'
-const store = useStore()
+import { iDatabaseConfig } from '@/types'
+import { ElLoading } from 'element-plus'
 
 /**
  * 数据库配置弹框显示状态
  */
 export const useHookDialog = ()=> {
+  const store = useStore()
   const { dbDialogVisable } = storeToRefs(store)
   const setDialogVisable = (show: boolean = true) => {
     store.openDbDialog(show)
@@ -17,33 +17,39 @@ export const useHookDialog = ()=> {
 }
 
 /**
- * 登录操作
- * @returns { isLogin, login, logout }
- */
-export const useHookLogin = () => {
-  const router = useRouter()
-  const isLogin = computed(() => store.isLogin)
-  // 登录
-  const login = () => {
-    store.setLogin(true)
-    router.push('/')
-  }
-  // 退出
-  const logout = () => {
-    store.setLogin(false)
-    router.push('/login')
-  }
-  return { isLogin, login, logout }
-}
-
-/**
  * 数据库配置相关操作
  * @returns { config,  setConfig }
  */
 export const useDbConfig = () => {
+  const store = useStore()
   const config = computed(() => store.dbConfig)
   const setConfig = (config: iDatabaseConfig) => {
     store.setDbConfig(config)
   }
   return { config, setConfig }
+}
+
+
+export const useLoading = () => {
+  const store = useStore()
+  const loading = computed(() => store.loading)
+
+  const setLoading = (boo: boolean = true) => {
+    if(loading.value) {
+      store.loading.close()
+      store.loading = null
+    }
+    if(boo) {
+      store.loading = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
+    }
+  }
+
+  return {
+    loading,
+    setLoading
+  }
 }

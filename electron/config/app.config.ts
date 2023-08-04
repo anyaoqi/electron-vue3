@@ -15,6 +15,6 @@ if(!import.meta.env.DEV){
 
 // 配置项
 export default {
-  title: "商超数据系统",
+  title: "第三方零消数据抽取系统",
   ...openConfig,
 }

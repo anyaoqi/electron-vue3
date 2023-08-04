@@ -1,4 +1,4 @@
-import { initMysql, query } from './index'
+import { initMysql, query, close } from './index'
 import type { dbConfigType } from './index'
 export default {
   connectDatabase: ({host, user, password, port, database}: dbConfigType) => {
@@ -19,5 +19,9 @@ export default {
   getShopInfos: (sql: string) => {
     // return query('SELECT * FROM shop_infos')
     return query(sql)
-  }
+  },
+  getShopColums: () => {
+    return query('SHOW FULL COLUMNS FROM shop_infos;')
+  },
+  close: ()=> close()
 }

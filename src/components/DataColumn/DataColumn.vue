@@ -1,57 +1,40 @@
 <script lang="ts" setup>
-const tableData = [
-  {
-    id: '123456',
-    apiColumn: '2016-05-03',
-    corColumn: 'Tom',
-    defaultValue: 'No. 189, Grove St, Los Angeles',
-    desc: '5555',
-  },
-  {
-    id: 'bbb',
-    apiColumn: '2016-05-03',
-    corColumn: 'Tom',
-    defaultValue: 'No. 189, Grove St, Los Angeles',
-    desc: 'dddd',
-  },
-  {
-    id: 'ccc',
-    apiColumn: '2016-05-03',
-    corColumn: 'Tom',
-    defaultValue: 'No. 189, Grove St, Los Angeles',
-    desc: '3333',
-  },
-  {
-    id: 'dddd',
-    apiColumn: '2016-05-03',
-    corColumn: 'Tom',
-    defaultValue: 'No. 189, Grove St, Los Angeles',
-    desc: '2222',
-  },
- 
-]
-const columnOptions = [
-  {
-    value: 'Option1',
-    label: 'Option1',
-  },
-  {
-    value: 'Option2',
-    label: 'Option2',
-  },
-  {
-    value: 'Option3',
-    label: 'Option3',
-  },
-  {
-    value: 'Option4',
-    label: 'Option4',
-  },
-  {
-    value: 'Option5',
-    label: 'Option5',
-  },
-]
+import { computed, reactive } from 'vue'
+
+interface columnType {
+  columnKey: string,
+  apiColumn: string,
+  corColumn: string,
+  defaultValue: string,
+  desc: string
+}
+
+const props = defineProps<{
+  columns: any[],
+  apiFilds: any[],
+}>()
+
+const columns = computed(() => props.columns)
+const apiColumns = computed(() => props.apiFilds)
+
+// 表格中的数据：格式化接口中的字段
+const tableColumns:columnType[] = apiColumns.value.map(filed => {
+  return {
+    columnKey: filed.filed,
+    apiColumn: filed.name,
+    corColumn: '',
+    defaultValue: '',
+    desc: '',
+  }
+})
+
+// 接口对照响应式数据
+const tableData = reactive(tableColumns)
+
+const selectColumnChange = (_val: string, _index: number) => {
+  const columnInfo = columns.value.find(c => c.Field === _val)
+  console.log(columnInfo);
+}
 </script>
 
 <template>
@@ -64,13 +47,17 @@ const columnOptions = [
         </template>
       </el-table-column>
       <el-table-column prop="corColumn" label="对应字段" width="180">
-        <template #default="{ row }">
-          <el-select v-model="row.corColumn" class="m-2" placeholder="Select">
+        <template #default="{ row, $index }">
+          <el-select 
+            v-model="row.corColumn" 
+            class="m-2" 
+            placeholder="Select"  
+            @change="selectColumnChange($event, $index)">
             <el-option
-              v-for="item in columnOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in columns"
+              :key="item.Field"
+              :label="item.Field"
+              :value="item.Field"
             />
           </el-select>
         </template>

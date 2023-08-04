@@ -1,4 +1,4 @@
-import mysql, { Connection, RowDataPacket,FieldPacket } from 'mysql2/promise'
+import mysql, { Connection } from 'mysql2/promise'
 
 let connection:Connection|null = null;
 
@@ -30,10 +30,19 @@ export async function initMysql(config?: dbConfigType): Promise<Connection> {
     }
   }
   
-  connection = await mysql.createConnection(config);
+  connection = await mysql.createConnection({
+    ...config,
+    dateStrings: true,
+  });
+  connection.connect().then((err: any) => {
+    if(!err){
+      console.log('mysql connect success');
+    } else {
+      console.log('mysql connect error:', err);
+    }
+  })
   return connection
 }
-
 
 /**
  * query方法Promise封装
@@ -43,10 +52,22 @@ export async function initMysql(config?: dbConfigType): Promise<Connection> {
 export const query = (sql: string) => {
   return new Promise((resolve, reject) => {
     initMysql().then(async db => {
-      const [results] = await db.query(sql)
-      resolve(results)
+      const [results, columns] = await db.query(sql)
+      console.log('columns', columns);
+      
+      resolve({ results, columns })
     }).catch(err => {
       reject(err)
     })
   })
+}
+
+/**
+ * 关闭数据库连接
+ */
+export const close = () => {
+  if(connection) {
+    connection.end()
+    connection = null
+  }
 }

@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import LayoutBarMenu from '@/components/LayoutBarMenu/LayoutBarMenu.vue'
 import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
 import DialogDbConfig from '@/components/DialogDbConfig/DialogDbConfig.vue';
-import { useHookDialog } from '@/hooks'
+import { useHookDialog, useLoading} from '@/hooks'
 
+const { setLoading } = useLoading()
 const { setDialogVisable } = useHookDialog()
+
+onMounted(() => {
+  setLoading(false)
+})
 </script>
 
 <template>

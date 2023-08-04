@@ -16,7 +16,7 @@ export function getInvokeEvents(eventObject: eventType) {
   let keys = Object.keys(eventObject)
   if(keys.length) {
     for (const eventName in eventObject) {
-      invokeEvents[eventName] = (params: any) => ipcRenderer.invoke(eventName, params)
+      invokeEvents[eventName] = (params1: any, params2: any) => ipcRenderer.invoke(eventName, params1, params2)
     }
   }
   return invokeEvents
