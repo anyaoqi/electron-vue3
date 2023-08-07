@@ -12,35 +12,42 @@ export interface dbConfigType {
   database: string
 }
 
+// 连接数据库
+export const connect = async (config?: dbConfigType): Promise<Connection>  =>  {
+  return new Promise(async (resolve, reject) => {
+    if(!config) {
+      // 默认参数
+      config = {
+        host     : '',
+        user     : '',
+        password : '',
+        port: 3306,
+        database: '', // 填写你自己的数据库名称
+      }
+    }
+    try {
+      connection = await mysql.createConnection({
+        ...config,
+        dateStrings: true,
+      });
+      console.log('mysql connect success');
+      addLister()
+      resolve(connection)
+    } catch (err) {
+      close()
+      reject(err)
+    }
+  })
+}
+
 /**
- * 初始化数据库连接方法
+ * 初始化数据库连接
  * @returns connection
  */
 export async function initMysql(config?: dbConfigType): Promise<Connection> {
-  console.log('config', config);
   if(connection) return connection
-  if(!config) {
-    // 默认参数
-    config = {
-      host     : '172.50.80.188',
-      user     : 'root',
-      password : 'Hsrc@20230612',
-      port: 3306,
-      database: 'tobacco', // 填写你自己的数据库名称
-    }
-  }
-  
-  connection = await mysql.createConnection({
-    ...config,
-    dateStrings: true,
-  });
-  connection.connect().then((err: any) => {
-    if(!err){
-      console.log('mysql connect success');
-    } else {
-      console.log('mysql connect error:', err);
-    }
-  })
+
+  connection = await connect(config)
   return connection
 }
 
@@ -63,11 +70,44 @@ export const query = (sql: string) => {
 }
 
 /**
+ * 数据库当前是否连接
+ * @returns 
+ */
+export const isConnection = async ()=> {
+  return new Promise((resolve, reject) => {
+    if(!connection) {
+      resolve(false)
+      return
+    }
+    connection.connect().then((conn: any) => {
+      console.log('isConnection', conn);
+      
+      if(conn) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    }).catch((error) => {
+      console.log('conn error', error);
+      
+      reject(error)
+    })
+  })
+}
+
+/**
  * 关闭数据库连接
  */
-export const close = () => {
+export function close(){
   if(connection) {
     connection.end()
     connection = null
   }
 }
+
+function addLister() {
+  console.log('添加监听事件');
+}
+
+
+

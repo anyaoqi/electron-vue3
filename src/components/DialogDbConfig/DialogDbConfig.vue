@@ -8,6 +8,8 @@ import { useDbConfig } from '@/hooks'
 const { config, setConfig } = useDbConfig()
 const { dialogVisable, setDialogVisable } = useHookDialog()
 
+const isConnection = ref(false)
+
 // 表单Ref对象
 const formRef = ref<FormInstance>()
 
@@ -56,7 +58,8 @@ const connectDatabase = () => {
     ElMessage.success('连接成功')
     setDialogVisable(false)
   }).catch((err: any) => {
-    ElMessage.error('连接数据库失败:', err)
+    isConnection.value = false
+    ElMessage.error('连接数据库失败:' + err)
   })
 }
 
@@ -74,6 +77,16 @@ const handleConfirm = async (formEl: FormInstance | undefined) => {
 const handleCancel = () => {
   setDialogVisable(false)
 }
+
+const onDialogOpen = () => {
+  console.log('open');
+  
+  window.serverAPI.isConnection().then((boo: boolean) => {
+    console.log(boo);
+    
+    isConnection.value = boo
+  })
+}
 </script>
 
 <template>
@@ -81,9 +94,16 @@ const handleCancel = () => {
     <el-dialog 
       v-model="dialogVisable"
       :close-on-click-modal="false"
-      title="连接设置"
       width="30%"
+      @open="onDialogOpen"
     >
+      <template  #header="{}">
+        <h2>
+          连接设置
+          <el-tag v-if="isConnection" class="ml-2" type="success">已连接</el-tag>
+          <el-tag v-else class="ml-2" type="info">未连接</el-tag>
+        </h2>
+      </template>
       <el-form 
         status-icon
         ref="formRef" 
