@@ -52,7 +52,8 @@ function getBody(code: any, array_data: any) {
 // xml => json
 function xml2arr(xml: any) {
   return new Promise((resolve) => {
-    parseString(xml, function (err:any, result:any) {
+    parseString(xml, function (_err:any, result:any) {
+      console.error(_err);
       resolve(
         result['soapenv:Envelope']['soapenv:Body'][0]['ns1:processResponse'][0][
           'ns1:processReturn'
@@ -83,7 +84,7 @@ export async function requestSoap(code: any, data: any) {
     xml: getBody(code, data),
     timeout: 1000 * 60,
   })
-  const { headers, body, statusCode } = response
+  const { body, statusCode } = response
   if (statusCode == 200) {
     return await parseBody(body)
   }

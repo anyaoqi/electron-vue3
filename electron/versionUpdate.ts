@@ -1,4 +1,4 @@
-import { autoUpdater } from "electron-updater";
+import { autoUpdater, CancellationToken } from "electron-updater";
 import type {
   UpdaterEvents,
   ProgressInfo,
@@ -76,7 +76,7 @@ export function updateHandle(feedUrl: string, callback: handleUpdateType) {
         cmd: "update-downloaded",
       });
       // 退出并安装更新包
-      autoUpdater.quitAndInstall();
+      autoUpdater.quitAndInstall(false, true);
     }
   );
 }
@@ -90,7 +90,14 @@ export function onAutoUpdater(funcName: updaterEventsName, params: any) {
   if (funcName) {
     const updateFunc = autoUpdater[funcName];
     if (updateFunc && typeof updateFunc === "function") {
-      autoUpdater[funcName](params);
+      if(funcName == 'downloadUpdate') {
+        const cancellationToken = new CancellationToken()
+        autoUpdater.downloadUpdate(cancellationToken)
+      } else if (funcName == 'quitAndInstall') {
+        autoUpdater.quitAndInstall(false, true)
+      } else {
+        autoUpdater[funcName](params);
+      }
     }
   } else {
     autoUpdater.checkForUpdates();

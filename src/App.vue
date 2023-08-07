@@ -1,18 +1,11 @@
 <script setup lang="ts">
-// const res = window.sqliteAPI.getUserOne('高启强')
-// const res2 = window.serverAPI.getUsers()
-
-// res.then((data: any) => {
-//   console.log(data);
-// })
-// res2.then((data: any) => {
-//   console.log('res2',data);
-  
-// })
+import VersionUpdate from '@/components/versionUpdate/versionUpdate.vue'
 </script>
 
 <template>
   <router-view></router-view>
+  <!-- 版本更新 -->
+  <VersionUpdate />
 </template>
 
 <style scoped lang="scss">

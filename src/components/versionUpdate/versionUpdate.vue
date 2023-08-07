@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { checkUpdate, onUpdateMessage,reUpdateMessage, downloadUpdate, quitAndInstall } from '@/utils/autoUpdater'
-const name = 'hello'
+import { ref, onMounted } from 'vue'
+import { checkUpdate,onUpdateMessage,reUpdateMessage, downloadUpdate } from '@/utils/autoUpdater'
 
-const dialogVisible = ref(false)
+const dialogVisible = ref(true)
 const closeOnPressEscape = ref(false)
 const showClose = ref(false)
 const closeOnClickModal = ref(false)
@@ -38,7 +37,6 @@ const handleUpdate = (arg: any) => {
   } else if (arg.cmd === 'update-downloaded') {
     // 安装最新版本
     dialogVisible.value = false;
-    quitAndInstall()
   } else if (arg.cmd === 'error') {
     // 错误
     dialogVisible.value = false;
@@ -47,26 +45,37 @@ const handleUpdate = (arg: any) => {
    
   }
 }
+
 // 移除监听
 reUpdateMessage(handleUpdate)
 // 绑定监听
 onUpdateMessage(handleUpdate)
 
-const checkUpdateFunc = () => {
+onMounted(() => {
   checkUpdate()
-}
+})
 </script>
 
 <template>
-  <div>{{ name }}</div>
-  <el-button type="primary" @click="checkUpdateFunc">检查版本</el-button>
-  <el-dialog title="正在更新版本,请稍后 ···" :visible.sync="dialogVisible" width="60%" :close-on-click-modal="closeOnClickModal"
-    :close-on-press-escape="closeOnPressEscape" :show-close="showClose" center>
-    <div style="width: 100%; height: 5vh; line-height: 5vh; text-align: center">
-      <el-progress status="success" :text-inside="true" :stroke-width="20" :percentage="percentage" :width="strokeWidth"
-        :show-text="true"></el-progress>
-    </div>
-  </el-dialog>
+   <el-dialog
+      title="正在更新版本,请稍后 ···"
+      :visible.sync="dialogVisible" width="60%"
+      :close-on-click-modal="closeOnClickModal"
+      :close-on-press-escape="closeOnPressEscape"
+      :show-close="showClose"
+      center
+      >
+      <div style="width: 100%; height: 5vh; line-height: 5vh; text-align: center">
+        <el-progress
+          status="success"
+          :text-inside="true"
+          :stroke-width="20"
+          :percentage="percentage"
+          :width="strokeWidth"
+          :show-text="true">
+        </el-progress>
+      </div>
+    </el-dialog>
 </template>
 
 <style lang="scss" scoped>

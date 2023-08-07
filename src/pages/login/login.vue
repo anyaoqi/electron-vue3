@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, onMounted } from 'vue'
 import { useLoading } from '@/hooks'
 import { useLogin } from '@/hooks/login'
 import type { FormInstance, FormRules } from 'element-plus'
 import { iLoginForm } from '@/types'
+import { checkUpdate } from '@/utils/autoUpdater'
 
 const ruleFormRef = ref<FormInstance>()
 
@@ -35,6 +36,10 @@ const rules = reactive<FormRules<iLoginForm>>({
     { required: true, trigger: 'blur',  message: '请输入密码' },
     { min: 6, message: '密码不能少于6位', trigger: 'blur' },
   ],
+})
+
+onMounted(() => {
+  checkUpdate()
 })
 
 // 登录
