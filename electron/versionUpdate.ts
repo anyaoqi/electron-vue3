@@ -29,8 +29,6 @@ export function updateHandle(feedUrl: string, callback: handleUpdateType) {
   autoUpdater.forceDevUpdateConfig = import.meta.env.DEV
   // 监听升级失败事件
   autoUpdater.on("error", function (error: Error) {
-    console.info("监听升级失败事件ERRO:");
-    console.info(error);
     sendUpdateMessage({
       cmd: "error",
       message: error,

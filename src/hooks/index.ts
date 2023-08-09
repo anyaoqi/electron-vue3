@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useStore } from '@/pinia/index'
-import { iDatabaseConfig } from '@/types'
+import { iDatabase } from '@/types'
 import { ElLoading } from 'element-plus'
 
 /**
@@ -23,13 +23,16 @@ export const useHookDialog = ()=> {
 export const useDbConfig = () => {
   const store = useStore()
   const config = computed(() => store.dbConfig)
-  const setConfig = (config: iDatabaseConfig) => {
+  const setConfig = (config: iDatabase) => {
     store.setDbConfig(config)
   }
   return { config, setConfig }
 }
 
-
+/**
+ * 全局加载Loading
+ * @returns { loading, setLoading }
+ */
 export const useLoading = () => {
   const store = useStore()
   const loading = computed(() => store.loading)

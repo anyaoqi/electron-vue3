@@ -1,12 +1,20 @@
 import { createPinia, defineStore } from 'pinia'
-import { iDatabaseConfig } from '@/types'
+import { iDatabase, iLicence } from '@/types'
 
 const pinia = createPinia()
 
+interface State {
+  isLogin: boolean,
+  dbDialogVisable: boolean,
+  dbConfig: iDatabase,
+  loading: any,
+  licenceInfo: iLicence|null
+}
+
 export const useStore = defineStore('main', {
-  state: () => ({
-    isLogin: false as boolean,  // 是否登录
-    dbDialogVisable: true as boolean,  // 数据库配置弹框
+  state: ():State => ({
+    isLogin: false,  // 是否登录
+    dbDialogVisable: true,  // 数据库配置弹框
     dbConfig: {
       type: 'mysql',
       user: '',
@@ -14,8 +22,9 @@ export const useStore = defineStore('main', {
       host: '',
       port: 3306,
       database: '',
-    } as iDatabaseConfig,
-    loading: null as any,  //
+    },
+    loading: null,
+    licenceInfo: null,
   }),
   actions: {
     setLogin(isLogin: boolean) {
@@ -24,9 +33,9 @@ export const useStore = defineStore('main', {
     openDbDialog(isShow: boolean = true) {
       this.dbDialogVisable = isShow
     },
-    setDbConfig(config: iDatabaseConfig) {
+    setDbConfig(config: iDatabase) {
       this.dbConfig = config
-    }
+    },
   }
 })
 

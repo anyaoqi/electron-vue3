@@ -10,6 +10,7 @@ declare module 'vue' {
     CorrGoods: typeof import('./src/components/CorrGoods/CorrGoods.vue')['default']
     CorrStore: typeof import('./src/components/CorrStore/CorrStore.vue')['default']
     DataColumn: typeof import('./src/components/DataColumn/DataColumn.vue')['default']
+    DataExtraction: typeof import('./src/components/DataExtraction/DataExtraction.vue')['default']
     DataPreview: typeof import('./src/components/DataPreview/DataPreview.vue')['default']
     DataSource: typeof import('./src/components/DataSource/DataSource.vue')['default']
     DialogDbConfig: typeof import('./src/components/DialogDbConfig/DialogDbConfig.vue')['default']

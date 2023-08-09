@@ -1,3 +1,5 @@
+import { initTable } from './dbTables'
+
 const sqlite3 = require("sqlite3");
 const path = require("path");
 const { app } = require("electron");
@@ -16,6 +18,7 @@ export function initSqlite() {
        console.log("sqlite connect error", err)
     }
   });
+  initTable()
   return db;
 }
 

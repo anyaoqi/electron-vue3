@@ -9,7 +9,7 @@ export default {
   },
   md5: (str: string) => md5(str),
   getMac: () => getMac(),
-  requestSoap: (code: any, data: any) => {
+  requestSoap: (code: string, data: any) => {
     return requestSoap(code, data)
   },
 }

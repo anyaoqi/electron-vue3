@@ -60,8 +60,6 @@ export const query = (sql: string) => {
   return new Promise((resolve, reject) => {
     initMysql().then(async db => {
       const [results, columns] = await db.query(sql)
-      console.log('columns', columns);
-      
       resolve({ results, columns })
     }).catch(err => {
       reject(err)
@@ -106,7 +104,7 @@ export function close(){
 }
 
 function addLister() {
-  console.log('添加监听事件');
+  console.log('');
 }
 
 

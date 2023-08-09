@@ -5,6 +5,7 @@ import { useLogin } from '@/hooks/login'
 import type { FormInstance, FormRules } from 'element-plus'
 import { iLoginForm } from '@/types'
 import { checkUpdate } from '@/utils/autoUpdater'
+import { api4G00, api4G01 } from '@/apis/index'
 
 const ruleFormRef = ref<FormInstance>()
 
@@ -42,6 +43,18 @@ onMounted(() => {
   checkUpdate()
 })
 
+// 下载数据
+const downloadData = async () => {
+  const clientver = '99999999999999'
+  const pageIndex = '1'
+  const pageSize = '500'
+  const storeList = await api4G00()
+  const goodsList = await api4G01(clientver, pageIndex, pageSize)
+
+  console.log('storeList', storeList);
+  console.log('goodsList', goodsList);
+}
+
 // 登录
 const onSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -52,10 +65,11 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     setLoading(true)
 
     try {
-      const loginRes = await licenceLogin(loginForm)
-      console.log('loginRes', loginRes);
-      handleLogin()
+      // const loginRes = await licenceLogin(loginForm)
+      // console.log('loginRes', loginRes);
+      // await downloadData()
 
+      handleLogin()
       ElMessage({
         message: '登录成功！',
         type: 'success'
