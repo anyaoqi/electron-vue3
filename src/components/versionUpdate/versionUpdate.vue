@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { checkUpdate,onUpdateMessage,reUpdateMessage, downloadUpdate } from '@/utils/autoUpdater'
+import { ref } from 'vue'
+import {onUpdateMessage,reUpdateMessage, downloadUpdate } from '@/utils/autoUpdater'
 
 const dialogVisible = ref(true)
 const closeOnPressEscape = ref(false)
@@ -51,9 +51,9 @@ reUpdateMessage(handleUpdate)
 // 绑定监听
 onUpdateMessage(handleUpdate)
 
-onMounted(() => {
-  checkUpdate()
-})
+// onMounted(() => {
+//   checkUpdate()
+// })
 </script>
 
 <template>

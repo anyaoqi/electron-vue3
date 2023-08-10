@@ -1,9 +1,10 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import path from 'node:path'
-import { bindHandleEvents } from './events'
-import appConfig from './config/app.config'
-import { updateHandle } from './versionUpdate'
-import { initDatabase, closeDatabase } from './database/index'
+import { bindHandleEvents } from '@main/events'
+import appConfig from '@main/config/app.config'
+import { updateHandle } from '@main/versionUpdate'
+import { initDatabase, closeDatabase } from '@main/database/index'
+
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 

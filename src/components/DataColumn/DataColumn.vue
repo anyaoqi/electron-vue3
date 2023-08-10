@@ -2,11 +2,11 @@
 import { computed, reactive } from 'vue'
 
 interface columnType {
-  columnKey: string,
-  apiColumn: string,
-  corColumn: string,
-  defaultValue: string,
-  desc: string
+  filed: string,  // 接口字段key
+  name: string,  // 接口字段名称
+  filedValue: string,  // 对应字段
+  defaultValue: string,  // 默认值
+  description: string    // 描述/说明
 }
 
 const props = defineProps<{
@@ -20,16 +20,16 @@ const apiColumns = computed(() => props.apiFilds)
 // 表格中的数据：格式化接口中的字段
 const tableColumns:columnType[] = apiColumns.value.map(filed => {
   return {
-    columnKey: filed.filed,
-    apiColumn: filed.name,
-    corColumn: '',
+    filed: filed.filed,
+    name: filed.name,
+    filedValue: '',
     defaultValue: '',
-    desc: '',
+    description: filed.description,
   }
 })
 
 // 接口对照响应式数据
-const tableData = reactive(tableColumns)
+const tableData = reactive<columnType[]>(tableColumns)
 
 const selectColumnChange = (_val: string, _index: number) => {
   const columnInfo = columns.value.find(c => c.Field === _val)
@@ -41,15 +41,15 @@ const selectColumnChange = (_val: string, _index: number) => {
   <el-button>预览视图</el-button>
   <div class="data-reporting">
     <el-table :data="tableData">
-      <el-table-column prop="apiColumn" label="接口字段" width="180">
+      <el-table-column prop="filed" label="接口字段" width="180">
         <template #default="{ row }">
-          {{ row.apiColumn }}
+          {{ row.name }}
         </template>
       </el-table-column>
-      <el-table-column prop="corColumn" label="对应字段" width="180">
+      <el-table-column prop="filedValue" label="对应字段" width="180">
         <template #default="{ row, $index }">
           <el-select 
-            v-model="row.corColumn" 
+            v-model="row.filedValue" 
             class="m-2" 
             placeholder="Select"  
             @change="selectColumnChange($event, $index)">
@@ -67,9 +67,9 @@ const selectColumnChange = (_val: string, _index: number) => {
           <el-input v-model="row.defaultValue"></el-input>
         </template>
       </el-table-column>
-      <el-table-column prop="desc" label="描述">
+      <el-table-column prop="description" label="描述">
         <template #default="{ row }">
-          <el-input v-model="row.desc"></el-input>
+          <el-input v-model="row.description"></el-input>
         </template>
       </el-table-column>
     </el-table>

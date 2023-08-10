@@ -4,7 +4,7 @@ import { useLoading } from '@/hooks'
 import { useLogin } from '@/hooks/login'
 import type { FormInstance, FormRules } from 'element-plus'
 import { iLoginForm } from '@/types'
-import { checkUpdate } from '@/utils/autoUpdater'
+// import { checkUpdate } from '@/utils/autoUpdater'
 import { api4G00, api4G01 } from '@/apis/index'
 
 const ruleFormRef = ref<FormInstance>()
@@ -40,7 +40,7 @@ const rules = reactive<FormRules<iLoginForm>>({
 })
 
 onMounted(() => {
-  checkUpdate()
+  // checkUpdate()
 })
 
 // 下载数据
