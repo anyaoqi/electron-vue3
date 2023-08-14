@@ -65,9 +65,9 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     setLoading(true)
 
     try {
-      const loginRes = await licenceLogin(loginForm)
-      console.log('loginRes', loginRes);
-      await downloadData()
+      // const loginRes = await licenceLogin(loginForm)
+      // console.log('loginRes', loginRes);
+      // await downloadData()
 
       handleLogin()
       ElMessage({

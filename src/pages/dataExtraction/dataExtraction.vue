@@ -16,11 +16,18 @@ const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
   activeTab.name = fItem?.name||''
 }
 
+const startUpload = () => {
+
+}
+
 </script>
 
 <template>
   <div class="page-title">
     <h2>数据抽取配置</h2>
+    <div class="head-right">
+      <el-button @click="startUpload" type="primary">开始上传</el-button>
+    </div>
   </div>
   <el-tabs
     v-model="activeTab.key"
@@ -40,6 +47,9 @@ const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
 
 <style lang="scss" scoped>
 .page-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   h2 {
     margin: 10px 0;
   }

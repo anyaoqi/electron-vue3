@@ -89,12 +89,19 @@ export const api4G05 = async (cust_uuid: string) => {
   })
 }
 
+export interface StoreInfos {
+  store_id: string,
+  license_code: string,
+  cust_name: string,
+  is_active: string
+}
 // 客户信息批量上传请求
-export const api4G07 = async (cust_uuid: string) => {
+export const api4G07 = async (storeInfos: StoreInfos[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4G07', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    store_infos: [],
+    store_infos: storeInfos,
   })
 }
 

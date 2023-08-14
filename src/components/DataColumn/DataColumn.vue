@@ -8,7 +8,7 @@ const props = defineProps<{
   modelValue: columnType[]
 }>()
 // 绑定事件
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'prviewData'])
 // 对应字段列表
 const columns = computed(() => props.columns)
 // 选择对应字段
@@ -25,10 +25,14 @@ const tableData = computed({
     emit('update:modelValue', value)
   }
 })
+
+const prviewData = () => {
+  emit('prviewData')
+}
 </script>
 
 <template>
-  <el-button>预览视图</el-button>
+  <el-button @click="prviewData">预览视图</el-button>
   <div class="data-reporting">
     <el-table :data="tableData">
       <el-table-column prop="filed" label="接口字段" width="180">
