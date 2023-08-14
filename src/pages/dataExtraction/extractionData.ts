@@ -1,6 +1,7 @@
 export default [
  { 
     name: '门店信息抽取',
+    key: 'store',
     apiFilds: [
       { filed: 'store_id', name: '门店ID', description: '必须,唯一' },
       { filed: 'license_code', name: '许可证号', description: '必须' },
@@ -10,6 +11,7 @@ export default [
   },
   {
     name: '供应商信息抽取',
+    key: 'supplier',
     apiFilds: [
       { name: '供应商名称', filed: 'supplier_name', description: '必须' },
       { name: '供应商编码', filed: 'supplier_code', description: '' },
@@ -21,6 +23,7 @@ export default [
   },
   {
     name: '非烟商品类别抽取',
+    key: 'notbCategory',
     apiFilds: [
       { name: '类目编码', filed: 'category_code', description: '必须,唯一' },
       { name: '类目名称', filed: 'category_name', description: '必须' },
@@ -31,6 +34,7 @@ export default [
   },
   {
     name: '非烟商品信息抽取',
+    key: 'notbGoods',
     apiFilds: [
       { name: '商品标识', filed: 'goods_isn', description: '必须,唯一' },
       { name: '商品编码', filed: 'goods_code', description: '同商品唯一' },
@@ -57,6 +61,7 @@ export default [
   },
   {
     name: '会员信息抽取',
+    key: 'memberInfo',
     apiFilds: [
       { name: '手机号码', filed: 'mobile', description: '必须' },
       { name: '昵称', filed: 'nickName', description: '必须' },
@@ -70,6 +75,7 @@ export default [
   },
   {
     name: '零售订单信息抽取',
+    key: 'retailOrder',
     apiFilds: [
       { name: '销售单ID', filed: 'clientorderid', description: '必须' },
       { name: '销售时间', filed: 'inputtime', description: '必须，销售单发生的实际时间yyyyMMddHHmmss' },
@@ -98,6 +104,7 @@ export default [
   },
   {
     name: '入库单信息抽取',
+    key: 'inOrder',
     apiFilds: [
       { name: '入库记录标识', filed: 'bill_code', description: '必填,唯一' },
       { name: '供应商编码', filed: 'supplier_code', description: '必填' },
@@ -112,6 +119,7 @@ export default [
   },
   {
     name: '损溢单信息抽取',
+    key: 'lossOrder',
     apiFilds: [
       { name: '损益记录标识', filed: 'storchecksid', description: '必填' },
       { name: '业务日期', filed: 'bizdate', description: 'YYYY-MM-dd' },
@@ -124,6 +132,7 @@ export default [
   },
   {
     name: '其他出入库单信息抽取',
+    key: 'outOrder',
     apiFilds: [
       { name: '入库记录标识', filed: 'bill_code', description: '必填,唯一' },
       { name: '供应商编码', filed: 'supplier_code', description: '必填' },
@@ -139,6 +148,7 @@ export default [
   },
   {
     name: '日结进销存信息抽取',
+    key: 'dayInvoicing',
     apiFilds: [
       { name: '业务日期', filed: 'reqdate', description: 'YYYY-MM-dd' },
       { name: '商品记录数', filed: 'dtlcount', description: '' },

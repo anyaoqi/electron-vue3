@@ -1,40 +1,30 @@
 <script lang="ts" setup>
-import { computed, reactive } from 'vue'
+import { computed } from 'vue'
+import type { columnType } from '@/types'
 
-interface columnType {
-  filed: string,  // 接口字段key
-  name: string,  // 接口字段名称
-  filedValue: string,  // 对应字段
-  defaultValue: string,  // 默认值
-  description: string    // 描述/说明
-}
-
+// 组件属性
 const props = defineProps<{
   columns: any[],
-  apiFilds: any[],
+  modelValue: columnType[]
 }>()
-
+// 绑定事件
+const emit = defineEmits(['update:modelValue'])
+// 对应字段列表
 const columns = computed(() => props.columns)
-const apiColumns = computed(() => props.apiFilds)
-
-// 表格中的数据：格式化接口中的字段
-const tableColumns:columnType[] = apiColumns.value.map(filed => {
-  return {
-    filed: filed.filed,
-    name: filed.name,
-    filedValue: '',
-    defaultValue: '',
-    description: filed.description,
-  }
-})
-
-// 接口对照响应式数据
-const tableData = reactive<columnType[]>(tableColumns)
-
+// 选择对应字段
 const selectColumnChange = (_val: string, _index: number) => {
   const columnInfo = columns.value.find(c => c.Field === _val)
   console.log(columnInfo);
 }
+// 表格字段数据
+const tableData = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
 </script>
 
 <template>

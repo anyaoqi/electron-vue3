@@ -1,15 +1,19 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import DataExtraction from '@/components/DataExtraction/DataExtraction.vue'
-import extractionData from '@/pages/dataExtraction/extractionData.ts'
+import { extrTypeDatas } from '@main/config/data.config'
 
 // 当前tab标签页
-const activeTab = ref(0)
+const activeTab = reactive({
+  name: extrTypeDatas[0].name,
+  key: extrTypeDatas[0].key
+})
 
 // Tab切换点击事件
 const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
-  console.log(_tab.paneName);
+  const fItem = extrTypeDatas.find(item => item.key === _tab.paneName)
+  activeTab.name = fItem?.name||''
 }
 
 </script>
@@ -19,16 +23,17 @@ const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
     <h2>数据抽取配置</h2>
   </div>
   <el-tabs
-    v-model="activeTab"
+    v-model="activeTab.key"
     type="card"
     class="page-tabs"
     @tab-click="handleTabClick"
     >
     <el-tab-pane
-      v-for="(tabItem, index)  in extractionData"
+      v-for="(tabItem)  in extrTypeDatas"
+      :lazy="true"
       :label="tabItem.name"
-      :name="index">
-      <DataExtraction :api-filds="tabItem.apiFilds" />
+      :name="tabItem.key">
+      <DataExtraction :api-filds="tabItem.apiFilds" :currentExtr="activeTab" />
     </el-tab-pane>
   </el-tabs>
 </template>

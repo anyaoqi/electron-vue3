@@ -12,7 +12,7 @@ const routes:RouteRecordRaw[] = [
       {
         path:'/dataExtraction',
         name:'dataExtraction',
-        component: () => import('@/pages/dataExtraction/dataExtraction.vue')
+        component: () => import('@/pages/dataExtraction/dataExtraction.vue'),
       },
       // 数据对照
       {

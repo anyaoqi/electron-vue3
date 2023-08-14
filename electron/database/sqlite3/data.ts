@@ -1,16 +1,16 @@
 import type { TypeData, apiFiledType, extrMappType } from "@main/types";
 
 export const extrTypeDatas = [
-  { typeName: "店铺数据抽取", englishFlag: "shop" },
-  { typeName: "供应商数据抽取", englishFlag: "supplier" },
-  { typeName: "非烟商品类别抽取", englishFlag: "notbCategory" },
-  { typeName: "非烟商品信息抽取", englishFlag: "notbGoods" },
-  { typeName: "会员信息抽取", englishFlag: "memberInfo" },
-  { typeName: "零售订单信息抽取", englishFlag: "retailOrder" },
-  { typeName: "入库单信息抽取", englishFlag: "inOrder" },
-  { typeName: "损溢单信息抽取", englishFlag: "lossOrder" },
-  { typeName: "其他出入库单信息抽取", englishFlag: "outOrder" },
-  { typeName: "日结进销存信息抽取", englishFlag: "dayInvoicing" },
+  { typeName: "店铺数据抽取", englishFlag: "store", sql:'' },
+  { typeName: "供应商数据抽取", englishFlag: "supplier", sql:'' },
+  { typeName: "非烟商品类别抽取", englishFlag: "notbCategory", sql:'' },
+  { typeName: "非烟商品信息抽取", englishFlag: "notbGoods", sql:'' },
+  { typeName: "会员信息抽取", englishFlag: "memberInfo", sql:'' },
+  { typeName: "零售订单信息抽取", englishFlag: "retailOrder", sql:'' },
+  { typeName: "入库单信息抽取", englishFlag: "inOrder", sql:'' },
+  { typeName: "损溢单信息抽取", englishFlag: "lossOrder", sql:'' },
+  { typeName: "其他出入库单信息抽取", englishFlag: "outOrder", sql:'' },
+  { typeName: "日结进销存信息抽取", englishFlag: "dayInvoicing", sql:'' },
 ];
 
 export const extrMappData = [

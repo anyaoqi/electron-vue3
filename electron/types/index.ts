@@ -1,6 +1,9 @@
 export interface TypeData {
+  createdAt: string, // 创建时间
+  updatedAt: string, // 更新时间
   typeName: string,
   englishFlag: string,
+  sql: string,
 }
 
 export interface apiFiledType {

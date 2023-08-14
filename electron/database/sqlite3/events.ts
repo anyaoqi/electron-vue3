@@ -1,4 +1,5 @@
 import { getDB } from "./index";
+import { saveExtrMappData, saveExtrSqlData, getExtrSqlData, getExtrMappData } from './dbData'
 
 export default {
   getUserOne: (name: string) => {
@@ -16,4 +17,8 @@ export default {
       );
     });
   },
+  saveExtrMappData: (params: any) => saveExtrMappData(params),
+  saveExtrSqlData: (params: any) => saveExtrSqlData(params),
+  getExtrSqlData: (englishFlag: string) => getExtrSqlData(englishFlag),
+  getExtrMappData: (englishFlag: string) => getExtrMappData(englishFlag),
 };

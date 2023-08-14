@@ -1,23 +1,40 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { sql } from '@codemirror/lang-sql'
 import { oneDark } from '@codemirror/theme-one-dark'
 
+const props = defineProps<{
+  modelValue: string
+}>()
+
 // 声名组件事件
 const emit = defineEmits<{
   // 预览视图
-  previewData: [sql: string]
+  previewData: [sql: string],
+  'update:modelValue': [sql: string]
 }>()
 
-const sqlContent = ref('SELECT * FROM shop_infos')
-
+// 输入内容
+const sqlContent = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
 // 预览视图
 const previewData = () => {
-  emit('previewData', sqlContent.value)
+  emit('previewData', props.modelValue)
 }
 
+// 输入框配置
 const extensions = [sql(), oneDark]
+
+// 输入框失去焦点事件
+const handleBlur = () => {
+}
 </script>
 
 <template>
@@ -34,13 +51,8 @@ const extensions = [sql(), oneDark]
       :indent-with-tab="true"
       :tab-size="2"
       :extensions="extensions"
+      @blur="handleBlur()"
     />
-    <!-- <el-input
-      v-model="sqlContent"
-      :rows="20"
-      type="textarea"
-      placeholder="Please input"
-    /> -->
 </template>
 
 <style lang="scss" scoped>
