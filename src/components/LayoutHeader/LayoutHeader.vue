@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { useNow, useDateFormat, useNetwork } from '@vueuse/core'
 import { useLogout } from '@/hooks/login'
+import { useUpload } from '@/hooks/uploadTimer'
+
+// 上传定时器
+const { isOpenTimer, startUpload, stopUpload } = useUpload()
 
 // 当前时间
 const formatted = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
@@ -25,6 +29,15 @@ const logout = () => {
     handleLogout()
   })
 }
+
+// 切换数据抽取状态
+const toggleUpload = () => {
+  if(isOpenTimer.value) {
+    stopUpload()
+  } else {
+    startUpload()
+  }
+}
 </script>
 
 <template>
@@ -36,12 +49,15 @@ const logout = () => {
       <span class="header-item app-version">
         <el-tag size="large">版本号：{{ version }}</el-tag>
       </span>
+      <span class="header-item upload-timer" :class="{ disabled: !isOpenTimer }" @click="toggleUpload">
+        <i class="fa fa-cloud-upload"></i>
+      </span>
       <span class="header-item net-state">
         <i class="fa fa-wifi"></i>
         <span class="">{{ isOnline ? '已连接' : '未连接'}}</span>
       </span>
       <span class="header-item now-date">{{ formatted }}</span>
-      <span class="header-item btn-logout" @click="logout">
+      <span class="header-item btn-logout" @click="logout" title="退出登录">
         <i class="fa fa-sign-out"></i>
       </span>
     </div>
@@ -93,6 +109,12 @@ const logout = () => {
         bottom: 0;
         right: 0;
         top: 2px;
+      }
+      &.upload-timer {
+        cursor: pointer;
+        &.disabled {
+          color: #666;
+        }
       }
       &.net-state {
         i {

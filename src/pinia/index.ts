@@ -8,13 +8,17 @@ interface State {
   dbDialogVisable: boolean,
   dbConfig: iDatabase,
   loading: any,
-  licenceInfo: iLicence|null
+  licenceInfo: iLicence|null,
+  isOpenTimer: boolean
 }
 
 export const useStore = defineStore('main', {
   state: ():State => ({
-    isLogin: false,  // 是否登录
-    dbDialogVisable: true,  // 数据库配置弹框
+     // 是否登录
+    isLogin: false,
+    // 数据库配置弹框
+    dbDialogVisable: true,
+    // 数据库连接配置
     dbConfig: {
       type: 'mysql',
       user: '',
@@ -23,8 +27,12 @@ export const useStore = defineStore('main', {
       port: 3306,
       database: '',
     },
+    // 加载中
     loading: null,
+    // 许可证信息
     licenceInfo: null,
+    // 上传定时器开关
+    isOpenTimer: false,
   }),
   actions: {
     setLogin(isLogin: boolean) {
@@ -36,6 +44,9 @@ export const useStore = defineStore('main', {
     setDbConfig(config: iDatabase) {
       this.dbConfig = config
     },
+    setOpenTimer(isOpen: boolean) {
+      this.isOpenTimer = isOpen
+    }
   }
 })
 

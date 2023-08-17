@@ -1,5 +1,17 @@
 import { useLicence } from '@/hooks/user'
 import { requestSoap } from './api'
+import type {
+  FieldsStore,
+  FieldsSupplier,
+  FieldsNotbCategory,
+  FieldsNotbGoods,
+  FieldsMemberInfo,
+  FieldRetailOrder,
+  FieldInOrder,
+  FieldLossOrder,
+  FieldOutOrder,
+  FieldDayInvoicing
+} from '@/types'
 
 // 登录接口
 export const api3G61 = async (username: string, password: string) => {
@@ -61,42 +73,39 @@ export const api4G02 = async (cust_uuid: string) => {
 }
 
 // 客户非烟商品类目批量上传请求
-export const api4G03 = async (cust_uuid: string) => {
+export const api4G03 = async (cate_infos: FieldsNotbCategory[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4G03', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    cate_infos: [],
+    cate_infos: cate_infos,
   })
 }
 
 
 // 客户非烟商品档案批量上传请求
-export const api4G04 = async (cust_uuid: string) => {
+export const api4G04 = async (goods_infos: FieldsNotbGoods[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4G04', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    goods_infos: [],
+    goods_infos: goods_infos,
   })
 }
 
 
 // 客户供应商批量上传请求
-export const api4G05 = async (cust_uuid: string) => {
+export const api4G05 = async (supplierInfos: FieldsSupplier[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4G05', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    supplier_infos: [],
+    supplier_infos: supplierInfos,
   })
 }
 
-export interface StoreInfos {
-  store_id: string,
-  license_code: string,
-  cust_name: string,
-  is_active: string
-}
 // 客户信息批量上传请求
-export const api4G07 = async (storeInfos: StoreInfos[]) => {
+export const api4G07 = async (storeInfos: FieldsStore[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G07', {
     deviceid: 'WINDOWS',
@@ -106,53 +115,60 @@ export const api4G07 = async (storeInfos: StoreInfos[]) => {
 }
 
 // 消费者会员信息上传请求
-export const api4G06 = async (cust_uuid: string) => {
+export const api4G06 = async (consumer_infos: FieldsMemberInfo[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4G06', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    consumer_infos: [],
+    consumer_infos: consumer_infos,
   })
 }
+
 // 批量上传销售信息请求
-export const api4S00 = async (cust_uuid: string) => {
+export const api4S00 = async (order_infos: FieldRetailOrder[]) => {
+  const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S00', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    cust_code: '',
-    order_infos: [],
+    cust_code: cust_code,
+    order_infos: order_infos,
   })
 }
 // 入库记录批量上传请求
-export const api4S01 = async (cust_uuid: string) => {
+export const api4S01 = async (purchcheck_infos: FieldInOrder[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4S01', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    purchcheck_infos: [],
+    purchcheck_infos: purchcheck_infos,
   })
 }
 // 损溢记录批量上传请求
-export const api4S02 = async (cust_uuid: string) => {
+export const api4S02 = async (records: FieldLossOrder[]) => {
+  const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S02', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    cust_code: '',
-    records: [],
+    cust_code: cust_code,
+    records: records,
   })
 }
 // 其他出入库记录批量上传请求
-export const api4S03 = async (cust_uuid: string) => {
+export const api4S03 = async (other_purchcheck_infos: FieldOutOrder[]) => {
+  const { cust_uuid } = useLicence()
   return await requestSoap('4S03', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    other_purchcheck_infos:[]
+    other_purchcheck_infos: other_purchcheck_infos
   })
 }
 // 进销存日报批量上报请求
-export const api4S04 = async (cust_uuid: string) => {
+export const api4S04 = async (records: FieldDayInvoicing[]) => {
+  const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S04', {
     deviceid: 'WINDOWS',
     cust_uuid: cust_uuid,
-    cust_code: '',
-    records:[]
+    cust_code: cust_code,
+    records: records
   })
 }

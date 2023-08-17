@@ -3,6 +3,10 @@ import { reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import DataExtraction from '@/components/DataExtraction/DataExtraction.vue'
 import { extrTypeDatas } from '@main/config/data.config'
+import { useUpload } from '@/hooks/uploadTimer'
+
+// 上传定时器
+const { isOpenTimer, startUpload, stopUpload } = useUpload()
 
 // 当前tab标签页
 const activeTab = reactive({
@@ -16,17 +20,21 @@ const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
   activeTab.name = fItem?.name||''
 }
 
-const startUpload = () => {
-
+const handleStartUpload = () => {
+  startUpload()
 }
 
+const handleStopTimeout = () => {
+  stopUpload()
+}
 </script>
 
 <template>
   <div class="page-title">
     <h2>数据抽取配置</h2>
     <div class="head-right">
-      <el-button @click="startUpload" type="primary">开始上传</el-button>
+      <el-button type="danger" v-if="isOpenTimer" @click="handleStopTimeout">停止上传</el-button>
+      <el-button type="primary" v-else @click="handleStartUpload" >开始上传</el-button>
     </div>
   </div>
   <el-tabs

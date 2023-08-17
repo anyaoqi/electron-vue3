@@ -23,14 +23,19 @@ const data = computed(() => props.dataTable.data)
 </script>
 
 <template>
-  <el-table-v2
-    header-class="table-header"
-    :columns="columns"
-    :data="data"
-    :width="1300"
-    :height="500"
-    fixed
-  />
+  <el-auto-resizer>
+    <template #default="{ width }">
+      <el-table-v2
+        header-class="table-header"
+        :columns="columns"
+        :data="data"
+        :width="width"
+        :height="580"
+        fixed
+      />
+    </template>
+  </el-auto-resizer>
+
 </template>
 
 <style lang="scss" scoped>

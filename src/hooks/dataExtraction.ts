@@ -32,7 +32,11 @@ export const useData = () => {
       })
     })
     // 循环保存接口对照
+    console.log('tableData', tableData);
+    
     for (const row of tableData) {
+      console.log('row', row);
+      
       window.sqliteAPI.saveExtrMappData({
         filed: row.filed,  // 接口字段key
         name: row.name,  // 接口字段名称
@@ -99,11 +103,10 @@ export const useData = () => {
               "key": column.name,
               "dataKey": column.name,
               "title": column.name,
-              "width": column.name.length * 20
+              "width": column.name.length * 18
           }
         })
         const filedList = columns.map((column:FieldPacket) => ({ Field: column.name }))
-        ElMessage.success('查询成功')
         loading.close()
         resolve({
           tableData,

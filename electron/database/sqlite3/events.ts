@@ -1,24 +1,20 @@
-import { getDB } from "./index";
-import { saveExtrMappData, saveExtrSqlData, getExtrSqlData, getExtrMappData } from './dbData'
+import { 
+  saveExtrMappData, 
+  saveExtrSqlData, 
+  getExtrSqlData, 
+  getExtrMappData, 
+  saveStoreData,
+  getStoreData,
+  delStoreData
+} from './dbData'
+import type { TypeData, ExtrMappType, delDataParams } from "../../types";
 
 export default {
-  getUserOne: (name: string) => {
-    return new Promise((resolve, reject) => {
-      getDB().all(
-        `SELECT * FROM user WHERE name='${name}'`,
-        function (err: any, rows: any) {
-          if (!err) {
-            resolve(rows);
-          } else {
-            console.log("SQL ERROR:", err);
-            reject(err);
-          }
-        }
-      );
-    });
-  },
-  saveExtrMappData: (params: any) => saveExtrMappData(params),
-  saveExtrSqlData: (params: any) => saveExtrSqlData(params),
+  saveExtrMappData: (params: ExtrMappType) => saveExtrMappData(params),
+  saveExtrSqlData: (params: TypeData) => saveExtrSqlData(params),
   getExtrSqlData: (englishFlag: string) => getExtrSqlData(englishFlag),
   getExtrMappData: (englishFlag: string) => getExtrMappData(englishFlag),
+  saveStoreData: (params: any, columns: any) => saveStoreData(params, columns),
+  getStoreData: (uploadDate: string) => getStoreData(uploadDate),
+  delStoreData: (params: delDataParams) => delStoreData(params),
 };

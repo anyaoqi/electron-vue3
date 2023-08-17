@@ -1,17 +1,7 @@
-interface iExtrType {
-  name: string,  // 抽取类型名称
-  key: string,   // 抽取类型key
-  sql?: string,  // 抽取sql
-  apiFilds: {
-    filed: string,   // 接口字段key
-    name: string,    // 接口字段名称
-    description: string,  // 描述
-    filedValue?: string,  // 对应字段key
-    defalutValue?: string  // 默认值
-  }[]
-}
+import { ExtrDataType } from '../types/index'
 
-export const extrTypeDatas: iExtrType[] = [
+// 初始化抽取类型数据
+export const extrTypeDatas: ExtrDataType[] = [
   {
     name: "门店信息抽取",
     key: "store",
@@ -36,7 +26,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "非烟商品类别抽取",
-    key: "notbCategory",
+    key: "notb_category",
     apiFilds: [
       { name: "类目编码", filed: "category_code", description: "必须,唯一" },
       { name: "类目名称", filed: "category_name", description: "必须" },
@@ -47,7 +37,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "非烟商品信息抽取",
-    key: "notbGoods",
+    key: "notb_goods",
     apiFilds: [
       { name: "商品标识", filed: "goods_isn", description: "必须,唯一" },
       { name: "商品编码", filed: "goods_code", description: "同商品唯一" },
@@ -81,12 +71,12 @@ export const extrTypeDatas: iExtrType[] = [
         description: "大包装必须",
       },
       { name: "包装率", filed: "pack_rate", description: "大包装必须" },
-      { name: "是否启用", filed: "is_active", description: "" },
+      { name: "是否启用", filed: "isactive", description: "" },
     ],
   },
   {
     name: "会员信息抽取",
-    key: "memberInfo",
+    key: "member_info",
     apiFilds: [
       { name: "手机号码", filed: "mobile", description: "必须" },
       { name: "昵称", filed: "nickName", description: "必须" },
@@ -108,7 +98,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "零售订单信息抽取",
-    key: "retailOrder",
+    key: "retail_order",
     apiFilds: [
       { name: "销售单ID", filed: "clientorderid", description: "必须" },
       {
@@ -174,7 +164,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "入库单信息抽取",
-    key: "inOrder",
+    key: "in_order",
     apiFilds: [
       { name: "入库记录标识", filed: "bill_code", description: "必填,唯一" },
       { name: "供应商编码", filed: "supplier_code", description: "必填" },
@@ -193,7 +183,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "损溢单信息抽取",
-    key: "lossOrder",
+    key: "loss_order",
     apiFilds: [
       { name: "损益记录标识", filed: "storchecksid", description: "必填" },
       { name: "业务日期", filed: "bizdate", description: "YYYY-MM-dd" },
@@ -214,7 +204,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "其他出入库单信息抽取",
-    key: "outOrder",
+    key: "out_order",
     apiFilds: [
       { name: "入库记录标识", filed: "bill_code", description: "必填,唯一" },
       { name: "供应商编码", filed: "supplier_code", description: "必填" },
@@ -238,7 +228,7 @@ export const extrTypeDatas: iExtrType[] = [
   },
   {
     name: "日结进销存信息抽取",
-    key: "dayInvoicing",
+    key: "day_invoicing",
     apiFilds: [
       { name: "业务日期", filed: "reqdate", description: "YYYY-MM-dd" },
       { name: "商品记录数", filed: "dtlcount", description: "" },

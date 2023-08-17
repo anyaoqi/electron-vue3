@@ -6,7 +6,7 @@ import DataPreview, { dataTableType } from '@/components/DataPreview/DataPreview
 import DataColumn from '@/components/DataColumn/DataColumn.vue'
 import { columnType } from '@/types'
 import { useData } from '@/hooks/dataExtraction'
-import { StoreInfos } from '@/apis'
+
 const { saveData, getSql, getTableData, viewData } = useData()
 
 const props = defineProps<{
@@ -41,6 +41,8 @@ const columnsInfo = reactive({
   tableData: [] as columnType[]
 })
 
+console.log('props.apiFilds', props.apiFilds);
+
 // 表格中的数据：格式化接口中的字段
 const tableColumns = props.apiFilds.map(filed => {
   return {
@@ -66,12 +68,15 @@ const toPrviewData = () => {
 }
 // 预览视图
 const previewData = (sql: string) => {
+  if(!sql) {
+    ElMessage.warning('请输入查询条件脚本！')
+    return
+  }
   viewData(sql).then(({ tableData, tableColumns, filedList }: any) => {
-    console.log('filedList', filedList);
-
     dataTable.data = tableData
     dataTable.columns = tableColumns
     columnsInfo.columns  = filedList
+    ElMessage.success('查询成功')
     toPrviewData()
   }).catch((err: any) => {
     console.log(err);
@@ -80,40 +85,13 @@ const previewData = (sql: string) => {
   })
 }
 
-/**
- * 将数据按照字段映射规则进行转换
- * 根据提供的字段映射规则，将查询数据转换为符合指定接口的上传数据格式。
- * @template T 泛型参数，表示最终转换后的数据项类型
- * @param datas 查询数据数组
- * @param fileds 字段映射规则，包含源字段和目标字段的对应关系
- * @returns 转换后的符合指定接口格式的数据数组
- */
-const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] => {
-  // 创建字段映射关系对象
-  const mapping: Record<string, string> = {};
-  for (const filedData of fileds) {
-    mapping[filedData.filed] = filedData.filedValue
-  }
-  // 根据映射关系将数据转换为目标格式
-  const result:T[] = datas.map((data: any) => {
-    // 创建一个新对象，根据映射关系赋值
-    const newItem: any = {};
-    for (const key in mapping) {
-      newItem[key] = data[mapping[key]]
-    }
-    return newItem as T
-  })
-  return result
-}
-
-const startUpload = () => {
-  const storeInfos = findFiledValues<StoreInfos>(dataTable.data, columnsInfo.tableData)
-  console.log(storeInfos);
-}
 
 // 获取之前配置的数据
 getTableData(currentExtr.value.key).then(tableData => {
   columnsInfo.tableData = tableData
+
+  console.log('columnsInfo.tableData', columnsInfo.tableData);
+  
 })
 
 getSql(currentExtr.value.key).then((sql) => {
@@ -134,7 +112,6 @@ const saveExtraction = () => {
 <template>
   <div class="page-buttons">
     <el-button type="success" @click="saveExtraction">保存</el-button>
-    <el-button type="success" @click="startUpload">上传</el-button>
     <el-button type="info">取消</el-button>
   </div>
   <div class="page-content">
