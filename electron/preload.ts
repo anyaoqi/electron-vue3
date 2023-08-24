@@ -112,7 +112,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   ...getInvokeEvents(commonEvents),
   getConfig: () => ipcRenderer.invoke('getConfig'),
   onUpdateMessage: (callback: any) => ipcRenderer.on('updateMessage', callback),
-  reUpdateMessage: (callback: any) => ipcRenderer.removeListener('updateMessage', callback)
+  reUpdateMessage: (callback: any) => ipcRenderer.removeListener('updateMessage', callback),
+  getLogger: (level: string, content: string) => ipcRenderer.invoke('getLogger', level, content),
+  appClose: (callback: any) => ipcRenderer.on('appClose', callback)
 })
 
 // 服务数据库对接api

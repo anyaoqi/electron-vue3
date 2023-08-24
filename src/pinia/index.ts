@@ -9,7 +9,8 @@ interface State {
   dbConfig: iDatabase,
   loading: any,
   licenceInfo: iLicence|null,
-  isOpenTimer: boolean
+  isOpenTimer: boolean,
+  isSyncTimer: boolean,
 }
 
 export const useStore = defineStore('main', {
@@ -33,6 +34,8 @@ export const useStore = defineStore('main', {
     licenceInfo: null,
     // 上传定时器开关
     isOpenTimer: false,
+    // 同步数据开关
+    isSyncTimer: false,
   }),
   actions: {
     setLogin(isLogin: boolean) {

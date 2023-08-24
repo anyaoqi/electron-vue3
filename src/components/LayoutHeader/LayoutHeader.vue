@@ -49,7 +49,11 @@ const toggleUpload = () => {
       <span class="header-item app-version">
         <el-tag size="large">版本号：{{ version }}</el-tag>
       </span>
-      <span class="header-item upload-timer" :class="{ disabled: !isOpenTimer }" @click="toggleUpload">
+      <span class="header-item upload-timer"
+        :class="{ disabled: !isOpenTimer }"
+        :title="isOpenTimer ? '正在进行数据抽取' : '数据抽取已停止'"
+        @click="toggleUpload"
+        >
         <i class="fa fa-cloud-upload"></i>
       </span>
       <span class="header-item net-state">

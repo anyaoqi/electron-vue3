@@ -17,8 +17,7 @@ export default {
       })
     })
   },
-  getShopInfos: (sql: string) => {
-    // return query('SELECT * FROM shop_infos')
+  queryTableDatas: (sql: string) => {
     return query(sql)
   },
   getShopColums: () => {

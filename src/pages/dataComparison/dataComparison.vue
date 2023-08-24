@@ -11,10 +11,10 @@ const handleClick = (_tab: TabsPaneContext, _event: Event) => {
 
 <template>
    <el-tabs v-model="activeName" class="page-tabs" @tab-click="handleClick">
-    <el-tab-pane label="门店对照配置" name="first">
+    <el-tab-pane :lazy="true" label="门店对照配置" name="first">
       <CorrStore />
     </el-tab-pane>
-    <el-tab-pane label="商品对照配置" name="second">
+    <el-tab-pane :lazy="true" label="商品对照配置" name="second">
       <CorrGoods />
     </el-tab-pane>
   </el-tabs>

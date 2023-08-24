@@ -5,7 +5,16 @@ import {
   getExtrMappData, 
   saveStoreData,
   getStoreData,
-  delStoreData
+  delStoreData,
+  saveStoreList,
+  getStoreComp,
+  updateStoreComp,
+  getStoreList,
+  saveStoreComp,
+  getGoodsComp,
+  getGoodsList,
+  saveGoodsList,
+  saveGoodsComp,
 } from './dbData'
 import type { TypeData, ExtrMappType, delDataParams } from "../../types";
 
@@ -17,4 +26,13 @@ export default {
   saveStoreData: (params: any, columns: any) => saveStoreData(params, columns),
   getStoreData: (uploadDate: string) => getStoreData(uploadDate),
   delStoreData: (params: delDataParams) => delStoreData(params),
+  saveStoreList: (params: any) => saveStoreList(params),
+  updateStoreComp: (params: any) => updateStoreComp(params),
+  getStoreList: () => getStoreList(),
+  getStoreComp: () => getStoreComp(),
+  saveStoreComp: (columns: any) => saveStoreComp(columns),
+  getGoodsComp: () => getGoodsComp(),
+  getGoodsList: () => getGoodsList(),
+  saveGoodsList: (columns:any) => saveGoodsList(columns),
+  saveGoodsComp: (columns:any) => saveGoodsComp(columns),
 };

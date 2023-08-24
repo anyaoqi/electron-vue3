@@ -4,6 +4,8 @@ import { bindHandleEvents } from '@main/events'
 import appConfig from '@main/config/app.config'
 import { updateHandle } from '@main/versionUpdate'
 import { initDatabase, closeDatabase } from '@main/database/index'
+import logger from '@main/logger'
+import { LoggerLevel } from './types'
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -76,7 +78,12 @@ function createWindow() {
       cancelId: 1, //这个的值是如果直接把提示框×掉返回的值，这里设置成和“取消”按钮一样的值，下面的idx也会是1
     }).then((idx) => {
       if(idx.response != 1) {
-        app.exit()
+        console.log('确认关闭程序');
+        // 关闭所有数据库连接
+        closeDatabase()
+        // 停止数据抽取
+        win && win.webContents.send('appClose')
+        // app.exit()
       } // 取消关闭
     })
   })
@@ -84,18 +91,24 @@ function createWindow() {
 // 禁用默认菜单
 Menu.setApplicationMenu(null)
 
-app.on('will-quit', () => {
-  // 关闭所有数据库连接
-  closeDatabase()
+app.on('before-quit', () => {
 })
 // 当所有的窗口都被关闭时触发
 app.on('window-all-closed', () => {
   win = null
 })
+
 ipcMain.handle('getConfig', () => appConfig)
+ipcMain.handle('getLogger', (_event, level: LoggerLevel, content: string) => {
+  logger[level](content)
+})
 
 // 当Electron 初始化完成
 app.whenReady().then(() => {
+  // 监听渲染进程的关闭消息
+  ipcMain.on('appClose', (_event) => {
+    app.exit()
+  })
   // 创建主窗口
   createWindow()
   // 绑定进程间通信事件

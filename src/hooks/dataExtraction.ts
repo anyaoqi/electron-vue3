@@ -96,7 +96,7 @@ export const useData = () => {
     })
 
     return new Promise((resolve, reject) => {
-      window.serverAPI.getShopInfos(sql).then(({results, columns}: any) => {
+      window.serverAPI.queryTableDatas(sql).then(({results, columns}: any) => {
         const tableData = results
         const tableColumns:columnsType[] = columns.map((column: FieldPacket) => {
           return {

@@ -14,6 +14,7 @@ import type {
   FieldLossOrder,
   FieldOutOrder,
   FieldDayInvoicing,
+  StoreCompType,
 } from "@/types";
 import { useData } from "@/hooks/dataExtraction";
 import * as apis from "@/apis";
@@ -77,7 +78,7 @@ export const useTimer = (isOpenTimer: Ref<boolean>) => {
 };
 
 /**
- * 数据上传相关操作
+ * 数据抽取相关操作
  */
 export const useUpload = () => {
   const store = useStore();
@@ -109,7 +110,7 @@ export const useUpload = () => {
 
       // 拼装接口字段数据
       const storeInfos = findFiledValues<T>(queryData, columnsData);
-      // console.log("storeInfos", storeInfos);
+      console.log("storeInfos", storeInfos);
 
       // 循环插入保存到本地
       for (const item of storeInfos) {
@@ -129,7 +130,7 @@ export const useUpload = () => {
       const uploadDataList: T[] = await window.sqliteAPI.getStoreData(
         updateDateTime?.value
       );
-      // console.log("uploadDataList", uploadDataList);
+      console.log("uploadDataList", uploadDataList);
 
       if (uploadDataList && uploadDataList.length) {
         const apiData: T[] = uploadDataList.map((data) => {
@@ -139,15 +140,25 @@ export const useUpload = () => {
               obj[key] = data[key];
             }
           }
+
           return obj;
         });
-        // 接口上传数据
-        // console.log("apiData", apiData);
+        // 门店对照配置
+        if(type == 'store'){
+          const storeComplist:Array<StoreCompType> = await window.sqliteAPI.getStoreComp()
+          apiData.map((item: any) => {
+            const findStore = storeComplist.find(o => o.store_id == item.store_id)
+            findStore && findStore.license_code ? item['license_code'] = findStore.license_code : ''
+          })
+        }
+        // 最终接口上传数据
+        console.log("apiData", apiData);
         // const res = await apiFunc(apiData);
         // console.log(res);
         // 更新上传时间
         updateDateTime = useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss");
         const ids = uploadDataList.map((item: any) => item.id);
+        // 删除已上传成功的数据
         window.sqliteAPI.delStoreData({
           tableName: tableName,
           ids: ids,
@@ -162,7 +173,6 @@ export const useUpload = () => {
   // 开始定时上传
   const startUpload = () => {
     console.log('开始上传');
-    
     openTimer(() => {
       // 抽取门店信息
       uploadData<FieldsStore>("store", apis.api4G07, 'store_id');
@@ -197,3 +207,42 @@ export const useUpload = () => {
     isOpenTimer
   };
 };
+
+/**
+ * 数据同步相关操作
+ */
+export const useDataSync = () => {
+  const store = useStore();
+  const { isSyncTimer } = storeToRefs(store);
+  const { openTimer } = useTimer(isSyncTimer);
+
+  // 同步店铺数据
+  const syncStoreData = async () => {
+    const storeList = await apis.api4G00()
+    console.log('storeList', storeList);
+  }
+  // 同步商品数据
+  const syncGoodsData = async () => {
+    const clientverStora =  localStorage.getItem('clientver')
+    const clientver = clientverStora && clientverStora!=='undefined' ? clientverStora : '99999999999999'
+    const pageIndex = '1'
+    const pageSize = '500'
+    const goodsResult = await apis.api4G01(clientver, pageIndex, pageSize)
+    localStorage.setItem('clientver', goodsResult.serverver)
+  }
+
+  // 开始同步数据
+  const syncTimerOpen = () => {
+    openTimer(() => {
+      syncStoreData()
+      syncGoodsData()
+    })
+  }
+
+  return {
+    isSyncTimer,
+    syncTimerOpen,
+    syncStoreData,
+    syncGoodsData
+  }
+}

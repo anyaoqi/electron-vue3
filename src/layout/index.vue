@@ -5,12 +5,21 @@ import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
 import DialogDbConfig from '@/components/DialogDbConfig/DialogDbConfig.vue';
 import { useHookDialog, useLoading} from '@/hooks'
+import { useUpload, useDataSync } from '@/hooks/uploadTimer'
 
 const { setLoading } = useLoading()
 const { setDialogVisable } = useHookDialog()
+// 数据抽取
+const { startUpload } = useUpload()
+// 数据同步
+const { syncTimerOpen } = useDataSync()
 
 onMounted(() => {
   setLoading(false)
+  // 开启定时数据抽取
+  startUpload()
+  // 开启定时数据同步
+  // syncTimerOpen()
 })
 </script>
 

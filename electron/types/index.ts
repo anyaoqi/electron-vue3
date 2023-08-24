@@ -65,3 +65,6 @@ export interface delDataParams{
   ids:string[]
   key:string
 }
+
+// electron-log等级
+export type LoggerLevel  = 'info'|'warn'|'error'|'debug'|'verbose'|'silly'

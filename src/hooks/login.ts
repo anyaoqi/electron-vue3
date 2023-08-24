@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { useLoading } from '@/hooks/index'
 import { useLicence } from '@/hooks/user'
 import { api3G61, api3G72, api4G00 } from '@/apis'
+import { useUpload } from '@/hooks/uploadTimer'
 
 /**
  * 登录相关操作
@@ -62,8 +63,14 @@ export const useLogout = ()=> {
     const router = useRouter()
     const store = useStore()
 
+    // 数据抽取定时器
+    const { isOpenTimer, stopUpload } = useUpload()
+
     // 退出
     const handleLogout = () => {
+      // 停止数据抽取
+      isOpenTimer.value && stopUpload()
+      // 设置登录状态
       store.setLogin(false)
       router.push('/login')
     }

@@ -49,12 +49,17 @@ export const useData = () => {
     });
   };
   // 插入数据方法封装
-  const dbInsertData = (sql: string) => {
+  const dbInsertData = (tableName: string, columns: any, sql: string='') => {
+    const fields = Object.keys(columns);
+    const values = fields.map((field) => `'${columns[field]}'`).join(", ");
+    const insertQuery = `INSERT INTO ${tableName} (${fields.join(
+      ", "
+    )}) VALUES (${values}) ${sql}`;
     return new Promise((resolve, reject) => {
-      getDB().run(sql, (error: any) => {
+      getDB().run(insertQuery, (error: any) => {
         if (error) {
           console.log("Insert data failed：" + error);
-          console.log("sql:", sql);
+          console.log("sql:", insertQuery);
           reject(error);
         } else {
           resolve(null);
@@ -63,10 +68,18 @@ export const useData = () => {
     });
   };
   // 更新数据
-  const dbUpdateData = (updateQuery: string) => {
+  const dbUpdateData = (tableName: string, params: any, where?: string) => {
     return new Promise((resolve, reject) => {
+      const fields = Object.keys(params)
+      const values = fields.map((field) => `${field} = '${params[field]}'`).join(", ");
+      where = where ? `WHERE ${where}` : ''
+      const updateQuery = `
+        UPDATE ${tableName} SET ${values}
+        ${where}
+      `;
       getDB().run(updateQuery, (updateErr: any) => {
         if (updateErr) {
+          console.log(updateQuery);
           console.error("Error updating data:", updateErr);
           reject(updateErr);
         } else {
@@ -81,7 +94,13 @@ export const useData = () => {
       const deleteQuery = `DELETE FROM ${tableName} WHERE ${key} IN (${ids.join(',')})`;
 
       getDB().run(deleteQuery, (error: any) => {
-        error ? reject(error) : resolve(null)
+        if(error) {
+          console.log(deleteQuery);
+          console.log('delete error:'+error);
+          reject(error)
+        } else {
+          resolve(null)
+        }
       })
     })
   }
@@ -89,9 +108,10 @@ export const useData = () => {
    * 保存数据方法参数类型
    */
   interface dbSaveDataType {
-    querySql: string; // sql查询语句
-    update: () => Promise<unknown>; // 更新方法
-    insert?: () => Promise<unknown>; // 插入方法
+    tableName: string // 表名
+    where: string // 表名
+    update: () => Promise<unknown> // 更新方法
+    insert?: () => Promise<unknown> // 插入方法
   }
 
   /**
@@ -103,36 +123,26 @@ export const useData = () => {
    * @param insert  插入方法
    */
   const dbSaveData = (params: dbSaveDataType) => {
-    const { querySql, update, insert } = params;
+    const { tableName, where, update, insert } = params;
+    const querySql = `SELECT * FROM ${tableName} WHERE ${where}`;
     return new Promise((resolve, reject) => {
       // 查询当前数据是否已存在
       getDB().get(querySql, (err: any, row: any) => {
         if (err) {
+          console.log(querySql);
+          console.log(err);
           reject(err);
           return;
         }
 
         if (row) {
           // 已存在数据，更新操作
-          update &&
-            update()
-              .then(() => {
-                resolve(null);
-              })
-              .catch((err) => {
-                reject(err);
-              });
+          update && update()
         } else {
           //不存在数据，执行插入操作
-          insert &&
-            insert()
-              .then(() => {
-                resolve(null);
-              })
-              .catch((err) => {
-                reject(err);
-              });
+          insert && insert()
         }
+        resolve(null)
       });
     });
   };
@@ -143,7 +153,7 @@ export const useData = () => {
    * @param fn 查询方法 默认是get查询单个，可以给为all查询多个
    * @returns Promise
    */
-  const dbGetData = (tableName: string, where: string, fn: string = "get") => {
+  const dbGetData = (tableName: string, where?: string, fn: 'get'|'all'='get') => {
     return new Promise((resolve, reject) => {
       where = where ? `WHERE ${where}` : '';
       const query = `SELECT * FROM ${tableName} ${where}`;
@@ -172,7 +182,13 @@ export const useTable = () => {
     const createQuery = `CREATE TABLE IF NOT EXISTS ${tableName} (${tableColumns})`;
     return new Promise((resolve, reject) => {
       getDB().run(createQuery, (error: any) => {
-        !error ? resolve(null) : reject(error);
+        if(error){
+          console.log(createQuery);
+          console.log('create table error', error);
+          reject(error)
+        } else {
+          resolve(null)
+        }
       });
     });
   };

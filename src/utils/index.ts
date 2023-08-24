@@ -19,7 +19,7 @@ export const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] 
     // 创建一个新对象，根据映射关系赋值
     const newItem: any = {};
     for (const key in mapping) {
-      newItem[key] = data[mapping[key]]
+      newItem[key] = data[mapping[key]]||''
     }
     newItem.created_at = data.createDate
     newItem.updated_at = data.modifyDate

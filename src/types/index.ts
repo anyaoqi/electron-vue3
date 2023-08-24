@@ -192,3 +192,64 @@ export interface FieldDayInvoicing {
   dtl_otherqty: string // 其他出入库数量
   dtl_restqty: string // 剩余数量
 }
+
+// 门店对照关系数据类型
+export interface StoreCompType {
+  store_name: string,
+  store_id: string,
+  license_code: string
+}
+
+// 同步门店数据接口类型
+export interface LicenseOptionType{
+  cust_code: string
+  cust_name: string
+  cust_uuid: string
+  license_code: string
+}
+
+// 商品对照关系数据类型
+export interface GoodsCompType {
+  goods_id: string
+  goods_category: string
+  goods_code: string
+  goods_unit: string
+  code_value: string
+}
+
+// 同步商品数据类型
+export interface GoodsListType {
+  goods_id: string
+  goods_code: string
+  goods_name: string
+  barcode: string
+  pack_barcode: string
+  wholesale_price: string
+  msrp: string
+  conversion_ratio: string
+  brand: string
+  manufacturer_name: string
+  is_new: string
+  backbone_brand: string
+  goods_image: string
+  mnemonic_code_pinyin: string
+  home_e: string
+  mnemonic_code_number: string
+  online_ordering: string
+  retail_price: string
+  message_code: string
+  brand_identity: string
+  manufacturer_identity: string
+  smoke_abnormal: string
+  smoke_province: string
+  default_unit: string
+  brand_code: string
+  manufacturer_code: string
+  is_import: string
+  price_class_code: string
+  price_class_name: string
+  disabled: string
+  tar_content: string
+  packaging_type: string
+  total_records: string
+}

@@ -33,8 +33,8 @@ const handleStopTimeout = () => {
   <div class="page-title">
     <h2>数据抽取配置</h2>
     <div class="head-right">
-      <el-button type="danger" v-if="isOpenTimer" @click="handleStopTimeout">停止上传</el-button>
-      <el-button type="primary" v-else @click="handleStartUpload" >开始上传</el-button>
+      <el-button type="danger" v-if="isOpenTimer" @click="handleStopTimeout">停止抽取</el-button>
+      <el-button type="primary" v-else @click="handleStartUpload" >开始抽取</el-button>
     </div>
   </div>
   <el-tabs

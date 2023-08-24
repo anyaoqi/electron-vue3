@@ -41,8 +41,6 @@ const columnsInfo = reactive({
   tableData: [] as columnType[]
 })
 
-console.log('props.apiFilds', props.apiFilds);
-
 // 表格中的数据：格式化接口中的字段
 const tableColumns = props.apiFilds.map(filed => {
   return {
@@ -89,9 +87,6 @@ const previewData = (sql: string) => {
 // 获取之前配置的数据
 getTableData(currentExtr.value.key).then(tableData => {
   columnsInfo.tableData = tableData
-
-  console.log('columnsInfo.tableData', columnsInfo.tableData);
-  
 })
 
 getSql(currentExtr.value.key).then((sql) => {

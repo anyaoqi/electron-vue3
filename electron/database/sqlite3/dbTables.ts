@@ -1,6 +1,7 @@
 import { initExtrTypeData, initExtrMappData } from "./dbData";
 import { useTable } from './hooks'
 import { extrTypeDatas } from '../../config/data.config'
+
 // 创建数据抽取字段表
 const createExtraction = () => {
   const tableName = "ds_extraction";
@@ -94,11 +95,102 @@ const createDsTables = () => {
   })
 }
 
-// 创建所有表
+// 创建门店对照表
+const createDsComparisonStore  = () => {
+  const { createTable } = useTable()
+  const tableName = 'ds_comparison_store';
+  const tableColumns = `
+      store_id TEXT NOT NULL UNIQUE,
+      store_name TEXT,
+      license_code TEXT
+  `;
+  return createTable(tableName, tableColumns)
+}
+
+
+// 创建商品对照表
+const createDsComparisonGoods  = () => {
+  const { createTable } = useTable()
+  const tableName = 'ds_comparison_goods';
+  const tableColumns = `
+      goods_id TEXT NOT NULL UNIQUE,
+      goods_category TEXT,
+      goods_code TEXT,
+      goods_unit TEXT,
+      code_value TEXT
+  `;
+  return createTable(tableName, tableColumns)
+}
+
+
+// 创建同步门店列表
+const createDsStoreList  = () => {
+  const { createTable } = useTable()
+  const tableName = 'ds_store_list';
+  const tableColumns = `
+      cust_uuid TEXT NOT NULL UNIQUE,
+      cust_code TEXT,
+      cust_name TEXT,
+      license_code TEXT
+  `;
+  return createTable(tableName, tableColumns)
+}
+
+// 创建同步商品列表
+const createDsGoodsList  = () => {
+  const { createTable } = useTable()
+  const tableName = 'ds_goods_list';
+  const tableColumns = `
+      goods_id TEXT NOT NULL UNIQUE,
+      goods_code TEXT,
+      goods_name TEXT,
+      barcode TEXT,
+      pack_barcode TEXT,
+      wholesale_price TEXT,
+      msrp TEXT,
+      conversion_ratio TEXT,
+      brand TEXT,
+      manufacturer_name TEXT,
+      is_new TEXT,
+      backbone_brand TEXT,
+      goods_image TEXT,
+      mnemonic_code_pinyin TEXT,
+      home_e TEXT,
+      mnemonic_code_number TEXT,
+      online_ordering TEXT,
+      retail_price TEXT,
+      message_code TEXT,
+      brand_identity TEXT,
+      manufacturer_identity TEXT,
+      smoke_abnormal TEXT,
+      smoke_province TEXT,
+      default_unit TEXT,
+      brand_code TEXT,
+      manufacturer_code TEXT,
+      is_import TEXT,
+      price_class_code TEXT,
+      price_class_name TEXT,
+      disabled TEXT,
+      tar_content TEXT,
+      packaging_type TEXT,
+      total_records TEXT
+  `;
+  return createTable(tableName, tableColumns)
+}
+
+// 初始化所有表
 export const initTable = async () => {
   await createExtraction();
   await createExtractionType();
 
   // 创建数据抽取表
   await createDsTables()
+  // 创建门店对照表
+  await createDsComparisonStore()
+  // 创建商品对照表
+  await createDsComparisonGoods()
+  // 创建门店列表
+  await createDsStoreList()
+  // 创建同步商品表
+  await createDsGoodsList()
 };
