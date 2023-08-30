@@ -1,5 +1,5 @@
 import { getDB } from "./index";
-
+import logger from "../../logger";
 // 定义数据类型
 interface InsertData {
   [key: string]: any;
@@ -11,35 +11,50 @@ interface InsertData {
  */
 export const useData = () => {
   // 批量插入方法
-  const dbBatchInsert = <T extends InsertData>(
+  const dbBatchInsertOrUpdate = <T extends InsertData>(
     table: string,
-    data: T[]
+    data: T[],
+    uniqueField: string
   ): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
-      // 开始事务
       getDB().serialize(() => {
         getDB().run("BEGIN TRANSACTION");
-
-        // 创建预备语句对象
+  
         const fields = Object.keys(data[0]);
         const fieldPlaceholders = fields.map(() => "?").join(", ");
         const insertQuery = `INSERT INTO ${table} (${fields.join(
           ", "
         )}) VALUES (${fieldPlaceholders})`;
-        const stmt = getDB().prepare(insertQuery);
-
-        // 执行批量插入操作
+        const updateQuery = `UPDATE ${table} SET ${fields
+          .map((field) => `${field} = ?`)
+          .join(", ")} WHERE ${uniqueField} = ?`;
+  
         data.forEach((item) => {
           const values = fields.map((field) => item[field]);
-          stmt.run(...values);
+          const uniqueFieldValue = item[uniqueField];
+  
+          // 查询数据是否已存在
+          getDB().get(`SELECT * FROM ${table} WHERE ${uniqueField} = ?`, [uniqueFieldValue], (err:any, row:any) => {
+            if (err) {
+              logger.error(`查询数据是否存在报错: ${err}`);
+              reject(err);
+              return;
+            }
+  
+            if (row) {
+              // 数据已存在，执行更新操作
+              getDB().run(updateQuery, [...values, uniqueFieldValue]);
+            } else {
+              // 数据不存在，执行插入操作
+              getDB().run(insertQuery, values);
+            }
+          });
         });
-
-        // 完成后销毁预备语句对象
-        stmt.finalize();
-
+  
         // 提交事务
         getDB().run("COMMIT", (err: any) => {
           if (err) {
+            logger.error(`sqlite批量插入或更新数据报错: ${err}`);
             reject(err);
           } else {
             resolve();
@@ -48,6 +63,8 @@ export const useData = () => {
       });
     });
   };
+  
+  
   // 插入数据方法封装
   const dbInsertData = (tableName: string, columns: any, sql: string='') => {
     const fields = Object.keys(columns);
@@ -58,8 +75,7 @@ export const useData = () => {
     return new Promise((resolve, reject) => {
       getDB().run(insertQuery, (error: any) => {
         if (error) {
-          console.log("Insert data failed：" + error);
-          console.log("sql:", insertQuery);
+          logger.error(`sqlite插入数据报错: ${error} \n sql语句: ${insertQuery}`)
           reject(error);
         } else {
           resolve(null);
@@ -77,11 +93,10 @@ export const useData = () => {
         UPDATE ${tableName} SET ${values}
         ${where}
       `;
-      getDB().run(updateQuery, (updateErr: any) => {
-        if (updateErr) {
-          console.log(updateQuery);
-          console.error("Error updating data:", updateErr);
-          reject(updateErr);
+      getDB().run(updateQuery, (error: any) => {
+        if (error) {
+          logger.error(`sqlite更新数据报错: ${error} \n sql语句: ${updateQuery}`)
+          reject(error);
         } else {
           resolve(null);
         }
@@ -95,8 +110,7 @@ export const useData = () => {
 
       getDB().run(deleteQuery, (error: any) => {
         if(error) {
-          console.log(deleteQuery);
-          console.log('delete error:'+error);
+          logger.error(`sqlite删除数据报错: ${error} \n sql语句: ${deleteQuery}`)
           reject(error)
         } else {
           resolve(null)
@@ -127,11 +141,10 @@ export const useData = () => {
     const querySql = `SELECT * FROM ${tableName} WHERE ${where}`;
     return new Promise((resolve, reject) => {
       // 查询当前数据是否已存在
-      getDB().get(querySql, (err: any, row: any) => {
-        if (err) {
-          console.log(querySql);
-          console.log(err);
-          reject(err);
+      getDB().get(querySql, (error: any, row: any) => {
+        if (error) {
+          logger.error(`sqlite保存数据查询报错: ${error} \n sql语句: ${querySql}`)
+          reject(error);
           return;
         }
 
@@ -157,8 +170,13 @@ export const useData = () => {
     return new Promise((resolve, reject) => {
       where = where ? `WHERE ${where}` : '';
       const query = `SELECT * FROM ${tableName} ${where}`;
-      getDB()[fn](query, (err: any, row: any) => {
-        !err ? resolve(row) : reject(err);
+      getDB()[fn](query, (error: any, row: any) => {
+        if(error) {
+          logger.error(`sqlite-查询数据报错: ${error} \n sql语句: ${query}`)
+          reject(error)
+        } else {
+          resolve(row)
+        }
       });
     });
   };
@@ -168,7 +186,7 @@ export const useData = () => {
     dbUpdateData,
     dbSaveData,
     dbGetData,
-    dbBatchInsert,
+    dbBatchInsertOrUpdate,
     dbDeleteData
   };
 };
@@ -183,8 +201,7 @@ export const useTable = () => {
     return new Promise((resolve, reject) => {
       getDB().run(createQuery, (error: any) => {
         if(error){
-          console.log(createQuery);
-          console.log('create table error', error);
+          logger.error(`sqlite-创建表报错: ${error} \n sql语句: ${createQuery}`)
           reject(error)
         } else {
           resolve(null)

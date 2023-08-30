@@ -31,6 +31,7 @@
 * mysql插件: [mysql2](https://github.com/sidorares/node-mysql2/tree/master/documentation/zh-cn)
 * 本地数据库：[sqlite](http://www.sqlite.net.cn/index.html)
 * 版本更新：[electron-updater](https://www.electron.build/configuration/configuration)
+* 日志：[electron-log](https://github.com/megahertz/electron-log)
 * 工具库：[vueuse](https://www.vueusejs.com/)
 
 ## 目录介绍
@@ -57,6 +58,11 @@
 * **vite.config.ts** Vite配置
 * **electron-builder.json5** 打包配置
 * **tsconfig.json** TypeScript配置
+
+## 位置
+
+* 日志位置：C:\Users\\username\AppData\Roaming\data-supermarket\logs
+* sqlite数据库：C:\Users\\username\AppData\Roaming\data-supermarket\database.db
 
 ## 项目命令
 

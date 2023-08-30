@@ -1,4 +1,4 @@
-import { columnType } from '@/types'
+import { columnType } from '@type/index'
 
 /**
  * 将数据按照字段映射规则进行转换

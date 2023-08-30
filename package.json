@@ -1,10 +1,10 @@
 {
   "name": "data-supermarket",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.9",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build && electron-builder",
+    "build": "vue-tsc && vite build && electron-builder --config electron-build.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,12 +34,13 @@
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.0.0",
+    "@types/electron-builder": "^2.8.0",
     "@types/node": "^20.4.5",
     "@vitejs/plugin-vue": "^4.1.0",
     "electron": "^24.4.0",
     "electron-builder": "^24.6.3",
     "sass": "^1.63.6",
-    "typescript": "^5.0.2",
+    "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.3.2",

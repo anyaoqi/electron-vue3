@@ -1,5 +1,5 @@
 import { createPinia, defineStore } from 'pinia'
-import { iDatabase, iLicence } from '@/types'
+import { iDatabase, iLicence } from '@type/index'
 
 const pinia = createPinia()
 

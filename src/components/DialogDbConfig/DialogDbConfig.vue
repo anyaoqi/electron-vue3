@@ -2,11 +2,14 @@
 import { reactive, ref, toRaw } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useHookDialog } from '@/hooks/index'
-import type { iDatabaseConfig } from '@/types'
+import type { iDatabase } from '@type/index'
 import { useDbConfig } from '@/hooks'
+import logger from '@/utils/logger'
+import { useUpload } from '@/hooks/uploadTimer'
 
 const { config, setConfig } = useDbConfig()
 const { dialogVisable, setDialogVisable } = useHookDialog()
+const { startUpload, isOpenTimer } = useUpload()
 
 const isConnection = ref(false)
 
@@ -14,7 +17,7 @@ const isConnection = ref(false)
 const formRef = ref<FormInstance>()
 
 // 表单
-const form = reactive<iDatabaseConfig>(config.value)
+const form = reactive<iDatabase>(config.value)
 
 if(import.meta.env.DEV) {
   form.type = "mysql"
@@ -25,7 +28,7 @@ if(import.meta.env.DEV) {
   form.database = "tobacco"
 }
 // 表单校验规则
-const formRules = reactive<FormRules<iDatabaseConfig>>({
+const formRules = reactive<FormRules<iDatabase>>({
   type: [
     {  required: true, message: '请选择数据库类型', trigger: 'blur' },
   ],
@@ -55,10 +58,13 @@ const connectDatabase = () => {
   // 这里传参需要通过toRaw转换为普通的js对象，reactive对象无法传参
   window.serverAPI.connectDatabase(toRaw(form)).then(() => {
     setConfig(form)
+    logger.info('数据库连接成功：'+JSON.stringify(toRaw(form)))
     ElMessage.success('连接成功')
     setDialogVisable(false)
+    !isOpenTimer.value && startUpload()
   }).catch((err: any) => {
     isConnection.value = false
+    logger.warn(`数据库连接失败：${err}, \n 数据库配置：${JSON.stringify(toRaw(form))}`)
     ElMessage.error('连接数据库失败:' + err)
   })
 }
@@ -80,10 +86,8 @@ const handleCancel = () => {
 
 const onDialogOpen = () => {
   console.log('open');
-  
   window.serverAPI.isConnection().then((boo: boolean) => {
     console.log(boo);
-    
     isConnection.value = boo
   })
 }

@@ -28,6 +28,8 @@
     "paths": {
       "@/*":["src/*"],
       "@main/*":["electron/*"],
+      "@config/*":["config/*"],
+      "@type/*":["types/*"]
     }
   },
   "include": [
@@ -37,7 +39,8 @@
     "src/**/*.vue", 
     "electron",
     "auto-imports.d.ts",
-    "ElMessageBox"
-  ],
+    "ElMessageBox",
+    "electron-builder.ts"
+, "config"  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

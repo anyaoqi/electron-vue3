@@ -14,12 +14,15 @@ const { startUpload } = useUpload()
 // 数据同步
 const { syncTimerOpen } = useDataSync()
 
-onMounted(() => {
+onMounted(async () => {
   setLoading(false)
-  // 开启定时数据抽取
-  startUpload()
   // 开启定时数据同步
-  // syncTimerOpen()
+  syncTimerOpen()
+  const boo = await window.serverAPI.isConnection()
+  console.log('boo', boo);
+
+  // 开启定时数据抽取
+  boo && startUpload()
 })
 </script>
 

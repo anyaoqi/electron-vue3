@@ -2,8 +2,9 @@
 import { useNow, useDateFormat, useNetwork } from '@vueuse/core'
 import { useLogout } from '@/hooks/login'
 import { useUpload } from '@/hooks/uploadTimer'
+import logger from '@/utils/logger'
 
-// 上传定时器
+// 数据抽取
 const { isOpenTimer, startUpload, stopUpload } = useUpload()
 
 // 当前时间
@@ -26,6 +27,7 @@ const logout = () => {
       type: 'info',
     },
   ).then(() => {
+    logger.info('退出登录')
     handleLogout()
   })
 }

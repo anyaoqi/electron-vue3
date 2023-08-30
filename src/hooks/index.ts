@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useStore } from '@/pinia/index'
-import { iDatabase } from '@/types'
+import { iDatabase } from '@type/index'
 import { ElLoading } from 'element-plus'
 
 /**
@@ -37,17 +37,19 @@ export const useLoading = () => {
   const store = useStore()
   const loading = computed(() => store.loading)
 
-  const setLoading = (boo: boolean = true) => {
+  const setLoading = (boo: boolean = true, text: string = 'Loading') => {
     if(loading.value) {
       store.loading.close()
-      store.loading = null
     }
-    if(boo) {
+    if(boo === true) {
       store.loading = ElLoading.service({
         lock: true,
-        text: 'Loading',
+        text: text,
         background: 'rgba(0, 0, 0, 0.7)',
       })
+    }
+    if(boo === false) {
+      loading.value && store.loading.close()
     }
   }
 

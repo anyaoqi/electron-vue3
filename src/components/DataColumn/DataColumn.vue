@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import type { columnType } from '@/types'
+import type { columnType } from '@type/index'
 
 // 组件属性
 const props = defineProps<{

@@ -1,4 +1,5 @@
 import mysql, { Connection } from 'mysql2/promise'
+import logger from '../../logger';
 
 let connection:Connection|null = null;
 
@@ -30,8 +31,6 @@ export const connect = async (config?: dbConfigType): Promise<Connection>  =>  {
         ...config,
         dateStrings: true,
       });
-      console.log('mysql connect success');
-      addLister()
       resolve(connection)
     } catch (err) {
       close()
@@ -57,13 +56,15 @@ export async function initMysql(config?: dbConfigType): Promise<Connection> {
  * @returns
  */
 export const query = (sql: string) => {
-  return new Promise((resolve, reject) => {
-    initMysql().then(async db => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = await initMysql()
       const [results, columns] = await db.query(sql)
       resolve({ results, columns })
-    }).catch(err => {
-      reject(err)
-    })
+    } catch (error) {
+      logger.error(`mysql查询失败：${error} \n sql语句：${sql}`)
+      reject(error)
+    }
   })
 }
 
@@ -78,16 +79,13 @@ export const isConnection = async ()=> {
       return
     }
     connection.connect().then((conn: any) => {
-      console.log('isConnection', conn);
-      
       if(conn) {
         resolve(true)
       } else {
         resolve(false)
       }
     }).catch((error) => {
-      console.log('conn error', error);
-      
+      logger.error('测试数据库连接失败：'+error)
       reject(error)
     })
   })
@@ -100,12 +98,6 @@ export function close(){
   if(connection) {
     connection.end()
     connection = null
+    logger.error(`mysql关闭数据库连接`)
   }
 }
-
-function addLister() {
-  console.log('');
-}
-
-
-

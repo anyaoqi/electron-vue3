@@ -1,14 +1,14 @@
 import { useNow, useDateFormat } from '@vueuse/core'
-import { extrTypeDatas } from "../../config/data.config";
-import type { TypeData, ExtrMappType, StoreParams, delDataParams } from "../../types";
+import { extrTypeDatas } from "../../../config/data.config";
+import type { TypeData, ExtrMappType, StoreParams, delDataParams } from "../../../types";
 import { useData } from "./hooks";
 
 const { 
-  dbInsertData, 
-  dbUpdateData, 
-  dbSaveData, 
-  dbGetData, 
-  dbBatchInsert,
+  dbInsertData,
+  dbUpdateData,
+  dbSaveData,
+  dbGetData,
+  dbBatchInsertOrUpdate,
   dbDeleteData
 } = useData();
 
@@ -168,7 +168,7 @@ export const getExtrMappData = (englishFlag: string) => {
 // 初始化数据抽取类型数据
 export const initExtrMappData = async () => {
   extrTypeDatas.forEach(async (data) => {
-    data.apiFilds.forEach(async filed => {
+    data.apiFilds.forEach(async (filed: any) => {
       const where = `filed = '${filed.filed}' AND english_flag = '${data.key}'`;
       return dbSaveData({
         tableName: 'ds_extraction',
@@ -204,7 +204,7 @@ export const initExtrMappData = async () => {
 const insertStoreData = (tableName: string, params: any) => {
   // if(Array.isArray(params)) {
   //   // 批量插入
-  //   return dbBatchInsert<StoreBatchParams>('ds_store', params)
+  //   return dbBatchInsertOrUpdate<StoreBatchParams>('ds_store', params)
   // }
   // 单个插入
   return dbInsertData(tableName, params);
@@ -266,7 +266,7 @@ export const updateStoreComp = (columns: StoreCompType) => {
 export const insertStoreComp = (columns: StoreCompType|StoreCompType[]) => {
   if(Array.isArray(columns)) {
     // 批量插入
-    return dbBatchInsert<StoreCompType>('ds_comparison_store', columns)
+    return dbBatchInsertOrUpdate<StoreCompType>('ds_comparison_store', columns, 'store_id')
   } else {
     // 单个插入
     return dbInsertData('ds_comparison_store', columns);
@@ -298,13 +298,8 @@ export const getStoreList = ()=> {
 
 // 插入门店数据
 export const insertStoreList = (columns: StoreListType|StoreListType[]) => {
-  if(Array.isArray(columns)) {
-    // 批量插入
-    return dbBatchInsert<StoreListType>('ds_store_list', columns)
-  } else {
-    // 单个插入
-    return dbInsertData('ds_store_list', columns);
-  }
+  // 单个插入
+  return dbInsertData('ds_store_list', columns);
 }
 
 // 更新门店数据
@@ -315,7 +310,12 @@ export const updateStoreList = (columns: StoreListType) => {
 }
 
 // 保存门店列表
-export const saveStoreList = (columns: StoreListType) => {
+export const saveStoreList = (columns: StoreListType|StoreListType[]) => {
+  // 批量保存
+  if(Array.isArray(columns)) { 
+    return dbBatchInsertOrUpdate<StoreListType>('ds_store_list', columns, 'cust_uuid')
+  }
+  // 单个保存
   const where = `cust_uuid = '${columns.cust_uuid}'`
   return dbSaveData({
     tableName: 'ds_store_list',
@@ -350,7 +350,7 @@ export const updateGoodsComp = (columns: GoodsCompType) => {
 export const insertGoodsComp = (columns: GoodsCompType|GoodsCompType[]) => {
   if(Array.isArray(columns)) {
     // 批量插入
-    return dbBatchInsert<GoodsCompType>('ds_comparison_goods', columns)
+    return dbBatchInsertOrUpdate<GoodsCompType>('ds_comparison_goods', columns, 'goods_id')
   } else {
     // 单个插入
     return dbInsertData('ds_comparison_goods', columns);
@@ -413,7 +413,7 @@ export const getGoodsList = ()=> {
 export const insertGoodsList = (columns: GoodsListType|GoodsListType[]) => {
   if(Array.isArray(columns)) {
     // 批量插入
-    return dbBatchInsert<GoodsListType>('ds_goods_list', columns)
+    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'goods_id')
   } else {
     // 单个插入
     return dbInsertData('ds_goods_list', columns);
@@ -428,7 +428,11 @@ export const updateGoodsList = (columns: GoodsListType) => {
 }
 
 // 保存商品列表
-export const saveGoodsList = (columns: GoodsListType) => {
+export const saveGoodsList = (columns: GoodsListType|GoodsListType[]) => {
+  // 批量保存
+  if(Array.isArray(columns)) { 
+    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'goods_id')
+  }
   const where = `goods_id = '${columns.goods_id}'`
   return dbSaveData({
     tableName: 'ds_goods_list',

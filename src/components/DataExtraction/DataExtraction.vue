@@ -4,7 +4,7 @@ import type { TabsPaneContext } from 'element-plus'
 import DataSource from '@/components/DataSource/DataSource.vue'
 import DataPreview, { dataTableType } from '@/components/DataPreview/DataPreview.vue'
 import DataColumn from '@/components/DataColumn/DataColumn.vue'
-import { columnType } from '@/types'
+import { columnType } from '@type/index'
 import { useData } from '@/hooks/dataExtraction'
 
 const { saveData, getSql, getTableData, viewData } = useData()

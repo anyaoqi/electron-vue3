@@ -1,7 +1,7 @@
 <template>
-  <el-menu class="menu-wrapper" :default-openeds="['1', '3']">
+  <el-menu class="menu-wrapper" default-active="1">
     <router-link to="/dataExtraction">
-    <el-menu-item index="4-1">
+    <el-menu-item index="1">
       <template #title>
         <el-icon><message /></el-icon>
        数据抽取配置
@@ -9,16 +9,15 @@
     </el-menu-item>
     </router-link>
     <router-link to="/dataComparison">
-    <el-menu-item index="4-2">
+    <el-menu-item index="2">
       <template #title>
         <el-icon><message /></el-icon>
-        
           数据对照配置
       </template>
     </el-menu-item>
     </router-link>
     <router-link to="/dataReporting">
-    <el-menu-item index="4-3">
+    <el-menu-item index="3">
       <template #title>
         <el-icon><setting /></el-icon>
         上报数据查询

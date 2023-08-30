@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import {onUpdateMessage,reUpdateMessage, downloadUpdate } from '@/utils/autoUpdater'
+import logger from '@/utils/logger'
 
 const dialogVisible = ref(true)
 const closeOnPressEscape = ref(false)
@@ -10,35 +11,36 @@ const percentage = ref(0)
 const strokeWidth = ref(200)
 
 const handleUpdate = (arg: any) => {
-  console.log('消息监听', arg);
+  console.log('版本更新消息监听', arg);
   if (arg.cmd === 'checking-for-update') {
     // 开始检测更新
-    console.log('开始检测更新');
+    logger.info('开始检测更新')
   } else if (arg.cmd === 'update-available') {
+    logger.info('发现新版本')
     // 发现新版本
     ElMessageBox.confirm('发现新版本,请确认是否升级？','info', {
       confirmButtonText: '升级',
       cancelButtonText: '取消',
       type: 'info',
     }).then(() => {
-      console.log('确认升级')
+      logger.info('确认升级')
       downloadUpdate()
       // 显示升级对话框
       dialogVisible.value = true;
     }).catch(() => {
-      console.log('取消升级');
+      logger.info('取消升级')
     })
   } else if (arg.cmd === 'download-progress') {
     // 下载中
-    console.log('下载中', arg);
-    
-    // const percent = Math.round(parseFloat(arg?.message?.percent));
-    // percentage.value = percent;
+    const percent = Math.round(parseFloat(arg?.message?.percent));
+    percentage.value = percent;
   } else if (arg.cmd === 'update-downloaded') {
     // 安装最新版本
+    logger.info('安装最新版本')
     dialogVisible.value = false;
   } else if (arg.cmd === 'error') {
     // 错误
+    logger.error('检测版本更新升级失败: \n '+arg.message)
     dialogVisible.value = false;
   } else if (arg.cmd === 'update-not-available') {
     // 未发现新版本
@@ -47,7 +49,7 @@ const handleUpdate = (arg: any) => {
 }
 
 // 移除监听
-reUpdateMessage(handleUpdate)
+reUpdateMessage()
 // 绑定监听
 onUpdateMessage(handleUpdate)
 

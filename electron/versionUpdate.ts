@@ -42,8 +42,6 @@ export function updateHandle(feedUrl: string, callback: handleUpdateType) {
   });
   // 监听发现可用更新事件
   autoUpdater.on("update-available", function (message: UpdateInfo) {
-    console.log('fn-update-available', message);
-    
     sendUpdateMessage({
       cmd: "update-available",
       message: message,
@@ -51,7 +49,6 @@ export function updateHandle(feedUrl: string, callback: handleUpdateType) {
   });
   // 监听没有可用更新事件
   autoUpdater.on("update-not-available", function (message: UpdateInfo) {
-    console.log('fn-update-not-available', message);
     sendUpdateMessage({
       cmd: "update-not-available",
       message: message,
@@ -59,8 +56,6 @@ export function updateHandle(feedUrl: string, callback: handleUpdateType) {
   });
   // 更新下载进度事件
   autoUpdater.on("download-progress", function (ProgressInfo: ProgressInfo) {
-    console.log('fn-download-progress', ProgressInfo);
-    
     sendUpdateMessage({
       cmd: "download-progress",
       message: ProgressInfo,

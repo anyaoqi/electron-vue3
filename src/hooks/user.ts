@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useStore } from '@/pinia'
-import { iLicence } from '@/types'
+import { iLicence } from '@type/index'
 
 // 许可证相关操作
 export const useLicence = () => {

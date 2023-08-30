@@ -1,6 +1,6 @@
 import { ExtrDataType } from '../types/index'
 
-// 初始化抽取类型数据
+// 数据抽取默认数据
 export const extrTypeDatas: ExtrDataType[] = [
   {
     name: "门店信息抽取",
@@ -73,6 +73,22 @@ export const extrTypeDatas: ExtrDataType[] = [
       { name: "包装率", filed: "pack_rate", description: "大包装必须" },
       { name: "是否启用", filed: "isactive", description: "" },
     ],
+  },
+  {
+    name: "卷烟商品信息抽取",
+    key: "tb_goods",
+    apiFilds: [
+      { name: "商品id", filed: "goods_id", description: "同商品唯一" },
+      { name: "商品编码", filed: "goods_code", description: "同商品唯一" },
+      { name: "商品名称", filed: "goods_name", description: "必须" },
+      {
+        name: "商品类别",
+        filed: "goods_category",
+        description: "",
+      },
+      { name: "条形码", filed: "bitcode", description: "必须" },
+      { name: "计量单位", filed: "unitname", description: "" },
+    ]
   },
   {
     name: "会员信息抽取",

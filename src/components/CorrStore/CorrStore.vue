@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, toRefs } from 'vue'
-import { FieldsStore, StoreCompType, LicenseOptionType } from '@/types'
+import { FieldsStore, StoreCompType, LicenseOptionType } from '@type/index'
 import { useData } from "@/hooks/dataExtraction";
 import { findFiledValues } from "@/utils";
 
@@ -13,7 +13,10 @@ const { tableData, licenseOptions } = toRefs(data)
 const { getSql, getTableData, viewData } = useData();
 // 获取许可证号列表
 window.sqliteAPI.getStoreList().then(async (res: any) => {
-  data.licenseOptions = res
+  console.log('licenseOptions', res);
+  if(res && res.length) {
+    data.licenseOptions = res.slice(0,100)
+  }
 })
 
 // 获取抽取sql语句

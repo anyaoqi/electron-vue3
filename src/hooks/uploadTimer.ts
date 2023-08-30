@@ -1,4 +1,5 @@
-import type { ComputedRef, Ref } from "vue";
+import { ref } from 'vue'
+import type { Ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useNow, useDateFormat } from "@vueuse/core";
 import { useStore } from "@/pinia/index";
@@ -15,11 +16,14 @@ import type {
   FieldOutOrder,
   FieldDayInvoicing,
   StoreCompType,
-} from "@/types";
+  GoodsListType,
+  LicenseOptionType,
+} from "@type/index";
 import { useData } from "@/hooks/dataExtraction";
+import { useLoading } from '@/hooks/index'
 import * as apis from "@/apis";
-import { extrTypeDatas } from "@main/config/data.config";
-
+import { extrTypeDatas } from "../../config/data.config";
+import logger from "@/utils/logger";
 
 /**
  * 定时相关操作
@@ -32,7 +36,7 @@ export const useTimer = (isOpenTimer: Ref<boolean>) => {
 
   // 开发环境调试
   if(import.meta.env.DEV) {
-    timing = 1000 * 10; // 每30秒触发一次
+    timing = 1000 * 60 * 2; //
   }
 
   // 创建一个定时器
@@ -86,7 +90,8 @@ export const useUpload = () => {
   const { openTimer, closeTimeout } = useTimer(isOpenTimer);
   const { getSql, getTableData, viewData } = useData();
 
-  let updateDateTime: ComputedRef<string> | null = null;
+  let upTime = localStorage.getItem('updateDateTime')
+  let updateDateTime: Ref<string> = ref(upTime||'');
 
   const uploadData = async <T>(
     type: string,
@@ -106,12 +111,11 @@ export const useUpload = () => {
       }
       const { tableData: queryData }: any = await viewData(querySql);
       const columnsData = await getTableData(type);
-      // console.log("queryData", queryData);
+      console.log("查询抽取的数据：", querySql, queryData);
 
       // 拼装接口字段数据
       const storeInfos = findFiledValues<T>(queryData, columnsData);
-      console.log("storeInfos", storeInfos);
-
+      console.log("拼接数据保存本地", storeInfos);
       // 循环插入保存到本地
       for (const item of storeInfos) {
         const whereValue = (item as any)[whereKey]
@@ -124,14 +128,14 @@ export const useUpload = () => {
         }
         await window.sqliteAPI.saveStoreData(params, item);
       }
-
       // 后上传数据
       // 获取需要更新的数据
+      updateDateTime.value = localStorage.getItem('updateDateTime')||useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value
+      console.log('updateDateTime', updateDateTime.value);
       const uploadDataList: T[] = await window.sqliteAPI.getStoreData(
-        updateDateTime?.value
+        updateDateTime.value
       );
-      console.log("uploadDataList", uploadDataList);
-
+      console.log('上传数据', uploadDataList);
       if (uploadDataList && uploadDataList.length) {
         const apiData: T[] = uploadDataList.map((data) => {
           const obj: Record<any, any> = {};
@@ -152,27 +156,40 @@ export const useUpload = () => {
           })
         }
         // 最终接口上传数据
-        console.log("apiData", apiData);
-        // const res = await apiFunc(apiData);
-        // console.log(res);
-        // 更新上传时间
-        updateDateTime = useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss");
-        const ids = uploadDataList.map((item: any) => item.id);
-        // 删除已上传成功的数据
-        window.sqliteAPI.delStoreData({
-          tableName: tableName,
-          ids: ids,
-        });
-        return apiData;
+        console.log("接口上传数据", apiData);
+        const updateRes = await apiFunc(apiData);
+        console.log('上传结果：',updateRes);
+        if(updateRes?.ALInfoError?.Sucess === '1'){
+          // 更新上传时间
+          localStorage.setItem('updateDateTime', useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value)
+          const ids = uploadDataList.map((item: any) => item.id);
+          // 删除已上传成功的数据
+          window.sqliteAPI.delStoreData({
+            tableName: tableName,
+            ids: ids,
+          });
+          return apiData;
+        } else if(updateRes?.ALInfoError?.Sucess === '0') {  // 上传失败
+          let errMes = `${extrTypeName}数据抽取失败：${updateRes.ALInfoError?.Description}`
+          logger.warn(errMes)
+          ElMessage.warning(errMes)
+          return updateRes
+        } else {
+          let errRes = updateRes ? JSON.stringify(updateRes) : updateRes
+          let errMes = `${extrTypeName}数据抽取失败：${errRes}`
+          logger.warn(errMes)
+          ElMessage.warning(errMes)
+          return updateRes
+        }
       }
     } catch (error: any) {
       console.log(`${extrTypeName}数据抽取失败：`, error);
     }
   };
 
-  // 开始定时上传
+  // 开始数据抽取
   const startUpload = () => {
-    console.log('开始上传');
+    logger.info('开始数据抽取')
     openTimer(() => {
       // 抽取门店信息
       uploadData<FieldsStore>("store", apis.api4G07, 'store_id');
@@ -197,8 +214,9 @@ export const useUpload = () => {
       uploadData<FieldDayInvoicing>("day_invoicing", apis.api4S04, 'dtl_productid');
     });
   };
-  // 停止定时上传
+  // 停止数据抽取
   const stopUpload = () => {
+    logger.info('停止数据抽取')
     closeTimeout()
   }
   return {
@@ -214,21 +232,163 @@ export const useUpload = () => {
 export const useDataSync = () => {
   const store = useStore();
   const { isSyncTimer } = storeToRefs(store);
-  const { openTimer } = useTimer(isSyncTimer);
-
+  const { openTimer, closeTimeout } = useTimer(isSyncTimer);
+  
   // 同步店铺数据
-  const syncStoreData = async () => {
-    const storeList = await apis.api4G00()
-    console.log('storeList', storeList);
+  const syncStoreData =  () => {
+    const { loading, setLoading } = useLoading()  // loading
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log('请求门店数据');
+
+        setLoading(true, '请求门店数据')
+        const storeRes = await apis.api4G00()
+        console.log('开始同步门店数据', storeRes);
+        if(storeRes?.ALInfoError?.Sucess == '1') {
+          let storeListRow: any[] = storeRes?.ior[0]?.SubRs[0]?.Row||[]
+          let storeList: LicenseOptionType[] = storeListRow.map(item => {
+            return {
+              cust_uuid: item.a,
+              cust_code: item.b,
+              cust_name: item.c,
+              license_code: item.d
+            }
+          })
+          if(import.meta.env.DEV) {
+            storeList = storeList.slice(0, 1000)
+          }
+          let index = 0
+          let storeTotal = storeList.length
+          // 递归存储本地，每次存200条
+          async function recuSaveStore() {
+            index = index > storeTotal ? storeTotal : index
+            console.log(`门店数据同步中 ${index}/${storeTotal}`);
+  
+            if(!loading.value) {
+              setLoading(true, `门店数据同步中 ${index}/${storeTotal}`)
+            } else {
+              loading.value.setText(`门店数据同步中 ${index}/${storeTotal}`)
+            }
+
+            let tmpArr = storeList.slice(index, index+200)
+
+            if(tmpArr.length) {
+              await window.sqliteAPI.saveStoreList(tmpArr)
+            }
+
+            if(storeTotal > index) {
+              index+=200
+              recuSaveStore()
+            } else {
+              console.log(`门店数据同步结束 ${index}/${storeTotal}`);
+              
+              setLoading(false)
+              resolve(true)
+            }
+          }
+          recuSaveStore()
+        } else {
+          setLoading(false)
+          reject(storeRes)
+        }
+      } catch (err) {
+        console.log('同步店铺数据失败：'+err);
+
+        setLoading(false)
+        reject(err)
+      }
+    })
   }
   // 同步商品数据
   const syncGoodsData = async () => {
-    const clientverStora =  localStorage.getItem('clientver')
-    const clientver = clientverStora && clientverStora!=='undefined' ? clientverStora : '99999999999999'
-    const pageIndex = '1'
-    const pageSize = '500'
-    const goodsResult = await apis.api4G01(clientver, pageIndex, pageSize)
-    localStorage.setItem('clientver', goodsResult.serverver)
+    const { loading, setLoading } = useLoading()  // loading
+    return new Promise(async (resolve, reject) => {
+      try {
+        setLoading(true, '请求商品数据')
+        const clientverStora =  localStorage.getItem('clientver')
+        const clientver = clientverStora && clientverStora!=='undefined' ? clientverStora : '99999999999999'
+        const pageIndex = '1'
+        const pageSize = '500'
+        const goodsResult = await apis.api4G01(clientver, pageIndex, pageSize)
+        localStorage.setItem('clientver', goodsResult.serverver)
+        console.log('开始同步商品数据', goodsResult);
+        if(goodsResult?.ALInfoError?.Sucess == '1') {
+          let goodsListRow: any[] = goodsResult?.ior[0]?.SubRs[0]?.Row||[]
+          let goodsList:GoodsListType[] = goodsListRow.map(item => {
+            return {
+              goods_id: item.a,
+              goods_code: item.b,
+              goods_name: item.c,
+              barcode: item.d,
+              pack_barcode: item.e,
+              wholesale_price: item.f,
+              msrp: item.g,
+              conversion_ratio: item.h,
+              brand: item.i,
+              manufacturer_name: item.j,
+              is_new: item.k,
+              backbone_brand: item.l,
+              goods_image: item.m,
+              mnemonic_code_pinyin: item.n,
+              home_e: item.o,
+              mnemonic_code_number: item.p,
+              online_ordering: item.q,
+              retail_price: item.r,
+              message_code: item.s,
+              brand_identity: item.t,
+              manufacturer_identity: item.u,
+              smoke_abnormal: item.v,
+              smoke_province: item.w,
+              default_unit: item.x,
+              brand_code: item.y,
+              manufacturer_code: item.z,
+              is_import: item.a1,
+              price_class_code: item.b1,
+              price_class_name: item.c1,
+              disabled: item.d1,
+              tar_content: item.e1,
+              packaging_type: item.f1,
+              total_records: item.page_totalrecordnum,
+            }
+          })
+          if(import.meta.env.DEV) {
+            goodsList = goodsList.slice(0, 1000)
+          }
+          let index = 0
+          let goodsTotal = goodsList.length
+          // 递归存储本地，每次存200条
+          async function recuSaveGoods() {
+            index = index > goodsTotal ? goodsTotal : index
+            if(!loading.value) {
+              setLoading(true, `商品数据同步中 ${index}/${goodsTotal}`)
+            } else {
+              loading.value.setText(`商品数据同步中 ${index}/${goodsTotal}`)
+            }
+            let tmpArr = goodsList.slice(index, index+200)
+
+            if(tmpArr.length) {
+              await window.sqliteAPI.saveGoodsList(tmpArr)
+            }
+
+            if(goodsTotal > index) {
+              index+=200
+              recuSaveGoods()
+            } else {
+              setLoading(false)
+              resolve(true)
+            }
+          }
+          recuSaveGoods()
+        } else {
+          setLoading(false)
+          reject(goodsResult)
+        }
+      } catch (err) {
+        console.log('同步商品数据失败：'+err);
+        setLoading(false)
+        reject(err)
+      }
+    })
   }
 
   // 开始同步数据
@@ -239,9 +399,16 @@ export const useDataSync = () => {
     })
   }
 
+   // 停止数据抽取
+  const syncTimerStop = () => {
+    // logger.info('停止数据抽取')
+    closeTimeout()
+  }
+
   return {
     isSyncTimer,
     syncTimerOpen,
+    syncTimerStop,
     syncStoreData,
     syncGoodsData
   }

@@ -1,3 +1,4 @@
+import logger from "../logger"
 const mac = require('getmac').default
 const crypto = require('crypto')
 const soapRequest = require('easy-soap-request')
@@ -25,15 +26,11 @@ function encodeBase64(str: string) {
  * 拼接请求体
  */
 function getBody(code: any, array_data: any) {
-  console.log('array_data', array_data);
-  
   const p2 = encodingConvert.convert(JSON.stringify(array_data), 'GBK', 'UTF-8').toString()
 
   let str =`0001M000M001${code}${p2}`
   let device_secret = 'E417CCD448B242F591FF92835584A41C'
   let secret = md5(str + device_secret)
-  console.log('str:', str)
-  console.log('secret', secret);
   
   let base64 = encodeBase64(str + secret)
   let res = `
@@ -75,17 +72,21 @@ async function parseBody(body: any) {
 }
 
 export async function requestSoap(code: any, data: any) {
-  const { response } = await soapRequest({
-    url: url,
-    headers: {
-      'Content-Type': 'text/xml; charset=GBK',
-      SOAPAction: '',
-    },
-    xml: getBody(code, data),
-    timeout: 1000 * 60,
-  })
-  const { body, statusCode } = response
-  if (statusCode == 200) {
-    return await parseBody(body)
+  try {
+    const { response } = await soapRequest({
+      url: url,
+      headers: {
+        'Content-Type': 'text/xml; charset=GBK',
+        SOAPAction: '',
+      },
+      xml: getBody(code, data),
+      timeout: 1000 * 60,
+    })
+    const { body, statusCode } = response
+    if (statusCode == 200) {
+      return await parseBody(body)
+    }
+  } catch (err) {
+    logger.error(`接口触发失败:${err} \n ${code},Data:${JSON.stringify(data)}`)
   }
 }

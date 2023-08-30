@@ -1,6 +1,6 @@
 import { initExtrTypeData, initExtrMappData } from "./dbData";
 import { useTable } from './hooks'
-import { extrTypeDatas } from '../../config/data.config'
+import { extrTypeDatas } from '../../../config/data.config'
 
 // 创建数据抽取字段表
 const createExtraction = () => {
@@ -84,7 +84,7 @@ const createDsTables = () => {
       created_at DATETIME NOT NULL,
       updated_at DATETIME NOT NULL,
     `
-    table.apiFilds.forEach((item, index, array) => {
+    table.apiFilds.forEach((item: any, index:number, array: any[]) => {
       if(index!==array.length-1) {
         tableColumns+=`${item.filed} TEXT,`
       } else {

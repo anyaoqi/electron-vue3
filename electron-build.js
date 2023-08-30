@@ -1,10 +1,13 @@
+const publicConfig = require('./config/public.config.json')
+
 /**
- * @see https://www.electron.build/configuration/configuration
+ * electron-builder打包配置
+ * https://www.electron.build/configuration/configuration
  */
-{
+const config = {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.dataextractor.app",
-  "productName": "第三方零消数据抽取系统",
+  "productName": publicConfig.title,
   "copyright":"海晟融创", //版权  信息
   "asar": true, // 是否把app文件夹压缩成app.asar
   "asarUnpack": [ // 解压到应用程序包的根目录下的文件，对外部可见
@@ -38,6 +41,7 @@
     ]
   },
   "win": {
+    "icon": "public/logo.png", // 设置 Windows 平台的图标路径
     "target": [
       {
         "target": "nsis",
@@ -67,4 +71,6 @@
     "uninstallerIcon": 'public/icon.ico', //卸载图标
     "installerHeaderIcon": 'public/icon.ico', // 安装时头部图标
   }
-}
+};
+
+module.exports = config

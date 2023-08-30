@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, toRefs } from 'vue'
-import { FieldsNotbGoods, GoodsCompType, GoodsListType } from '@/types'
+import { FieldsNotbGoods, GoodsCompType, GoodsListType } from '@type/index'
 import { useData } from "@/hooks/dataExtraction";
 import { findFiledValues } from "@/utils";
 
@@ -18,7 +18,7 @@ window.sqliteAPI.getGoodsList().then(async (res: any) => {
 })
 
 
-getSql('notb_goods').then(async (sql: string) => {
+getSql('tb_goods').then(async (sql: string) => {
   if(!sql){
     ElMessage.warning('请先配置非烟商品抽取信息')
     return
@@ -27,28 +27,35 @@ getSql('notb_goods').then(async (sql: string) => {
   const { tableData: queryData }:any = await viewData(sql)
   if(!queryData) return
 
-  const columnsData = await getTableData('notb_goods');
+  const columnsData = await getTableData('tb_goods');
   console.log(columnsData);
-  
+
   // 拼装接口字段数据
-  const storeInfos = findFiledValues<FieldsNotbGoods>(queryData, columnsData);
+  let storeInfos = findFiledValues<FieldsNotbGoods>(queryData, columnsData);
   console.log('storeInfos', storeInfos);
-  
+
   // 获取已保存的商品对照配置
   const goodsComplist:Array<GoodsCompType> = await window.sqliteAPI.getGoodsComp()
-  // console.log('goodsComplist', goodsComplist);
-  
-  data.tableData = storeInfos.map((item: any) => {
-    
+  // 筛选一品多码卷烟
+  const tmpArr = storeInfos
+  const newArr:FieldsNotbGoods[] = []
+  storeInfos.forEach((itme, index) => {
+    tmpArr.forEach((tmp, i) => {
+      if(itme.bitcode === tmp.bitcode && index !== i) {
+        newArr.push(itme)
+      }
+    })
+  })
+
+  data.tableData = newArr.map((item: any) => {
     const findData = goodsComplist.find(d => d.goods_id == item.goods_isn)
     let newRow = {} as GoodsCompType
     if(findData) {
       newRow = findData
     } else {
-      const goods_category = item.second_cust_category_code||item.first_cust_category_code
       newRow = {
-        goods_id: item.goods_isn,
-        goods_category: goods_category,
+        goods_id: item.goods_id,
+        goods_category: item.goods_category,
         goods_code: item.bitcode,
         goods_unit: item.unitname,
         code_value: item.goods_code
@@ -73,6 +80,7 @@ const selectChange = (row: any) => {
     })
   }
 }
+
 </script>
 
 <template>

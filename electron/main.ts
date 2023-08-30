@@ -1,11 +1,11 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import path from 'node:path'
 import { bindHandleEvents } from '@main/events'
-import appConfig from '@main/config/app.config'
+import appConfig from '../config/app.config'
 import { updateHandle } from '@main/versionUpdate'
 import { initDatabase, closeDatabase } from '@main/database/index'
-import logger from '@main/logger'
-import { LoggerLevel } from './types'
+import logger, { deleteHistoryLog } from '@main/logger'
+import { LoggerLevel } from '@type/index'
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -21,7 +21,7 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.D
 initDatabase()
 
 // 是否打开控制台
-const openDevTools = import.meta.env.DEV ?  true : appConfig.debug;
+const openDevTools = appConfig.debug;
 
 let win: BrowserWindow | null
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -113,4 +113,6 @@ app.whenReady().then(() => {
   createWindow()
   // 绑定进程间通信事件
   bindHandleEvents()
+  // 删除历史日志
+  deleteHistoryLog()
 })

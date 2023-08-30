@@ -9,7 +9,7 @@ import ElementPlus from 'element-plus'
 import locale from "element-plus/lib/locale/lang/zh-cn"
 import * as ElementPlusIconsVue from '@element-plus/icons-vue' // element-ui 字体图标组件
 import 'element-plus/dist/index.css' // 这个路径跟官网给的不一样，根据实际安装路径填写
-import { useUpload } from '@/hooks/uploadTimer'
+import { useUpload, useDataSync } from '@/hooks/uploadTimer'
 
 const app = createApp(App)
 app.use(router)
@@ -24,8 +24,12 @@ window.electronAPI.getConfig().then((config: any) => {
 // 监听程序关闭
 window.electronAPI.appClose((event:any) => {
   const { isOpenTimer, stopUpload } = useUpload()
+   // 数据同步
+   const { isSyncTimer, syncTimerStop } = useDataSync()
   // 停止数据抽取
   isOpenTimer.value && stopUpload()
+  // 停止数据同步
+  isSyncTimer.value && syncTimerStop()
   // 关闭程序
   event.sender.send('appClose')
 })

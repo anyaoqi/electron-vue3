@@ -4,8 +4,7 @@ import { md5, getMac, requestSoap } from '../events/login'
 
 export default {
   getUserPath: () => app.getPath('userData'),
-  autoUpdater: (funcName: updaterEventsName, params: any) => {
-    console.log('1111', funcName, params);
+  autoUpdater: (funcName: updaterEventsName) => {
     onAutoUpdater(funcName, {})
   },
   md5: (str: string) => md5(str),

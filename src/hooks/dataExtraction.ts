@@ -1,4 +1,4 @@
-import { columnType } from '@/types'
+import { columnType } from '@type/index'
 import { ElLoading } from 'element-plus'
 import { FieldPacket } from 'mysql2'
 

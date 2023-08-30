@@ -20,6 +20,10 @@ const props = defineProps<{
 
 const columns = computed(() => props.dataTable.columns)
 const data = computed(() => props.dataTable.data)
+
+console.log('columns', columns);
+console.log('data', data);
+
 </script>
 
 <template>

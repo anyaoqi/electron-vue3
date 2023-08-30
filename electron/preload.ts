@@ -112,7 +112,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   ...getInvokeEvents(commonEvents),
   getConfig: () => ipcRenderer.invoke('getConfig'),
   onUpdateMessage: (callback: any) => ipcRenderer.on('updateMessage', callback),
-  reUpdateMessage: (callback: any) => ipcRenderer.removeListener('updateMessage', callback),
+  reUpdateMessage: () => ipcRenderer.removeAllListeners('updateMessage'),
   getLogger: (level: string, content: string) => ipcRenderer.invoke('getLogger', level, content),
   appClose: (callback: any) => ipcRenderer.on('appClose', callback)
 })

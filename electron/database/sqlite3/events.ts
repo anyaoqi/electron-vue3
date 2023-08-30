@@ -16,7 +16,7 @@ import {
   saveGoodsList,
   saveGoodsComp,
 } from './dbData'
-import type { TypeData, ExtrMappType, delDataParams } from "../../types";
+import type { TypeData, ExtrMappType, delDataParams } from "../../../types";
 
 export default {
   saveExtrMappData: (params: ExtrMappType) => saveExtrMappData(params),

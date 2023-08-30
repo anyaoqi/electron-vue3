@@ -2,14 +2,18 @@
 import { ref, reactive, inject, onMounted } from 'vue'
 import { useLoading } from '@/hooks'
 import { useLogin } from '@/hooks/login'
+import { useDataSync } from '@/hooks/uploadTimer'
 import type { FormInstance, FormRules } from 'element-plus'
-import { iLoginForm } from '@/types'
+import { iLoginForm } from '@type/index'
 import { checkUpdate } from '@/utils/autoUpdater'
 import logger from '@/utils/logger'
 
 const ruleFormRef = ref<FormInstance>()
 
-const { setLoading } = useLoading()
+// hooks
+const {  loading, setLoading } = useLoading()
+const { syncStoreData, syncGoodsData } = useDataSync()
+const { handleLogin, licenceLogin } = useLogin()
 
 // 引入全局配置
 const config:any = inject('config')
@@ -20,14 +24,7 @@ const loginForm = reactive<iLoginForm>({
   password: '',
 })
 
-if(import.meta.env.DEV) {
-  loginForm.username = '431001105361'
-  loginForm.password = '1357452o268yzas'
-}
-
 const title:string = config.title
-
-const { handleLogin, licenceLogin } = useLogin()
 
 const rules = reactive<FormRules<iLoginForm>>({
   username: [
@@ -39,6 +36,11 @@ const rules = reactive<FormRules<iLoginForm>>({
   ],
 })
 
+if(import.meta.env.DEV) {
+  loginForm.username = '431001105361'
+  loginForm.password = '1357452o268yzas'
+}
+
 onMounted(() => {
   checkUpdate()
 })
@@ -46,6 +48,7 @@ onMounted(() => {
 // 登录
 const onSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
+ 
   await formEl.validate(async (valid, _fields) => {
     if(!valid) return
     console.log('valid', valid);
@@ -53,22 +56,38 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     setLoading(true)
 
     try {
-      // const loginRes = await licenceLogin(loginForm)
-      // console.log('loginRes', loginRes);
+      const loginRes = await licenceLogin(loginForm)
+      console.log('loginRes', loginRes);
+      if(loginRes.success === true) {
+        loading.value.setText('开始同步数据')
 
-      ElMessage({
-        message: '登录成功！',
-        type: 'success'
-      })
-      logger.info('登录成功，用户：'+loginForm.username)
-      handleLogin()
+        // 同步门店数据
+        await syncStoreData()
+        // 同步商品数据
+        await syncGoodsData()
+
+        setLoading(true, '登录中...')
+        // 登录操作
+        handleLogin()
+        ElMessage({
+          message: '登录成功！',
+          type: 'success'
+        })
+        logger.info('登录成功，用户：'+loginForm.username)
+      } else {
+        setLoading(false)
+        ElMessage({
+          message: '登录失败：'+loginRes.error,
+          type: 'error'
+        })
+      }
     } catch (err) {
+      setLoading(false)
       ElMessage({
         message: ''+err,
         type: 'warning'
       })
       logger.info('登录失败，用户：'+loginForm.username)
-      setLoading(false)
     }
   })
 }

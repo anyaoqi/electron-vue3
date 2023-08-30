@@ -17,10 +17,8 @@ export function onUpdateMessage(callback: (params:iMessageParams) => void) {
 }
 
 // 移除监听版本升级消息
-export function reUpdateMessage(callback: (params:iMessageParams) => void) {
-  window.electronAPI.reUpdateMessage((_event:any, updateParams: iMessageParams) => {
-    callback(updateParams)
-  })
+export function reUpdateMessage() {
+  window.electronAPI.reUpdateMessage()
 }
 
 // 检查更新

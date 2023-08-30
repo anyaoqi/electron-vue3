@@ -68,6 +68,14 @@ export default defineConfig({
         find: "@main", // 别名
         replacement: resolve(__dirname, "electron"), // 别名对应地址
       },
+      {
+        find: "@config", // 别名
+        replacement: resolve(__dirname, "config"), // 别名对应地址
+      },
+      {
+        find: "@type", // 别名
+        replacement: resolve(__dirname, "types"), // 别名对应地址
+      },
     ],
   },
   css: {

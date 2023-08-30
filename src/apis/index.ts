@@ -10,8 +10,11 @@ import type {
   FieldInOrder,
   FieldLossOrder,
   FieldOutOrder,
-  FieldDayInvoicing
-} from '@/types'
+  FieldDayInvoicing,
+  FieldReportingForm
+} from '@type/index'
+
+const deviceid = 'WINDOWS'
 
 // 登录接口
 export const api3G61 = async (username: string, password: string) => {
@@ -19,7 +22,7 @@ export const api3G61 = async (username: string, password: string) => {
     let device_no = await window.electronAPI.md5(mac + username)
     console.log('device_no', device_no);
     return await requestSoap('3G61', {
-      deviceid: 'WINDOWS',
+      deviceid: deviceid,
       login_name: username,
       login_pwd: password,
       device_no: device_no
@@ -29,7 +32,7 @@ export const api3G61 = async (username: string, password: string) => {
 // 登录获取店铺信息
 export const api3G72 = async (cust_uuid: string, device_no: string) => {
   return await requestSoap('3G72', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     device_no: device_no
   })
@@ -40,7 +43,7 @@ export const api4G00 = async () => {
   const { cust_uuid } = useLicence()
   
   return await requestSoap('4G00', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid
   })
 }
@@ -55,7 +58,7 @@ export const api4G00 = async () => {
 export const api4G01 = async (clientver: string, pageIndex: string, pageSize: string) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G01', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     clientver: clientver, // 终端版本号
     querytype:'1', // 查询标识 1返回所有字段，其他返回基本字段
@@ -67,7 +70,7 @@ export const api4G01 = async (clientver: string, pageIndex: string, pageSize: st
 // 卷烟计量单位信息同步请求
 export const api4G02 = async (cust_uuid: string) => {
   return await requestSoap('4G02', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid
   })
 }
@@ -76,7 +79,7 @@ export const api4G02 = async (cust_uuid: string) => {
 export const api4G03 = async (cate_infos: FieldsNotbCategory[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G03', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     cate_infos: cate_infos,
   })
@@ -87,7 +90,7 @@ export const api4G03 = async (cate_infos: FieldsNotbCategory[]) => {
 export const api4G04 = async (goods_infos: FieldsNotbGoods[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G04', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     goods_infos: goods_infos,
   })
@@ -98,7 +101,7 @@ export const api4G04 = async (goods_infos: FieldsNotbGoods[]) => {
 export const api4G05 = async (supplierInfos: FieldsSupplier[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G05', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     supplier_infos: supplierInfos,
   })
@@ -108,7 +111,7 @@ export const api4G05 = async (supplierInfos: FieldsSupplier[]) => {
 export const api4G07 = async (storeInfos: FieldsStore[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G07', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     store_infos: storeInfos,
   })
@@ -118,7 +121,7 @@ export const api4G07 = async (storeInfos: FieldsStore[]) => {
 export const api4G06 = async (consumer_infos: FieldsMemberInfo[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4G06', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     consumer_infos: consumer_infos,
   })
@@ -128,7 +131,7 @@ export const api4G06 = async (consumer_infos: FieldsMemberInfo[]) => {
 export const api4S00 = async (order_infos: FieldRetailOrder[]) => {
   const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S00', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     cust_code: cust_code,
     order_infos: order_infos,
@@ -138,7 +141,7 @@ export const api4S00 = async (order_infos: FieldRetailOrder[]) => {
 export const api4S01 = async (purchcheck_infos: FieldInOrder[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4S01', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     purchcheck_infos: purchcheck_infos,
   })
@@ -147,7 +150,7 @@ export const api4S01 = async (purchcheck_infos: FieldInOrder[]) => {
 export const api4S02 = async (records: FieldLossOrder[]) => {
   const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S02', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     cust_code: cust_code,
     records: records,
@@ -157,18 +160,28 @@ export const api4S02 = async (records: FieldLossOrder[]) => {
 export const api4S03 = async (other_purchcheck_infos: FieldOutOrder[]) => {
   const { cust_uuid } = useLicence()
   return await requestSoap('4S03', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     other_purchcheck_infos: other_purchcheck_infos
   })
 }
+
 // 进销存日报批量上报请求
 export const api4S04 = async (records: FieldDayInvoicing[]) => {
   const { cust_uuid, cust_code } = useLicence()
   return await requestSoap('4S04', {
-    deviceid: 'WINDOWS',
+    deviceid: deviceid,
     cust_uuid: cust_uuid,
     cust_code: cust_code,
     records: records
+  })
+}
+
+
+// 报表数据查询
+export const api4G08 = async (params: FieldReportingForm) => {
+  return await requestSoap('4G08', {
+    deviceid: deviceid,
+    ...params
   })
 }
