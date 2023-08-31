@@ -29,7 +29,7 @@ function getBody(code: any, array_data: any) {
   const p2 = encodingConvert.convert(JSON.stringify(array_data), 'GBK', 'UTF-8').toString()
 
   let str =`0001M000M001${code}${p2}`
-  let device_secret = 'E417CCD448B242F591FF92835584A41C'
+  let device_secret = '1688543D3ACD57E57A6E604F387A5F53'
   let secret = md5(str + device_secret)
   
   let base64 = encodeBase64(str + secret)
@@ -64,6 +64,8 @@ function xml2arr(xml: any) {
  * 解析返回的body
  */
 async function parseBody(body: any) {
+  console.log('body', body);
+
   let r:any = await xml2arr(body)
   let str = Buffer.from(r, 'base64')
   let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()

@@ -1,12 +1,12 @@
 import { app } from 'electron'
 import path from 'node:path'
 import fs from 'fs'
-import publicConfig from './public.config.json'
+import publicConfig from './config.json'
 
 // App配置项
 let config = {
   ...publicConfig,
-  debug: import.meta.env.DEV
+  debug: import.meta.env.DEV,
 }
 
 // 生产环境配置

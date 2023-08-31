@@ -1,22 +1,50 @@
 <script lang="ts" setup>
-const props = defineProps(['data'])
-const { data } = props
+import { computed } from 'vue'
+
+const props = defineProps(['data', 'pagination', 'shopName'])
+const emit = defineEmits(['pageChange'])
+
+const data = computed(() => props.data)
+const pagination = computed(() => props.pagination)
+const shopName = computed(() => props.shopName)
+
+const pageChange = (index: number) => {
+  emit('pageChange', index)
+}
 </script>
 
 <template>
   <div class="table-reporting">
     <el-table :data="data" style="width: 100%;">
-      <el-table-column prop="setDate" label="操作日期" ></el-table-column>
-      <el-table-column prop="setTime" label="操作时间" ></el-table-column>
-      <el-table-column prop="shopName" label="店面名称" ></el-table-column>
-      <el-table-column prop="licenCode" label="许可证号" ></el-table-column>
-      <el-table-column prop="totalNum" label="总笔数" ></el-table-column>
-      <el-table-column prop="successNum" label="成功笔数" ></el-table-column>
-      <el-table-column prop="errorNum" label="失败笔数" ></el-table-column>
+      <el-table-column prop="upload_time" label="操作日期" ></el-table-column>
+      <el-table-column prop="shopName" label="店面名称" >
+        <template default="scoped">
+          {{ shopName }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="license_code" label="许可证号" ></el-table-column>
+      <el-table-column prop="totalNum" label="总笔数" >
+        <template #default="{row}">
+          {{ row.batch_success_num + row.batch_fail_num }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="batch_success_num" label="成功笔数" ></el-table-column>
+      <el-table-column prop="batch_fail_num" label="失败笔数" ></el-table-column>
     </el-table>
+    <div class="pagination">
+      <el-pagination
+        :page-size="pagination.pageSize"
+        layout="prev, pager, next"
+        :total="pagination.total"
+        @current-change="pageChange"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-  
+.pagination {
+  display: flex;
+  justify-content: center;
+}
 </style>

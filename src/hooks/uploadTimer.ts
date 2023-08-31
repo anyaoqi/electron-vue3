@@ -254,9 +254,6 @@ export const useDataSync = () => {
               license_code: item.d
             }
           })
-          if(import.meta.env.DEV) {
-            storeList = storeList.slice(0, 1000)
-          }
           let index = 0
           let storeTotal = storeList.length
           // 递归存储本地，每次存200条
@@ -351,9 +348,6 @@ export const useDataSync = () => {
               total_records: item.page_totalrecordnum,
             }
           })
-          if(import.meta.env.DEV) {
-            goodsList = goodsList.slice(0, 1000)
-          }
           let index = 0
           let goodsTotal = goodsList.length
           // 递归存储本地，每次存200条

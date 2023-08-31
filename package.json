@@ -1,7 +1,7 @@
 {
   "name": "data-supermarket",
   "private": true,
-  "version": "0.0.9",
+  "version": "1.0.0-beta-230831-1",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder --config electron-build.js",

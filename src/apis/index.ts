@@ -14,7 +14,7 @@ import type {
   FieldReportingForm
 } from '@type/index'
 
-const deviceid = 'WINDOWS'
+const deviceid = 'CZCTXJ'
 
 // 登录接口
 export const api3G61 = async (username: string, password: string) => {

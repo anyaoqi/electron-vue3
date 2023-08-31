@@ -17,6 +17,7 @@ const { handleLogin, licenceLogin } = useLogin()
 
 // 引入全局配置
 const config:any = inject('config')
+console.log('config', config);
 
 // 登录表单
 const loginForm = reactive<iLoginForm>({

@@ -1,17 +1,32 @@
 <script lang="ts" setup>
 import { reactive, ref, toRefs } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-import { extrTypeDatas } from '../../../config/data.config'
+// import { extrTypeDatas } from '../../../config/data.config'
 import TableReporting from '@/components/TableReporting/TableReporting.vue';
 import { api4G08 } from '@/apis'
-import { FieldReportingForm } from '@type/index'
+import { FieldReportingForm, LicenseOptionType } from '@type/index'
 import { useLicence } from '@/hooks/user'
 import { useNow, useDateFormat } from "@vueuse/core";
 
 // tree类型
 interface TreeType {
-  label: string
+  label: string,
+  cust_uuid?: string,
   children?: TreeType[]
+}
+
+// 上报查询数据类型
+interface ReportDataType {
+  upload_time: string
+  license_code: string
+  batch_success_num: number
+  batch_fail_num: number
+}
+
+// data数据类型
+interface Data {
+  tableData: ReportDataType[],
+  treeData: TreeType[]
 }
 
 const { cust_uuid } = useLicence()
@@ -22,67 +37,84 @@ const treeProps = {
   children: 'children',
   label: 'label',
 }
-// 门店数据
-const treeData: TreeType[] = [
-  {
-    label: '总部',
-    children: [
-      {
-        label: '厦门',
-      },
-    ],
-  },
+
+const extrDatas = [
+  { label: '门店信息抽取',  name: '4G07' },
+  { label: '商品信息抽取',  name: '4G04' },
+  { label: '会员信息抽取',  name: '4G06' },
+  { label: '零售订单抽取',  name: '4S00' },
+  { label: '入库单据抽取',  name: '4S01' },
+  { label: '报损单据抽取',  name: '4S02' },
+  { label: '其他出入库单据抽取',  name: '4S03' },
+  { label: '日结进销存抽取',  name: '4S04' },
 ]
 
 // 当前抽取类型
-const activeTab = ref(extrTypeDatas[0].key)
+const activeTab = ref<string>(extrDatas[0].name)
 
 // 表单
 const form = reactive<FieldReportingForm>({
   begin_date: nowDate,
   end_date: nowDate,
-  cust_uuid: cust_uuid,
+  cust_uuid: '',
   page: 1,
   size: 100,
   biz_type: '4G07'
 })
 
-const data = reactive({
-  tableData: [
+// 分页
+const pagination = reactive({
+  pageSize: 20, // 每页条数
+  total: 1000,  // 总条数
+})
+
+const data = reactive<Data>({
+  tableData: [],
+  treeData: [
     {
-      setDate: '2023-08-30',
-      setTime: '08:32:55',
-      shopName: '火星直营店',
-      licenCode: '451541547854',
-      totalNum: 10,
-      successNum: 6,
-      errorNum: 4,
-    }
+      label: '总部',
+      children: [],
+    },
   ]
 })
-const { tableData } = toRefs(data)
 
+const { tableData, treeData } = toRefs(data)
+const shopName = ref('')
 // 门店点击查询
 const handleNodeClick = (data: TreeType) => {
   console.log(data)
-  getData()
+  if(data.cust_uuid) {
+    form.cust_uuid = data.cust_uuid
+    shopName.value = data.label
+
+    getData()
+  }
 }
 
 // 抽取类型查询
 const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
-  console.log(activeTab.value)
+  form.biz_type = activeTab.value
   getData()
 }
 
 // 查询报表数据
 function getData(){
+  if(!form.cust_uuid) {
+    ElMessage.info('请选择门店')
+    return
+  }
+  console.log('form', form);
   api4G08(form).then((res) => {
     console.log('api4G08', res);
+    if(res) {
+      pagination.total = res.total
+    }
   })
 }
 
 // 查询按钮点击
 function searchData() {
+  console.log('form', form);
   getData()
 }
 
@@ -91,17 +123,36 @@ function refresh() {
   form.begin_date = nowDate
   form.end_date = nowDate
   form.cust_uuid = cust_uuid
+  form.page = 1
   getData()
 }
 
-// 初始化
-getData()
+// 分页
+function pageChange(index: number) {
+  form.page = index
+  getData()
+}
+
+// 获取门店列表
+async function getStoreTree() {
+  const storeList: LicenseOptionType[] = await window.sqliteAPI.getStoreList()
+  data.treeData[0].children = storeList.map(store => {
+    return {
+      label: store.cust_name,
+      cust_uuid: store.cust_uuid,
+    }
+  })
+}
+
+// 获取数据
+getStoreTree()
+
 </script>
 
 <template>
  <div class="page-reporting">
     <div class="tree-wrapper">
-      <el-tree :data="treeData" :props="treeProps" @node-click="handleNodeClick" />
+      <el-tree :data="treeData" :default-expand-all="true" :props="treeProps" @node-click="handleNodeClick" />
     </div>
     <div class="reporting-content">
       <div class="head-bar">
@@ -109,12 +160,16 @@ getData()
         <el-date-picker 
           v-model="form.begin_date"
           type="date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           placeholder="请选择开始时间"
         />
         —
         <el-date-picker
           v-model="form.end_date"
           type="date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           placeholder="请选择开始时间"
         />
         <el-button class="button-search" type="primary" @click="searchData">查找</el-button>
@@ -123,11 +178,11 @@ getData()
       <div class="tabs-wrapper">
         <el-tabs v-model="activeTab" type="border-card" class="tabs" @tab-click="handleTabClick">
           <el-tab-pane
-            v-for="(tabItem)  in extrTypeDatas"
+            v-for="(tabItem)  in extrDatas"
             :lazy="true"
-            :label="tabItem.name"
-            :name="tabItem.key">
-            <TableReporting :data="tableData" />
+            :label="tabItem.label"
+            :name="tabItem.name">
+            <TableReporting :data="tableData" :pagination="pagination" :shopName="shopName" @pageChange="pageChange"/>
           </el-tab-pane>
         </el-tabs>
       </div>

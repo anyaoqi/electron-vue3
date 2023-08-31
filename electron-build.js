@@ -1,4 +1,4 @@
-const publicConfig = require('./config/public.config.json')
+const publicConfig = require('./config/config.json')
 
 /**
  * electron-builder打包配置

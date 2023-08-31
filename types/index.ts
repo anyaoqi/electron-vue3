@@ -263,7 +263,7 @@ export interface FieldReportingForm {
   size: number
   begin_date: string
   end_date: string
-  biz_type: BizType
+  biz_type: string
 }
 
 // 抽取类型对应的key类型
