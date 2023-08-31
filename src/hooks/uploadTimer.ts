@@ -229,19 +229,15 @@ export const useUpload = () => {
 /**
  * 数据同步相关操作
  */
-export const useDataSync = () => {
+export const useDataSync = (callback?: (index:number, total:number) => void) => {
   const store = useStore();
   const { isSyncTimer } = storeToRefs(store);
   const { openTimer, closeTimeout } = useTimer(isSyncTimer);
   
   // 同步店铺数据
-  const syncStoreData =  () => {
-    const { loading, setLoading } = useLoading()  // loading
+  const syncStoreData =  (fn?: (index:number, total:number) => void) => {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log('请求门店数据');
-
-        setLoading(true, '请求门店数据')
         const storeRes = await apis.api4G00()
         console.log('开始同步门店数据', storeRes);
         if(storeRes?.ALInfoError?.Sucess == '1') {
@@ -259,49 +255,41 @@ export const useDataSync = () => {
           // 递归存储本地，每次存200条
           async function recuSaveStore() {
             index = index > storeTotal ? storeTotal : index
-            console.log(`门店数据同步中 ${index}/${storeTotal}`);
-  
-            if(!loading.value) {
-              setLoading(true, `门店数据同步中 ${index}/${storeTotal}`)
-            } else {
-              loading.value.setText(`门店数据同步中 ${index}/${storeTotal}`)
-            }
-
+            // if(!loading.value) {
+            //   setLoading(true, `门店数据同步中 ${index}/${storeTotal}`)
+            // } else {
+            //   loading.value.setText(`门店数据同步中 ${index}/${storeTotal}`)
+            // }
             let tmpArr = storeList.slice(index, index+200)
-
             if(tmpArr.length) {
               await window.sqliteAPI.saveStoreList(tmpArr)
             }
+
+            fn && fn(index, storeTotal)
+            callback && callback(index, storeTotal)
 
             if(storeTotal > index) {
               index+=200
               recuSaveStore()
             } else {
               console.log(`门店数据同步结束 ${index}/${storeTotal}`);
-              
-              setLoading(false)
               resolve(true)
             }
           }
           recuSaveStore()
         } else {
-          setLoading(false)
           reject(storeRes)
         }
       } catch (err) {
         console.log('同步店铺数据失败：'+err);
-
-        setLoading(false)
         reject(err)
       }
     })
   }
   // 同步商品数据
-  const syncGoodsData = async () => {
-    const { loading, setLoading } = useLoading()  // loading
+  const syncGoodsData = async (fn?: (index:number, total:number) => void) => {
     return new Promise(async (resolve, reject) => {
       try {
-        setLoading(true, '请求商品数据')
         const clientverStora =  localStorage.getItem('clientver')
         const clientver = clientverStora && clientverStora!=='undefined' ? clientverStora : '99999999999999'
         const pageIndex = '1'
@@ -353,33 +341,28 @@ export const useDataSync = () => {
           // 递归存储本地，每次存200条
           async function recuSaveGoods() {
             index = index > goodsTotal ? goodsTotal : index
-            if(!loading.value) {
-              setLoading(true, `商品数据同步中 ${index}/${goodsTotal}`)
-            } else {
-              loading.value.setText(`商品数据同步中 ${index}/${goodsTotal}`)
-            }
-            let tmpArr = goodsList.slice(index, index+200)
 
+            let tmpArr = goodsList.slice(index, index+200)
             if(tmpArr.length) {
               await window.sqliteAPI.saveGoodsList(tmpArr)
             }
+
+            fn && fn(index, goodsTotal)
+            callback && callback(index, goodsTotal)
 
             if(goodsTotal > index) {
               index+=200
               recuSaveGoods()
             } else {
-              setLoading(false)
               resolve(true)
             }
           }
           recuSaveGoods()
         } else {
-          setLoading(false)
           reject(goodsResult)
         }
       } catch (err) {
         console.log('同步商品数据失败：'+err);
-        setLoading(false)
         reject(err)
       }
     })

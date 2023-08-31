@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import LayoutBarMenu from '@/components/LayoutBarMenu/LayoutBarMenu.vue'
 import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
@@ -9,24 +9,36 @@ import { useUpload, useDataSync } from '@/hooks/uploadTimer'
 
 const { setLoading } = useLoading()
 const { setDialogVisable } = useHookDialog()
+
+const percentage = ref<number>(0)
+
 // 数据抽取
 const { startUpload } = useUpload()
 // 数据同步
-const { syncTimerOpen } = useDataSync()
+const { syncTimerOpen } = useDataSync((index, total)=> {
+  percentage.value = index / total * 100
+  if(total <= index){ // 同步结束
+    percentage.value = 0
+  }
+})
 
 onMounted(async () => {
   setLoading(false)
   // 开启定时数据同步
   syncTimerOpen()
   const boo = await window.serverAPI.isConnection()
-  console.log('boo', boo);
 
   // 开启定时数据抽取
   boo && startUpload()
 })
+
 </script>
 
 <template>
+  <!-- 数据同步进度条 -->
+  <div class="progress-wrapper">
+    <el-progress  v-show="percentage!=0" :percentage="50" status="success" :show-text="false" />
+  </div>
   <!-- 头部 -->
   <header class="layout-header">
     <LayoutHeader />
@@ -47,6 +59,14 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 $layout-left-width: 230px;
+
+.progress-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
 .layout-header {
   position: sticky;
   width: 100%;

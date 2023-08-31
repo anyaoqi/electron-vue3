@@ -63,11 +63,15 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         loading.value.setText('开始同步数据')
 
         // 同步门店数据
-        await syncStoreData()
+        await syncStoreData((index, total) => {
+          loading.value.setText(`门店数据同步中 ${index}/${total}`)
+        })
         // 同步商品数据
-        await syncGoodsData()
+        await syncGoodsData((index, total) => {
+          loading.value.setText(`商品数据同步中 ${index}/${total}`)
+        })
 
-        setLoading(true, '登录中...')
+        loading.value.setText('登录中...')
         // 登录操作
         handleLogin()
         ElMessage({
