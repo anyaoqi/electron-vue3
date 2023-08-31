@@ -20,7 +20,7 @@ window.sqliteAPI.getGoodsList().then(async (res: any) => {
 
 getSql('tb_goods').then(async (sql: string) => {
   if(!sql){
-    ElMessage.warning('请先配置非烟商品抽取信息')
+    ElMessage.warning('请先配置卷烟商品抽取信息')
     return
   }
   // 获取远程商品抽取数据
