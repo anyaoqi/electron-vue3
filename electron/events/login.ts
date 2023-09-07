@@ -64,9 +64,8 @@ function xml2arr(xml: any) {
  * 解析返回的body
  */
 async function parseBody(body: any) {
-  console.log('body', body);
-
   let r:any = await xml2arr(body)
+  // console.log('r', r);
   let str = Buffer.from(r, 'base64')
   let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()
   res = res.substring(res.indexOf('{'))
@@ -85,6 +84,8 @@ export async function requestSoap(code: any, data: any) {
       timeout: 1000 * 60,
     })
     const { body, statusCode } = response
+    // console.log(code, body, statusCode);
+    
     if (statusCode == 200) {
       return await parseBody(body)
     }

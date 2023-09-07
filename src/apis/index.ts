@@ -17,11 +17,11 @@ import type {
 const deviceid = 'CZCTXJ'
 
 // 登录接口
-export const api3G61 = async (username: string, password: string) => {
+export const api4G61 = async (username: string, password: string) => {
     const mac:string = await window.electronAPI.getMac()
     let device_no = await window.electronAPI.md5(mac + username)
     console.log('device_no', device_no);
-    return await requestSoap('3G61', {
+    return await requestSoap('4G61', {
       deviceid: deviceid,
       login_name: username,
       login_pwd: password,

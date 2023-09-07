@@ -5,7 +5,7 @@ import { useStore } from '@/pinia/index'
 import { useRouter } from 'vue-router'
 import { useLoading } from '@/hooks/index'
 import { useLicence } from '@/hooks/user'
-import { api3G61, api3G72 } from '@/apis'
+import { api4G61, api3G72 } from '@/apis'
 import { useUpload, useDataSync } from '@/hooks/uploadTimer'
 
 /**
@@ -25,7 +25,7 @@ export const useLogin = () => {
         const mac:string = await window.electronAPI.getMac()
         let device_no = await window.electronAPI.md5(mac + loginForm.username)
         console.log('device_no', device_no);
-        const r = await api3G61(loginForm.username, loginForm.password)
+        const r = await api4G61(loginForm.username, loginForm.password)
 
         if (r['ALInfoError']['Sucess'] !== '1') {
           const message = r['ALInfoError']['Description'] || '登陆失败'

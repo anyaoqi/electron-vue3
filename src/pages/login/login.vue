@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, inject, onMounted } from 'vue'
+import { ref, reactive, inject, onMounted, toRaw } from 'vue'
 import { useLoading } from '@/hooks'
 import { useLogin } from '@/hooks/login'
 import { useDataSync } from '@/hooks/uploadTimer'
@@ -49,7 +49,7 @@ onMounted(() => {
 // 登录
 const onSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
- 
+
   await formEl.validate(async (valid, _fields) => {
     if(!valid) return
     console.log('valid', valid);
@@ -85,6 +85,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
           message: '登录失败：'+loginRes.error,
           type: 'error'
         })
+        logger.error('登录失败：'+loginRes.error+' \n '+JSON.stringify(toRaw(loginForm)))
       }
     } catch (err) {
       setLoading(false)
@@ -92,7 +93,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         message: ''+err,
         type: 'warning'
       })
-      logger.info('登录失败，用户：'+loginForm.username)
+      logger.error('登录失败：'+err+' \n '+JSON.stringify(toRaw(loginForm)))
     }
   })
 }
@@ -130,17 +131,20 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
   width: 100vw;
   height: 100vh;
   background-color: $color-primary;
+  background: url('../../assets/images/background.jpg');
+  background-size: 100% 100%;
 }
 .login-form-wrapper {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 73%;
   transform: translate(-50%, -50%);
-  width: 350px;
+  width: 380px;
   padding: 30px 30px 30px 15px;
   background-color: $color-white;;
   border: 1px solid #ccc;
   border-radius: 6px;
+  box-shadow: 10px 10px 0px 0px #79bbff;
   .title {
     text-align: center;
   }
