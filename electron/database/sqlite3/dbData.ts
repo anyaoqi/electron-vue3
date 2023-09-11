@@ -217,12 +217,13 @@ const updateStoreData = (tableName: string, params: any, where: string) => {
 }
 
 // 查询已经更新的
-export const getStoreData = (uploadDate: string) => {
+export const getStoreData = (params: any) => {
+  const { uploadDate, tableName } = params
   let where = ''
   if(uploadDate) {
-    where = `updated_at > DATETIME('${uploadDate}')`;
+    where = `COALESCE(updated_at, created_at) > DATETIME('${uploadDate}')`;
   }
-  return dbGetData('ds_store', where, 'all');
+  return dbGetData(tableName, where, 'all');
 }
 
 export const delStoreData = ({tableName, ids, key}: delDataParams) => {

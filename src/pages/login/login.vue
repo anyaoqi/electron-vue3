@@ -37,7 +37,7 @@ const rules = reactive<FormRules<iLoginForm>>({
   ],
 })
 
-if(import.meta.env.DEV) {
+if(import.meta.env.DEV || config.debug === true) {
   loginForm.username = '431001105361'
   loginForm.password = '1357452o268yzas'
 }

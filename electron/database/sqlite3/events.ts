@@ -24,7 +24,7 @@ export default {
   getExtrSqlData: (englishFlag: string) => getExtrSqlData(englishFlag),
   getExtrMappData: (englishFlag: string) => getExtrMappData(englishFlag),
   saveStoreData: (params: any, columns: any) => saveStoreData(params, columns),
-  getStoreData: (uploadDate: string) => getStoreData(uploadDate),
+  getStoreData: (params: any) => getStoreData(params),
   delStoreData: (params: delDataParams) => delStoreData(params),
   saveStoreList: (params: any) => saveStoreList(params),
   updateStoreComp: (params: any) => updateStoreComp(params),

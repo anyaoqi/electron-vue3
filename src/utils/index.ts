@@ -10,16 +10,28 @@ import { columnType } from '@type/index'
  */
 export const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] => {
   // 创建字段映射关系对象
-  const mapping: Record<string, string> = {};
+  const mapping: Record<string, any> = {};
   for (const filedData of fileds) {
-    mapping[filedData.filed] = filedData.filedValue
+    mapping[filedData.filed] = {
+      fv: filedData.filedValue,
+      dv: filedData.defaultValue
+    }
   }
   // 根据映射关系将数据转换为目标格式
   const result:T[] = datas.map((data: any) => {
     // 创建一个新对象，根据映射关系赋值
     const newItem: any = {};
     for (const key in mapping) {
-      newItem[key] = data[mapping[key]]||''
+      let val = data[mapping[key].fv]
+      if(mapping[key].fv === 'is_active') {
+        val = String(val)
+      }
+      newItem[key] = val||''
+      // 赋值默认值
+      // 最终值不存在 && 最终值不为0 && 赋值存在或者为0
+      if((!val && val!==0)  && (mapping[key].dv ||mapping[key].dv===0)) {
+        newItem[key] = mapping[key].dv
+      }
     }
     newItem.created_at = data.createDate
     newItem.updated_at = data.modifyDate

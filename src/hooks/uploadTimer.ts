@@ -1,4 +1,4 @@
-import { ref, inject } from 'vue'
+import { reactive, inject } from 'vue'
 import type { Ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useNow, useDateFormat } from "@vueuse/core";
@@ -95,8 +95,13 @@ export const useUpload = () => {
   const { openTimer, closeTimeout } = useTimer(isOpenTimer, timing);
   const { getSql, getTableData, viewData } = useData();
 
-  let upTime = localStorage.getItem('updateDateTime')
-  let updateDateTime: Ref<string> = ref(upTime||'');
+  let upTime:any = localStorage.getItem('updateDateTime')
+  try {
+    upTime = upTime ? JSON.parse(upTime) : {} 
+  } catch (error) {
+    upTime = {}
+  }
+  let updateDateTime = upTime;
 
   const uploadData = async <T>(
     type: string,
@@ -135,11 +140,17 @@ export const useUpload = () => {
       }
       // 后上传数据
       // 获取需要更新的数据
-      updateDateTime.value = localStorage.getItem('updateDateTime')||useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value
-      console.log('updateDateTime', updateDateTime.value);
-      const uploadDataList: T[] = await window.sqliteAPI.getStoreData(
-        updateDateTime.value
-      );
+      let UDT = localStorage.getItem('updateDateTime')
+      try {
+        updateDateTime[type] = UDT ? JSON.parse(UDT)[type] : ''
+      } catch (err) {
+        updateDateTime[type] = ''
+      }
+      console.log('updateDateTime', updateDateTime[type]);
+      const uploadDataList: T[] = await window.sqliteAPI.getStoreData({
+        uploadDate: updateDateTime.value,
+        tableName: tableName
+      });
       console.log('上传数据', uploadDataList);
       if (uploadDataList && uploadDataList.length) {
         const apiData: T[] = uploadDataList.map((data) => {
@@ -166,7 +177,8 @@ export const useUpload = () => {
         console.log('上传结果：',updateRes);
         if(updateRes?.ALInfoError?.Sucess === '1'){
           // 更新上传时间
-          localStorage.setItem('updateDateTime', useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value)
+          updateDateTime[type] = useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value
+          localStorage.setItem('updateDateTime', JSON.stringify(updateDateTime))
           const ids = uploadDataList.map((item: any) => item.id);
           // 删除已上传成功的数据
           window.sqliteAPI.delStoreData({

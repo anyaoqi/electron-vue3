@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, toRaw } from 'vue'
+import { reactive, ref, toRaw, inject } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useHookDialog } from '@/hooks/index'
 import type { iDatabase } from '@type/index'
@@ -7,6 +7,7 @@ import { useDbConfig } from '@/hooks'
 import logger from '@/utils/logger'
 // import { useUpload } from '@/hooks/uploadTimer'
 
+const publicConfig:any = inject('config')
 const { config, setConfig } = useDbConfig()
 const { dialogVisable, setDialogVisable } = useHookDialog()
 // const { startUpload, isOpenTimer } = useUpload()
@@ -19,7 +20,7 @@ const formRef = ref<FormInstance>()
 // 表单
 const form = reactive<iDatabase>(config.value)
 
-if(import.meta.env.DEV) {
+if(import.meta.env.DEV || publicConfig.debug === true) {
   form.type = "mysql"
   form.host = "172.50.80.188"
   form.user = "root"
