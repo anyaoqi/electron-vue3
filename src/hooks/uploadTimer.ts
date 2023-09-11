@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import type { Ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useNow, useDateFormat } from "@vueuse/core";
@@ -20,19 +20,20 @@ import type {
   LicenseOptionType,
 } from "@type/index";
 import { useData } from "@/hooks/dataExtraction";
-import { useLoading } from '@/hooks/index'
+// import { useLoading } from '@/hooks/index'
 import * as apis from "@/apis";
 import { extrTypeDatas } from "../../config/data.config";
 import logger from "@/utils/logger";
 
 /**
  * 定时相关操作
- * @param isOpenTimer 
+ * @param isOpenTimer
+ * @param timing 间隔时间  默认30分钟触发一次
  */
-export const useTimer = (isOpenTimer: Ref<boolean>) => {
+export const useTimer = (isOpenTimer: Ref<boolean>, timing = 1000 * 60 * 30) => {
   let timer: any = null;
   // 定时间隔时间
-  let timing = 1000 * 60 * 30  // 30分钟触发一次
+  // let timing = 1000 * 60 * 30  // 30分钟触发一次
 
   // 开发环境调试
   if(import.meta.env.DEV) {
@@ -64,6 +65,7 @@ export const useTimer = (isOpenTimer: Ref<boolean>) => {
   // 开启定时抽取
   const openTimer = (callback: () => void) => {
     isOpenTimer.value = true;
+    callback && callback()
     newTimout(callback);
   };
 
@@ -87,7 +89,10 @@ export const useTimer = (isOpenTimer: Ref<boolean>) => {
 export const useUpload = () => {
   const store = useStore();
   const { isOpenTimer } = storeToRefs(store);
-  const { openTimer, closeTimeout } = useTimer(isOpenTimer);
+  const config:any = inject('config')
+  const timing = config?.timing ? config?.timing : 1000 * 60 * 30
+
+  const { openTimer, closeTimeout } = useTimer(isOpenTimer, timing);
   const { getSql, getTableData, viewData } = useData();
 
   let upTime = localStorage.getItem('updateDateTime')

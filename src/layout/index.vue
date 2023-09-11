@@ -5,7 +5,10 @@ import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
 import DialogDbConfig from '@/components/DialogDbConfig/DialogDbConfig.vue';
 import { useHookDialog, useLoading} from '@/hooks'
-import { useUpload, useDataSync } from '@/hooks/uploadTimer'
+import { 
+  // useUpload,
+  useDataSync
+} from '@/hooks/uploadTimer'
 
 const { setLoading } = useLoading()
 const { setDialogVisable } = useHookDialog()
@@ -13,7 +16,7 @@ const { setDialogVisable } = useHookDialog()
 const percentage = ref<number>(0)
 
 // 数据抽取
-const { startUpload } = useUpload()
+// const { startUpload } = useUpload()
 // 数据同步
 const { syncTimerOpen } = useDataSync((index, total)=> {
   percentage.value = index / total * 100
@@ -26,10 +29,10 @@ onMounted(async () => {
   setLoading(false)
   // 开启定时数据同步
   syncTimerOpen()
-  const boo = await window.serverAPI.isConnection()
 
+  // const boo = await window.serverAPI.isConnection()
   // 开启定时数据抽取
-  boo && startUpload()
+  // boo && startUpload()
 })
 
 </script>

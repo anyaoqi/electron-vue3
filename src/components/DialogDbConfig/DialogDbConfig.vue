@@ -5,11 +5,11 @@ import { useHookDialog } from '@/hooks/index'
 import type { iDatabase } from '@type/index'
 import { useDbConfig } from '@/hooks'
 import logger from '@/utils/logger'
-import { useUpload } from '@/hooks/uploadTimer'
+// import { useUpload } from '@/hooks/uploadTimer'
 
 const { config, setConfig } = useDbConfig()
 const { dialogVisable, setDialogVisable } = useHookDialog()
-const { startUpload, isOpenTimer } = useUpload()
+// const { startUpload, isOpenTimer } = useUpload()
 
 const isConnection = ref(false)
 
@@ -61,7 +61,7 @@ const connectDatabase = () => {
     logger.info('数据库连接成功：'+JSON.stringify(toRaw(form)))
     ElMessage.success('连接成功')
     setDialogVisable(false)
-    !isOpenTimer.value && startUpload()
+    // !isOpenTimer.value && startUpload()
   }).catch((err: any) => {
     isConnection.value = false
     logger.warn(`数据库连接失败：${err}, \n 数据库配置：${JSON.stringify(toRaw(form))}`)

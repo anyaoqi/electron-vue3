@@ -144,7 +144,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
   background-color: $color-white;;
   border: 1px solid #ccc;
   border-radius: 6px;
-  box-shadow: 10px 10px 0px 0px #79bbff;
+  // box-shadow: 10px 10px 0px 0px #79bbff;
   .title {
     text-align: center;
   }
