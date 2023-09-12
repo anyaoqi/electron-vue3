@@ -87,7 +87,7 @@ export const useData = () => {
   const dbUpdateData = (tableName: string, params: any, where?: string) => {
     return new Promise((resolve, reject) => {
       const fields = Object.keys(params)
-      const values = fields.map((field) => `${field} = '${params[field]}'`).join(", ");
+      const values = fields.map((field) => `${field} = "${params[field]}"`).join(", ");
       where = where ? `WHERE ${where}` : ''
       const updateQuery = `
         UPDATE ${tableName} SET ${values}
