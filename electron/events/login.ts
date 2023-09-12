@@ -22,17 +22,47 @@ function encodeBase64(str: string) {
   return Buffer.from(str).toString('base64')
 }
 
+// 中文转unicode
+function chineseToUnicode(str: string) {
+  let unicodeStr = "";
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charAt(i);
+    if (char.match(/[\u4e00-\u9fa5]/)) {
+      // 如果字符是中文字符，则转换为Unicode表示
+      unicodeStr += "\\u" + char.charCodeAt(0).toString(16);
+    } else {
+      // 如果字符不是中文字符，则保持原样
+      unicodeStr += char;
+    }
+  }
+  return unicodeStr;
+}
+
 /**
  * 拼接请求体
  */
 function getBody(code: any, array_data: any) {
+  const dataType = Object.prototype.toString.call(array_data)
+  if(array_data && dataType==='[object Object]') {
+    for (const dataKey in array_data) {
+      if(Array.isArray(array_data[dataKey])) {
+        array_data[dataKey].map((obj: any) => {
+          for (const key in obj) {
+            // 将中文转为unicode
+            obj[key] = chineseToUnicode(obj[key])
+          }
+        })
+      }
+    }
+  }
   const p2 = encodingConvert.convert(JSON.stringify(array_data), 'GBK', 'UTF-8').toString()
 
   let str =`0001M000M001${code}${p2}`
   let device_secret = '1688543D3ACD57E57A6E604F387A5F53'
   let secret = md5(str + device_secret)
-  
+  // console.log('签名:' + str + secret)
   let base64 = encodeBase64(str + secret)
+
   let res = `
             <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.services.crea.com">
               <soapenv:Header />
