@@ -52,21 +52,23 @@ const extrDatas = [
 // 当前抽取类型
 const activeTab = ref<string>(extrDatas[0].name)
 
+// 分页
+const pagination = reactive({
+  pageSize: 20, // 每页条数
+  total: 1000,  // 总条数
+})
+
 // 表单
 const form = reactive<FieldReportingForm>({
   begin_date: nowDate,
   end_date: nowDate,
   cust_uuid: '',
   page: 1,
-  size: 100,
+  size: pagination.pageSize,
   biz_type: '4G07'
 })
 
-// 分页
-const pagination = reactive({
-  pageSize: 20, // 每页条数
-  total: 1000,  // 总条数
-})
+
 
 const data = reactive<Data>({
   tableData: [],
@@ -104,10 +106,16 @@ function getData(){
     return
   }
   console.log('form', form);
+  
   api4G08(form).then((res) => {
     console.log('api4G08', res);
-    if(res) {
-      pagination.total = res.total
+    if(res && res?.ALInfoError?.Sucess === '1') {
+      const { rows, total } = res.result
+      pagination.total = Number(total)
+      data.tableData = rows
+    } else {
+      pagination.total = 0
+      data.tableData = []
     }
   })
 }
@@ -152,7 +160,14 @@ getStoreTree()
 <template>
  <div class="page-reporting">
     <div class="tree-wrapper">
-      <el-tree :data="treeData" :default-expand-all="true" :props="treeProps" @node-click="handleNodeClick" />
+      <el-tree 
+        class="tree" 
+        :data="treeData" 
+        :default-expand-all="true" 
+        :highlight-current="true"
+        :props="treeProps" 
+        @node-click="handleNodeClick"
+       />
     </div>
     <div class="reporting-content">
       <div class="head-bar">
@@ -198,6 +213,10 @@ getStoreTree()
   width: 200px;
   padding: 10px 0;
   margin-right: 10px;
+  .tree {
+    height: 700px;
+    overflow: auto;
+  }
 }
 .reporting-content {
   flex: 1;

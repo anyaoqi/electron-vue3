@@ -15,10 +15,10 @@ const pageChange = (index: number) => {
 
 <template>
   <div class="table-reporting">
-    <el-table :data="data" style="width: 100%;">
-      <el-table-column prop="upload_time" label="操作日期" ></el-table-column>
+    <el-table :data="data" class="table" >
+      <el-table-column prop="upload_date" label="操作日期" ></el-table-column>
       <el-table-column prop="shopName" label="店面名称" >
-        <template default="scoped">
+        <template #default="{}">
           {{ shopName }}
         </template>
       </el-table-column>
@@ -46,5 +46,10 @@ const pageChange = (index: number) => {
 .pagination {
   display: flex;
   justify-content: center;
+}
+.table-reporting {
+  .table {
+    width: 100%; height: 500px; overflow: auto;
+  }
 }
 </style>
