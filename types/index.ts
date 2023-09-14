@@ -122,17 +122,17 @@ export interface FieldRetailOrder {
   consumersid: string // 消费者标识
   mobilephone: string // 消费者手机
   dtlcount: string // 商品记录数
-  dtl_goodsisn: string // 商品标识
-  dtl_istobacco: string // 是否卷烟商品
-  dtl_unitid: string // 销售单位
-  dtl_barcode: string // 条形码
-  dtl_saleprice: string // 零售价
-  dtl_buyprice: string // 购入价
-  dtl_quantity: string // 销售数量
+  dtl_goodsisn: string[] // 商品标识
+  dtl_istobacco: string[] // 是否卷烟商品
+  dtl_unitid: string[] // 销售单位
+  dtl_barcode: string[] // 条形码
+  dtl_saleprice: string[] // 零售价
+  dtl_buyprice: string[] // 购入价
+  dtl_quantity: string[] // 销售数量
   paydtlcount: string // 支付明细数
-  paydtl_fund_channel: string // 支付渠道
-  paydtl_amount: string // 支付金额
-  paydtl_remark: string // 支付说明
+  paydtl_fund_channel: string[] // 支付渠道
+  paydtl_amount: string[] // 支付金额
+  paydtl_remark: string[] // 支付说明
   trade_no: string // 支付宝交易号
   buyer_user_id: string // 买家支付宝用户号
   buyer_logon_id: string // 买家支付宝账号
@@ -147,11 +147,11 @@ export interface FieldInOrder {
   supplier_code: string // 供应商编码
   biz_type: string // 业务类型
   biz_date: string // 业务日期
-  dtl_is_tobacco: string // 是否卷烟商品
-  dtl_goodsisn: string // 商品代码
-  dtl_barcode: string // 条形码
-  dtl_quantity: string // 数量
-  dtl_price: string // 单价
+  dtl_is_tobacco: string[] // 是否卷烟商品
+  dtl_goodsisn: string[] // 商品代码
+  dtl_barcode: string[] // 条形码
+  dtl_quantity: string[] // 数量
+  dtl_price: string[] // 单价
 }
 
 // 损溢单信息抽取-参数接口类型
@@ -159,10 +159,10 @@ export interface FieldLossOrder {
   storchecksid: string // 损益记录标识
   bizdate: string // 业务日期
   dtlcount: string // 明细记录数
-  dtl_is_tobacco: string // 是否卷烟商品
-  dtl_productid: string // 商品ID
-  dtl_barcode: string // 条形码
-  dtl_stockqty: string // 损溢数量
+  dtl_is_tobacco: string[] // 是否卷烟商品
+  dtl_productid: string[] // 商品ID
+  dtl_barcode: string[] // 条形码
+  dtl_stockqty: string[] // 损溢数量
 }
 
 // 其他出入库单信息抽取-参数接口类型
@@ -172,25 +172,26 @@ export interface FieldOutOrder {
   biz_type: string // 业务类型
   biz_type_name: string // 业务类型名称
   biz_date: string // 业务日期
-  dtl_is_tobacco: string // 是否卷烟商品
-  dtl_barcode: string // 条形码
-  dtl_quantity: string // 数量
-  dtl_goodsisn: string // 商品代码
-  dtl_price: string // 单价
+  dtl_is_tobacco: string[] // 是否卷烟商品
+  dtl_barcode: string[] // 条形码
+  dtl_quantity: string[] // 数量
+  dtl_goodsisn: string[] // 商品代码
+  dtl_price: string[] // 单价
 }
 
 // 日结进销存信息抽取
 export interface FieldDayInvoicing {
   reqdate: string // 业务日期
   dtlcount: string // 商品记录数
-  dtl_productid: string // 商品ID
-  dtl_is_tobacco: string // 是否卷烟商品
-  dtl_lastqty: string // 期初数量
-  dtl_buyqty: string // 购入数量
-  dtl_saleqty: string // 销售数量
-  dtl_correctqty: string // 损益数量
-  dtl_otherqty: string // 其他出入库数量
-  dtl_restqty: string // 剩余数量
+  dtl_productid: string[] // 商品ID
+  dtl_barcode: string[] // 商品ID
+  dtl_is_tobacco: string[] // 是否卷烟商品
+  dtl_lastqty: string[] // 期初数量
+  dtl_buyqty: string[] // 购入数量
+  dtl_saleqty: string[] // 销售数量
+  dtl_correctqty: string[] // 损益数量
+  dtl_otherqty: string[] // 其他出入库数量
+  dtl_restqty: string[] // 剩余数量
 }
 
 // 门店对照关系数据类型
@@ -293,6 +294,7 @@ export interface ExtrDataType {
     description: string,  // 描述
     filedValue?: string,  // 对应字段key
     defalutValue?: string  // 默认值
+    type?:string  // 字段类型
   }[]
 }
 

@@ -148,17 +148,29 @@ export const useUpload = () => {
       }
       console.log('updateDateTime', updateDateTime[type]);
       const uploadDataList: T[] = await window.sqliteAPI.getStoreData({
-        uploadDate: updateDateTime.value,
+        uploadDate: updateDateTime[type],
         tableName: tableName
       });
+      const apiFilds = o?.apiFilds||[]
       console.log('上传数据', uploadDataList);
       if (uploadDataList && uploadDataList.length) {
         const apiData: T[] = uploadDataList.map((data) => {
           const obj: Record<any, any> = {};
           for (const key in storeInfos[0]) {
+            let val:string[]|string = ''
             if (key !== "created_at" && key !== "updated_at") {
-              obj[key] = data[key];
+              val = data[key] as string;
             }
+            // 数据类型转换
+            const filed = apiFilds.find(item => item.filed === key)
+            if(filed && filed.type) {
+              // 数组类型-将字符串转为数组
+              if(filed.type === 'Array' && val && typeof val === 'string') {
+                val = val.split(',')
+              }
+            }
+
+            obj[key] = val
           }
 
           return obj;

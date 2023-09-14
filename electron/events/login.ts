@@ -38,24 +38,41 @@ function chineseToUnicode(str: string) {
   return unicodeStr;
 }
 
-/**
- * 拼接请求体
- */
-function getBody(code: any, array_data: any) {
+// 数据转换
+function vonvertData(array_data: any) {
   const dataType = Object.prototype.toString.call(array_data)
   if(array_data && dataType==='[object Object]') {
     for (const dataKey in array_data) {
       if(Array.isArray(array_data[dataKey])) {
         array_data[dataKey].map((obj: any) => {
           for (const key in obj) {
-            // 将中文转为unicode
-            obj[key] = chineseToUnicode(obj[key])
+            let valType = Object.prototype.toString.call(obj[key])
+            if(valType==='[object String]'){
+              // 将中文转为unicode
+              obj[key] = chineseToUnicode(obj[key])
+            } else if (valType==='[object Array]') {
+              obj[key] = obj[key].map((vStr: string) => {
+                if(typeof vStr === 'string') {
+                  return chineseToUnicode(vStr)
+                } else {
+                  return vStr
+                }
+              })
+            }
           }
         })
       }
     }
   }
+  return array_data
+}
 
+/**
+ * 拼接请求体
+ */
+function getBody(code: string, array_data: any) {
+
+  array_data = vonvertData(array_data)
   const p2 = encodingConvert.convert(JSON.stringify(array_data), 'GBK', 'UTF-8').toString()
 
   let str =`0001M000M001${code}${p2}`
