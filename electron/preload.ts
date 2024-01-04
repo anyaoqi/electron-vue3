@@ -1,8 +1,4 @@
 const { contextBridge, ipcRenderer } = require('electron')
-import { getInvokeEvents } from "./events"
-import commonEvents from "./events/eventElectron"
-import databaseEvents from "./database/eventServer"
-import sqliteEvents from "./database/sqlite3/events"
 
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {
@@ -102,21 +98,11 @@ export {};
 declare global {
   interface Window {
     electronAPI?: any;
-    serverAPI?:any;
-    sqliteAPI?:any;
   }
 }
 
 // 公共方法
 contextBridge.exposeInMainWorld('electronAPI', {
-  ...getInvokeEvents(commonEvents),
-  getConfig: () => ipcRenderer.invoke('getConfig'),
-  onUpdateMessage: (callback: any) => ipcRenderer.on('updateMessage', callback),
-  reUpdateMessage: (callback: any) => ipcRenderer.removeListener('updateMessage', callback)
+  // 日志
+  logger: (level: string, content: string) => ipcRenderer.invoke('logger', level, content),
 })
-
-// 服务数据库对接api
-contextBridge.exposeInMainWorld('serverAPI', getInvokeEvents(databaseEvents))
-
-// 本地数据库对接api
-contextBridge.exposeInMainWorld('sqliteAPI', getInvokeEvents(sqliteEvents))

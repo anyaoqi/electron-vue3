@@ -8,7 +8,7 @@ import type {
 
 // 创建请求实例
 const instance:AxiosInstance = axios.create({
-  baseURL: 'http://localhost:5354', // 设置统一的请求前缀
+  baseURL: '', // 设置统一的请求前缀
   timeout: 10000, // 设置统一的超时时长
 })
 
@@ -16,10 +16,10 @@ const instance:AxiosInstance = axios.create({
 instance.interceptors.request.use(
   (config:InternalAxiosRequestConfig<any>) => {
     // 请求拦截添加token，用于后端的验证
-    const token = localStorage.getItem('token') as string
-    if(token) {
-      config.headers['Authorization'] = token
-    }
+    // const token = localStorage.getItem('token') as string
+    // if(token) {
+    //   config.headers['Authorization'] = token
+    // }
     return config
   },
   (err: any) => {

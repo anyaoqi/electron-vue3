@@ -1,25 +1,18 @@
 import { createApp } from 'vue'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue' // element-ui 字体图标组件
-import "font-awesome/css/font-awesome.min.css"  // 字体图标库
-import '@/styles/index.scss' // 公共样式和初始化样式
 import App from './App.vue'
-import router  from '@/router/index'
+import router  from '@/router'
 import pinia from '@/pinia'
+
+// Element-plus
+import ElementPlus from 'element-plus'
+import locale from "element-plus/lib/locale/lang/zh-cn"
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import 'element-plus/dist/index.css'
 
 const app = createApp(App)
 app.use(router)
 app.use(pinia)
-
-// 获取全局配置 通过provide注入到全局，使用的时候通过Inject引入
-window.electronAPI.getConfig().then((config: object) => {
-  console.log('渲染进程获取到全局配置', config);
-  app.provide('config', config)
-})
-window.serverAPI.getShopInfos().then((data: any) => {
-  console.log('mysql data:', data);
-}).catch((err: any) => {
-  console.log('获取到错误', err);
-})
+app.use(ElementPlus, {locale})
 
 // element-ui图标：注册全局组件
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

@@ -1,24 +1,14 @@
-import { app, BrowserWindow, Menu, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { initDatabase, closeDatabase } from './database/index'
 import path from 'node:path'
-import { bindHandleEvents } from './events'
-import appConfig from './config/app.config'
-import { updateHandle } from './versionUpdate'
-import { initDatabase } from './database/index'
+import logger, { deleteHistoryLog } from './logger'
+import $config from '../config/config.json'
+
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-// 测试打包
-// Object.defineProperty(app, 'isPackaged', {
-//   get() {
-//     return true;
-//   }
-// });
-
-// 初始化数据库
-initDatabase()
-
 // 是否打开控制台
-const openDevTools = import.meta.env.DEV ?  true : appConfig.debug;
+let openDevTools = import.meta.env.DEV;
 
 let win: BrowserWindow | null
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -28,11 +18,11 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 // 创建主进程窗口
 function createWindow() {
   win = new BrowserWindow({
-    title: appConfig.title,
+    title: $config.title,
     width: 1920,
     height: 1080,
-    icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     frame: true,
+    icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     autoHideMenuBar: true, // 隐藏默认菜单
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -51,10 +41,6 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
-  // 软件升级监听绑定
-  updateHandle('http://127.0.0.1:5500',(updateParams) => {
-    win?.webContents.send('updateMessage', updateParams)
-  })
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -62,20 +48,45 @@ function createWindow() {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'))
   }
+
+  // 窗口关闭
+  win.on('close', (e) => {
+    e.preventDefault()
+    // 窗口关闭提示弹框
+    win && dialog.showMessageBox(win, {
+      type: 'info',
+      title: '提示',
+      message: '请确认是否关闭？',
+      buttons: ['确认', '取消'],
+      cancelId: 1,
+    }).then((idx) => {
+      if(idx.response != 1) {
+        // 关闭所有数据库连接
+        closeDatabase()
+        app.exit()
+      }
+    })
+  })
 }
-// 禁用默认菜单
-Menu.setApplicationMenu(null)
 
 // 当所有的窗口都被关闭时触发
 app.on('window-all-closed', () => {
   win = null
 })
-ipcMain.handle('getConfig', () => appConfig)
+
+// 主进程和渲染进程通信
+// 日志记录
+type LoggerLevel  = 'info'|'warn'|'error'|'debug'|'verbose'|'silly'
+ipcMain.handle('logger', (_event, level: LoggerLevel, content: string) => {
+  logger[level](content)
+})
 
 // 当Electron 初始化完成
 app.whenReady().then(() => {
+  // 初始化数据库
+  initDatabase()
+  // 删除历史日志
+  deleteHistoryLog()
   // 创建主窗口
   createWindow()
-  // 绑定进程间通信事件
-  bindHandleEvents()
 })

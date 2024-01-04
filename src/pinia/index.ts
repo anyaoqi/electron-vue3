@@ -1,24 +1,17 @@
 import { createPinia, defineStore } from 'pinia'
-import { iDatabaseConfig } from '@/types/databaseType'
+
 const pinia = createPinia()
 
+// State类型
+interface State {
+}
+
+// 创建store
 export const useStore = defineStore('main', {
-  state: () => ({
-    isLogin: false,  // 是否登录
-    dbDialogVisable: true,  // 数据库配置弹框
-    dbConfig: {}
+  state: ():State => ({
   }),
-  actions: {
-    setLogin(isLogin: boolean) {
-      this.isLogin = isLogin
-    },
-    openDbDialog(isShow: boolean = true) {
-      this.dbDialogVisable = isShow
-    },
-    setDbConfig(config: iDatabaseConfig) {
-      this.dbConfig = config
-    }
-  }
+  getters: {},
+  actions: {},
 })
 
 export default pinia
