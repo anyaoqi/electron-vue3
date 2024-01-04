@@ -6,11 +6,35 @@
 
 如果觉得不错，麻烦给个Star吧(#^.^#)
 
-## 技术框架
+![](public/img.png)
+
+## 下载项目
 
 ### 基础环境
 
 * Node:  18.0或更高版本
+
+**1、克隆项目**
+
+```
+git clone https://gitee.com/anyaoqi/electron-vue3.git
+```
+
+**2、下载依赖**
+
+```
+npm install 
+或
+pnpm install
+```
+
+**3、运行项目**
+
+```
+npm run dev
+```
+
+## 技术框架
 
 ### **基础框架：[electron-vite-vue](https://github.com/electron-vite/electron-vite-vue)**
 
@@ -28,6 +52,7 @@
 * [Vite](https://cn.vitejs.dev/)
 * [Sass](https://www.sass.hk/)
 * [TypeScript](https://www.tslang.cn/index.html)
+* [Vueuse](https://vueuse.org/)
 * [Element-plus](https://element-plus.org/zh-CN/component/button.html)
 * 本地数据库：[Sqlite3](https://github.com/TryGhost/node-sqlite3)
 * 本地日志：[electron-log](https://github.com/megahertz/electron-log)
@@ -69,9 +94,12 @@
 
 文件位置：src\apis\axios.ts
 
-## 位置
+### 日志
 
 * 日志位置：C:\Users\\username\AppData\Roaming\electron-vue3\logs
+
+### 本地数据库-sqlite
+
 * sqlite数据库：C:\Users\\username\AppData\Roaming\electron-vue3\database.db
 
 ## 项目命令

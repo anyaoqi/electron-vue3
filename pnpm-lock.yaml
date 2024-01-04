@@ -1494,11 +1494,11 @@ packages:
     version: 0.2.13
     dev: true
 
-  registry.npmmirror.com/buffer-equal/1.0.0:
-    resolution: {integrity: sha512-tcBWO2Dl4e7Asr9hTGcpVrCe+F7DubpmqWCTbj4FHLmjqO2hIaC383acQubWtRJhdceqs5uBHs6Es+Sk//RKiQ==, registry: https://registry-cnpm.dayu.work/, tarball: https://registry.npmmirror.com/buffer-equal/-/buffer-equal-1.0.0.tgz}
+  registry.npmmirror.com/buffer-equal/1.0.1:
+    resolution: {integrity: sha512-QoV3ptgEaQpvVwbXdSO39iqPQTCxSF7A5U99AxbHYqUdCizL/lH2Z0A2y6nbZucxMEOtNyZfG2s6gsVugGpKkg==, registry: https://registry-cnpm.dayu.work/, tarball: https://registry.npmmirror.com/buffer-equal/-/buffer-equal-1.0.1.tgz}
     name: buffer-equal
-    version: 1.0.0
-    engines: {node: '>=0.4.0'}
+    version: 1.0.1
+    engines: {node: '>=0.4'}
     dev: true
 
   registry.npmmirror.com/buffer-from/1.1.2:
@@ -1916,7 +1916,7 @@ packages:
     name: dir-compare
     version: 3.3.0
     dependencies:
-      buffer-equal: registry.npmmirror.com/buffer-equal/1.0.0
+      buffer-equal: registry.npmmirror.com/buffer-equal/1.0.1
       minimatch: registry.npmmirror.com/minimatch/3.1.2
     dev: true
 
@@ -2465,7 +2465,7 @@ packages:
       foreground-child: registry.npmmirror.com/foreground-child/3.1.1
       jackspeak: registry.npmmirror.com/jackspeak/2.3.6
       minimatch: registry.npmmirror.com/minimatch/9.0.3
-      minipass: registry.npmmirror.com/minipass/5.0.0
+      minipass: registry.npmmirror.com/minipass/7.0.4
       path-scurry: registry.npmmirror.com/path-scurry/1.10.1
     dev: true
 
@@ -3228,6 +3228,13 @@ packages:
     version: 5.0.0
     engines: {node: '>=8'}
 
+  registry.npmmirror.com/minipass/7.0.4:
+    resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==, registry: https://registry-cnpm.dayu.work/, tarball: https://registry.npmmirror.com/minipass/-/minipass-7.0.4.tgz}
+    name: minipass
+    version: 7.0.4
+    engines: {node: '>=16 || 14 >=14.17'}
+    dev: true
+
   registry.npmmirror.com/minizlib/2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==, registry: https://registry-cnpm.dayu.work/, tarball: https://registry.npmmirror.com/minizlib/-/minizlib-2.1.2.tgz}
     name: minizlib
@@ -3465,7 +3472,7 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       lru-cache: registry.npmmirror.com/lru-cache/10.1.0
-      minipass: registry.npmmirror.com/minipass/5.0.0
+      minipass: registry.npmmirror.com/minipass/7.0.4
     dev: true
 
   registry.npmmirror.com/pathe/1.1.1:
