@@ -1,7 +1,7 @@
 {
   "name": "electron-vue3",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.0-release-1",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder --config electron-build.js",
