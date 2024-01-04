@@ -1,4 +1,4 @@
-!define DIR_NAME "data-supermarket"
+!define DIR_NAME "electron-vue3"
 
 Function .onVerifyInstDir
   StrLen $0 "\${DIR_NAME}"

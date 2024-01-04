@@ -71,8 +71,8 @@
 
 ## 位置
 
-* 日志位置：C:\Users\\username\AppData\Roaming\data-supermarket\logs
-* sqlite数据库：C:\Users\\username\AppData\Roaming\data-supermarket\database.db
+* 日志位置：C:\Users\\username\AppData\Roaming\electron-vue3\logs
+* sqlite数据库：C:\Users\\username\AppData\Roaming\electron-vue3\database.db
 
 ## 项目命令
 
