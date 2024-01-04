@@ -2,7 +2,7 @@
 import { reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import DataExtraction from '@/components/DataExtraction/DataExtraction.vue'
-import { extrTypeDatas } from '../../../config/data.config'
+import { extrDatas_shanxi as extrTypeDatas } from '../../../config/data.config'
 import { useUpload } from '@/hooks/uploadTimer'
 
 // 上传定时器

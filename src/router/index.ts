@@ -1,22 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import type { Router } from 'vue-router'
 import routes from './routes'
-import { useLogin } from '@/hooks/login'
+// import { useLogin } from '@/hooks/login'
 
 // 创建路由
 const router:Router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: routes
 })
 
-// 路由前置拦截器
+// // 路由前置拦截器
 router.beforeEach((to, _from, next) => {
-  const { isLogin } = useLogin()
-  // 未登录 && 要跳转的不是登录页 就跳转到登录页
-  if(!isLogin.value && to.path!='/login'){
-    next('/login')
-    return
-  }
+  console.log(to);
+  console.log(_from);
   // 正常跳转
   next()
 })

@@ -11,6 +11,8 @@ interface State {
   licenceInfo: iLicence|null,
   isOpenTimer: boolean,
   isSyncTimer: boolean,
+  isOrderTimer: boolean,
+  isDbSelectTimer: boolean
 }
 
 export const useStore = defineStore('main', {
@@ -36,6 +38,10 @@ export const useStore = defineStore('main', {
     isOpenTimer: false,
     // 同步数据开关
     isSyncTimer: false,
+    // 订单主表数据同步开关
+    isOrderTimer: false,
+    // 数据库定时查询开关
+    isDbSelectTimer: false,
   }),
   actions: {
     setLogin(isLogin: boolean) {

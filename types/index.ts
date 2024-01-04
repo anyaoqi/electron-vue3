@@ -156,6 +156,7 @@ export interface FieldInOrder {
 
 // 损溢单信息抽取-参数接口类型
 export interface FieldLossOrder {
+  customersid: string,
   storchecksid: string // 损益记录标识
   bizdate: string // 业务日期
   dtlcount: string // 明细记录数
@@ -181,6 +182,7 @@ export interface FieldOutOrder {
 
 // 日结进销存信息抽取
 export interface FieldDayInvoicing {
+  customersid:string,
   reqdate: string // 业务日期
   dtlcount: string // 商品记录数
   dtl_productid: string[] // 商品ID
@@ -198,15 +200,41 @@ export interface FieldDayInvoicing {
 export interface StoreCompType {
   store_name: string,
   store_id: string,
-  license_code: string
+  cust_uuid: string,
+  cust_code: string,
+  cust_name: string,
+  license_code: string,
 }
 
 // 同步门店数据接口类型
 export interface LicenseOptionType{
+  customer_id: string
   cust_code: string
   cust_name: string
-  cust_uuid: string
   license_code: string
+  mobile_number: string
+  order_number: string
+  legal_person: string
+  address: string
+  reason_class_name: string
+  settle_method_name: string
+  order_frequency: string
+  account_manager_id: string
+  account_manager_name: string
+  delivery_id: string
+  delivery_name: string
+  inspector_id: string
+  inspector_name: string
+  tbc_company_name: string
+}
+
+export interface GoodsUnitType {
+  unit_id: string
+  unit_name: string
+  serial_code: string
+  series: string
+  piece_num: string
+  is_default: string
 }
 
 // 商品对照关系数据类型
@@ -220,39 +248,39 @@ export interface GoodsCompType {
 
 // 同步商品数据类型
 export interface GoodsListType {
-  goods_id: string
-  goods_code: string
-  goods_name: string
-  barcode: string
-  pack_barcode: string
+  product_id: string
+  product_code: string
+  product_name: string
+  bar_code: string
+  packet_bar_code: string
   wholesale_price: string
-  msrp: string
-  conversion_ratio: string
-  brand: string
+  suggested_retail_price: string
+  strip_conversion_ratio: string
+  brand_name: string
   manufacturer_name: string
   is_new: string
-  backbone_brand: string
-  goods_image: string
-  mnemonic_code_pinyin: string
-  home_e: string
-  mnemonic_code_number: string
-  online_ordering: string
+  is_backbone_brand: string
+  cigarette_picture: string
+  pinyin_mnemonic_code: string
+  family_e_use_status: string
+  digital_mnemonic_code: string
+  is_online_order: string
   retail_price: string
-  message_code: string
-  brand_identity: string
-  manufacturer_identity: string
-  smoke_abnormal: string
-  smoke_province: string
-  default_unit: string
+  short_message_code: string
+  brand_id: string
+  manufacturer_id: string
+  is_abnormal: string
+  is_province: string
+  default_unit_id: string
   brand_code: string
   manufacturer_code: string
   is_import: string
-  price_class_code: string
-  price_class_name: string
-  disabled: string
+  price_classification_code: string
+  price_classification_name: string
+  is_active: string
   tar_content: string
-  packaging_type: string
-  total_records: string
+  pack_type: string
+  sort_index?: string
 }
 
 // 抽取类型字面量
@@ -304,6 +332,8 @@ export interface TypeData {
   typeName: string,
   englishFlag: string,
   sql: string,
+  createTimeField: string,
+  updateTimeField: string
 }
 
 export interface ExtrMappType {
@@ -347,3 +377,21 @@ export interface delDataParams{
 
 // electron-log等级
 export type LoggerLevel  = 'info'|'warn'|'error'|'debug'|'verbose'|'silly'
+
+
+export interface iOrderItem {
+  ordersid: string
+  customersid: string
+  reqtotalqty: string
+  totaldefqty: string
+  totalamt: string
+  inputtime: string
+  bizdate: string
+}
+
+export interface iOrderRes {
+  a: string
+  b: string
+  c: string
+  d: string
+}

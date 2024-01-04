@@ -1,11 +1,11 @@
 import { app } from 'electron'
 import path from 'node:path'
 import fs from 'fs'
-import publicConfig from './config.json'
+import defaultConfig from './config.json'
 
 // App配置项
 let config = {
-  ...publicConfig,
+  ...defaultConfig,
   debug: import.meta.env.DEV,
 }
 
@@ -13,9 +13,15 @@ let config = {
 if(import.meta.env.PROD){
   // 获取外部配置文件
   const appPath = path.dirname(app.getPath('exe'))
-  const openConfigPath = path.join(appPath, '/config.json')
-  const prodOpenConfig = fs.existsSync(openConfigPath) ? require(openConfigPath) : {}
-  Object.assign(config, prodOpenConfig)
+  const prodConfigPath = path.join(appPath, '/config.json')
+  const fsExists = fs.existsSync(prodConfigPath)
+  let prodConfig = {}
+  try {
+    prodConfig = fsExists ? require(prodConfigPath) : {}
+  } catch (error) {
+    prodConfig = {}
+  }
+  Object.assign(config, prodConfig, { debug: fsExists })
 }
 
 // 配置项

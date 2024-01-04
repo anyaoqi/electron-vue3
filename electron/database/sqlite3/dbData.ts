@@ -1,5 +1,5 @@
 import { useNow, useDateFormat } from '@vueuse/core'
-import { extrTypeDatas } from "../../../config/data.config";
+import { extrDatas_shanxi as extrTypeDatas } from "../../../config/data.config";
 import type { TypeData, ExtrMappType, StoreParams, delDataParams } from "../../../types";
 import { useData } from "./hooks";
 
@@ -18,13 +18,15 @@ export const insertTypeData = (params: TypeData) => {
   const nowDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss').value;
   params.createdAt = nowDate;
   params.updatedAt = nowDate;
-  const { createdAt, updatedAt, typeName, englishFlag, sql } = params;
+  const { createdAt, updatedAt, typeName, englishFlag, sql, createTimeField, updateTimeField } = params;
   const queryParams = {
     created_at: createdAt,
     updated_at: updatedAt,
     type_name: typeName,
     english_flag: englishFlag,
     sql: sql,
+    createTimeField: createTimeField,
+    updateTimeField: updateTimeField
   }
   const otherSql = `ON CONFLICT(english_flag) DO NOTHING`;
   return dbInsertData('ds_extraction_list', queryParams, otherSql);
@@ -39,6 +41,8 @@ export const initExtrTypeData = async () => {
       sql: data.sql || "",
       updatedAt: "",
       createdAt: "",
+      createTimeField: "",
+      updateTimeField: ""
     });
   });
 };
@@ -46,10 +50,12 @@ export const initExtrTypeData = async () => {
 // 更新抽取类型sql语句
 const updateExtrSqlData = (params: TypeData) => {
   params.updatedAt = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss').value;
-  const { englishFlag, sql, updatedAt } = params;
+  const { englishFlag, sql, updatedAt, createTimeField, updateTimeField } = params;
   const queryParams = {
     sql: sql,
     updated_at: updatedAt,
+    createTimeField: createTimeField,
+    updateTimeField: updateTimeField
   }
   const where = `english_flag = '${englishFlag}'`
   return dbUpdateData('ds_extraction_list', queryParams, where);
@@ -286,11 +292,35 @@ export const saveStoreComp = (columns: StoreCompType) => {
 }
 
 interface StoreListType {
-  cust_uuid: string
+  customer_id: string
   cust_code: string
   cust_name: string
   license_code: string
+  mobile_number: string
+  order_number: string
+  legal_person: string
+  address: string
+  reason_class_name: string
+  settle_method_name: string
+  order_frequency: string
+  account_manager_id: string
+  account_manager_name: string
+  delivery_id: string
+  delivery_name: string
+  inspector_id: string
+  inspector_name: string
+  tbc_company_name: string
 }
+
+interface GoodsUnitType {
+  unit_id: string
+  unit_name: string
+  serial_code: string
+  series: string
+  piece_num: string
+  is_default: string
+}
+
 
 // 获取门店列表
 export const getStoreList = ()=> {
@@ -306,7 +336,7 @@ export const insertStoreList = (columns: StoreListType|StoreListType[]) => {
 // 更新门店数据
 export const updateStoreList = (columns: StoreListType) => {
   const tableName = 'ds_store_list'
-  const where = `cust_uuid = '${columns.cust_uuid}'`
+  const where = `customer_id = '${columns.customer_id}'`
   return dbUpdateData(tableName, columns, where);
 }
 
@@ -314,10 +344,10 @@ export const updateStoreList = (columns: StoreListType) => {
 export const saveStoreList = (columns: StoreListType|StoreListType[]) => {
   // 批量保存
   if(Array.isArray(columns)) { 
-    return dbBatchInsertOrUpdate<StoreListType>('ds_store_list', columns, 'cust_uuid')
+    return dbBatchInsertOrUpdate<StoreListType>('ds_store_list', columns, 'customer_id')
   }
   // 单个保存
-  const where = `cust_uuid = '${columns.cust_uuid}'`
+  const where = `customer_id = '${columns.customer_id}'`
   return dbSaveData({
     tableName: 'ds_store_list',
     where: where,
@@ -326,9 +356,40 @@ export const saveStoreList = (columns: StoreListType|StoreListType[]) => {
   });
 }
 
+/************************** 卷烟单位 **************************/
+
+// 插入卷烟单位数据
+export const insertGoodsUnit = (columns: GoodsUnitType|GoodsUnitType[]) => {
+  // 单个插入
+  return dbInsertData('ds_goods_unit', columns);
+}
+
+// 更新卷烟单位数据
+export const updateGoodsUnit = (columns: GoodsUnitType) => {
+  const tableName = 'ds_goods_unit'
+  const where = `unit_id = '${columns.unit_id}'`
+  return dbUpdateData(tableName, columns, where);
+}
+
+// 保存卷烟单位列表
+export const saveGoodsUnit = (columns: GoodsUnitType|GoodsUnitType[]) => {
+  // 批量保存
+  if(Array.isArray(columns)) { 
+    return dbBatchInsertOrUpdate<GoodsUnitType>('ds_goods_unit', columns, 'unit_id')
+  }
+  // 单个保存
+  const where = `unit_token = '${columns.unit_id}'`
+  return dbSaveData({
+    tableName: 'ds_goods_unit',
+    where: where,
+    update: () => updateGoodsUnit(columns),
+    insert: () => insertGoodsUnit(columns),
+  });
+}
+
 /************************** 商品对照 **************************/
 interface GoodsCompType {
-  goods_id: string
+  product_id: string
   goods_category: string
   goods_code: string
   goods_unit: string
@@ -343,7 +404,7 @@ export const getGoodsComp = () => {
 // 更新门店对照
 export const updateGoodsComp = (columns: GoodsCompType) => {
   const tableName = 'ds_comparison_goods'
-  const where = `goods_id = '${columns.goods_id}'`
+  const where = `product_id = '${columns.product_id}'`
   return dbUpdateData(tableName, columns, where);
 }
 
@@ -351,7 +412,7 @@ export const updateGoodsComp = (columns: GoodsCompType) => {
 export const insertGoodsComp = (columns: GoodsCompType|GoodsCompType[]) => {
   if(Array.isArray(columns)) {
     // 批量插入
-    return dbBatchInsertOrUpdate<GoodsCompType>('ds_comparison_goods', columns, 'goods_id')
+    return dbBatchInsertOrUpdate<GoodsCompType>('ds_comparison_goods', columns, 'product_id')
   } else {
     // 单个插入
     return dbInsertData('ds_comparison_goods', columns);
@@ -360,7 +421,7 @@ export const insertGoodsComp = (columns: GoodsCompType|GoodsCompType[]) => {
 
 // 保存门店对照
 export const saveGoodsComp = (columns: GoodsCompType) => {
-  const where = `goods_id = '${columns.goods_id}'`
+  const where = `product_id = '${columns.product_id}'`
   return dbSaveData({
     tableName: 'ds_comparison_goods',
     where: where,
@@ -370,39 +431,39 @@ export const saveGoodsComp = (columns: GoodsCompType) => {
 }
 
 interface GoodsListType {
-  goods_id: string
-  goods_code: string
-  goods_name: string
-  barcode: string
-  pack_barcode: string
+  product_id: string
+  product_code: string
+  product_name: string
+  bar_code: string
+  packet_bar_code: string
   wholesale_price: string
-  msrp: string
-  conversion_ratio: string
-  brand: string
+  suggested_retail_price: string
+  strip_conversion_ratio: string
+  brand_name: string
   manufacturer_name: string
   is_new: string
-  backbone_brand: string
-  goods_image: string
-  mnemonic_code_pinyin: string
-  home_e: string
-  mnemonic_code_number: string
-  online_ordering: string
+  is_backbone_brand: string
+  cigarette_picture: string
+  pinyin_mnemonic_code: string
+  family_e_use_status: string
+  digital_mnemonic_code: string
+  is_online_order: string
   retail_price: string
-  message_code: string
-  brand_identity: string
-  manufacturer_identity: string
-  smoke_abnormal: string
-  smoke_province: string
-  default_unit: string
+  short_message_code: string
+  brand_id: string
+  manufacturer_id: string
+  is_abnormal: string
+  is_province: string
+  default_unit_id: string
   brand_code: string
   manufacturer_code: string
   is_import: string
-  price_class_code: string
-  price_class_name: string
-  disabled: string
+  price_classification_code: string
+  price_classification_name: string
+  is_active: string
   tar_content: string
-  packaging_type: string
-  total_records: string
+  pack_type: string
+  sort_index: string
 }
 
 // 获取门店列表
@@ -414,7 +475,7 @@ export const getGoodsList = ()=> {
 export const insertGoodsList = (columns: GoodsListType|GoodsListType[]) => {
   if(Array.isArray(columns)) {
     // 批量插入
-    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'goods_id')
+    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'product_id')
   } else {
     // 单个插入
     return dbInsertData('ds_goods_list', columns);
@@ -424,7 +485,7 @@ export const insertGoodsList = (columns: GoodsListType|GoodsListType[]) => {
 // 更新同步商品数据
 export const updateGoodsList = (columns: GoodsListType) => {
   const tableName = 'ds_goods_list'
-  const where = `goods_id = '${columns.goods_id}'`
+  const where = `product_id = '${columns.product_id}'`
   return dbUpdateData(tableName, columns, where);
 }
 
@@ -432,9 +493,9 @@ export const updateGoodsList = (columns: GoodsListType) => {
 export const saveGoodsList = (columns: GoodsListType|GoodsListType[]) => {
   // 批量保存
   if(Array.isArray(columns)) { 
-    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'goods_id')
+    return dbBatchInsertOrUpdate<GoodsListType>('ds_goods_list', columns, 'product_id')
   }
-  const where = `goods_id = '${columns.goods_id}'`
+  const where = `product_id = '${columns.product_id}'`
   return dbSaveData({
     tableName: 'ds_goods_list',
     where: where,
@@ -442,3 +503,6 @@ export const saveGoodsList = (columns: GoodsListType|GoodsListType[]) => {
     insert: () => insertGoodsList(columns),
   });
 }
+
+
+/************************** 项目配置 **************************/

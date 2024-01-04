@@ -15,6 +15,7 @@ import {
   getGoodsList,
   saveGoodsList,
   saveGoodsComp,
+  saveGoodsUnit,
 } from './dbData'
 import type { TypeData, ExtrMappType, delDataParams } from "../../../types";
 
@@ -35,4 +36,5 @@ export default {
   getGoodsList: () => getGoodsList(),
   saveGoodsList: (columns:any) => saveGoodsList(columns),
   saveGoodsComp: (columns:any) => saveGoodsComp(columns),
+  saveGoodsUnit: (columns:any) => saveGoodsUnit(columns),
 };

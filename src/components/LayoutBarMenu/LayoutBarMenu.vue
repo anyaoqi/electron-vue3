@@ -16,11 +16,11 @@
       </template>
     </el-menu-item>
     </router-link>
-    <router-link to="/dataReporting">
+    <router-link to="/distributionList">
     <el-menu-item index="3">
       <template #title>
         <el-icon><setting /></el-icon>
-        上报数据查询
+        配货主表查询
       </template>
     </el-menu-item>
     </router-link>

@@ -17,6 +17,7 @@ instance.interceptors.request.use(
   (config:InternalAxiosRequestConfig<any>) => {
     // 请求拦截添加token，用于后端的验证
     const token = localStorage.getItem('token') as string
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
     if(token) {
       config.headers['Authorization'] = token
     }

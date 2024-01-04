@@ -26,6 +26,11 @@ const routes:RouteRecordRaw[] = [
         name:'dataReporting',
         component: () => import('@/pages/dataReporting/dataReporting.vue')
       },
+      {
+        path:'/distributionList',
+        name:'distributionList',
+        component: () => import('@/pages/distributionList/distributionList.vue')
+      }
     ]
   },
   {

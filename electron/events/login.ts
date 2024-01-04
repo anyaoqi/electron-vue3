@@ -5,7 +5,7 @@ const soapRequest = require('easy-soap-request')
 const encodingConvert = require('encoding')
 const parseString = require('xml2js').parseString
 
-const url = "https://proxyretail.hntobacco.com/services/SimpleWS"
+const url = "http://test-yxglpt.siluqing.com.cn/proxy/cis/process"
 
 
 export function md5(str: string) {
@@ -75,25 +75,39 @@ function getBody(code: string, array_data: any) {
   array_data = vonvertData(array_data)
   const p2 = encodingConvert.convert(JSON.stringify(array_data), 'GBK', 'UTF-8').toString()
 
-  let str =`0001M000M001${code}${p2}`
-  let device_secret = '1688543D3ACD57E57A6E604F387A5F53'
-  let secret = md5(str + device_secret)
-  // console.log('签名:' + str + secret)
-  let base64 = encodeBase64(str + secret)
+  // 系统编码
+  const syscode = '0002'
+  // 厂商编码
+  const factorycode = 'M031'
+  // 设备编码
+  const devicetypecode = 'M004'
+  // 交易码
+  const transid = code
+  // 业务报文
+  const businessmsg = p2
+  // 密钥
+  const secret = '17fd22a2cf1c645ae98d20f906b4cce8'
+  // 签名内容 `系统编码 + 厂商编码 + 设备编码 + 交易码 + 业务报文`
+  const sign = `${syscode}${factorycode}${devicetypecode}${transid}${businessmsg}`
+  // 签名md5加密
+  const signMd5 = md5(sign + secret)
+  // 将加密后的签名通过base64转义
+  const signBase64 = encodeBase64(sign + signMd5)
+  console.log('sign', sign);
 
   let res = `
             <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.services.crea.com">
               <soapenv:Header />
               <soapenv:Body>
                   <ws:process soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-                      <reqpkg xsi:type="xsd:base64Binary">${base64}</reqpkg>
+                      <reqpkg xsi:type="xsd:base64Binary">${signBase64}</reqpkg>
                   </ws:process>
               </soapenv:Body>
               </soapenv:Envelope>
             `
   return {
     res,
-    sign: str + secret
+    sign: sign + secret
   }
 }
 
@@ -115,17 +129,24 @@ function xml2arr(xml: any) {
  * 解析返回的body
  */
 async function parseBody(body: any) {
-  let r:any = await xml2arr(body)
-  // console.log('r', r);
-  let str = Buffer.from(r, 'base64')
-  let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()
-  res = res.substring(res.indexOf('{'))
-  return JSON.parse(res)
+  try {
+    let r:any = await xml2arr(body)
+    let str = Buffer.from(r, 'base64')
+    let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()
+    res = res.substring(res.indexOf('{'))
+    return JSON.parse(res)
+  } catch (err) {
+    logger.error(`
+      parseBody解析错误：${err}\n
+      body: ${body}
+    `)
+    throw Error('parseBody解析错误：'+err+'  body:'+body)
+  }
 }
 
 export async function requestSoap(code: any, data: any) {
   const { res, sign }  = getBody(code, data)
-  try {
+  // try {
     const { response } = await soapRequest({
       url: url,
       headers: {
@@ -136,25 +157,33 @@ export async function requestSoap(code: any, data: any) {
       timeout: 1000 * 60,
     })
     const { body, statusCode } = response
-
+    console.log('statusCode',statusCode);
+    
+    console.log('body', JSON.stringify(body));
+    
     if (statusCode == 200) {
-      const bd =  await parseBody(body)
-      if(bd && bd?.ALInfoError?.Sucess != '1') {
+      if(body && body?.ALInfoError?.Sucess != '1') {
+        const desc = body.ALInfoError.Description
         logger.error(`
-          ${code} 接口触发失败: ${bd?.ALInfoError?.Description} \n
+          ${code} 接口触发失败: ${desc} \n
           接口：${code} \n
           参数:${JSON.stringify(data)} \n
           签名: ${sign}
         `)
+        return desc
       }
-      return bd
+
+      return await parseBody(body)
+    } else {
+      return response
     }
-  } catch (err) {
-    logger.error(`
-      ${code} 接口触发失败:${err} \n
-      接口：${code} \n
-      参数:${JSON.stringify(data)} \n
-      签名: ${sign}
-    `)
-  }
+  // } catch (err) {
+  //   logger.error(`
+  //     ${code} 接口触发失败:${err} \n
+  //     接口：${code} \n
+  //     参数:${JSON.stringify(data)} \n
+  //     签名: ${sign}
+  //   `)
+  //   return err
+  // }
 }

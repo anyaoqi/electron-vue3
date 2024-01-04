@@ -1,29 +1,32 @@
 <script lang="ts" setup>
-import { ref, reactive, inject, onMounted, toRaw } from 'vue'
+import { ref, reactive, onMounted, toRaw } from 'vue'
 import { useLoading } from '@/hooks'
 import { useLogin } from '@/hooks/login'
-import { useDataSync } from '@/hooks/uploadTimer'
+// import { useDataSync } from '@/hooks/uploadTimer'
 import type { FormInstance, FormRules } from 'element-plus'
-import { iLoginForm } from '@type/index'
-import { checkUpdate } from '@/utils/autoUpdater'
+import { iLoginForm, iLicence } from '@type/index'
+import { useLicence } from '@/hooks/user'
+// import { checkUpdate } from '@/utils/autoUpdater'
 import logger from '@/utils/logger'
+import { getConfig } from '@/utils'
 
 const ruleFormRef = ref<FormInstance>()
 
 // hooks
 const {  loading, setLoading } = useLoading()
-const { syncStoreData, syncGoodsData } = useDataSync()
-const { handleLogin, licenceLogin } = useLogin()
+// const { syncStoreData, syncGoodsData, syncGoodsUnit } = useDataSync()
+const { handleLogin } = useLogin()
+const { setLicence } = useLicence()
 
 // 引入全局配置
-const config:any = inject('config')
-console.log('config', config);
-
+const config = getConfig()
 // 登录表单
 const loginForm = reactive<iLoginForm>({
   username: '',
-  password: '',
+  password: ''
 })
+// 记住密码
+const remePassword = ref(false)
 
 const title:string = config.title
 
@@ -31,47 +34,41 @@ const rules = reactive<FormRules<iLoginForm>>({
   username: [
     {  required: true, trigger: 'blur',  message: '请输入烟草许可证号' },
   ],
-  password: [
-    { required: true, trigger: 'blur',  message: '请输入密码' },
-    { min: 6, message: '密码不能少于6位', trigger: 'blur' },
-  ],
 })
 
-if(import.meta.env.DEV || config.debug === true) {
-  loginForm.username = '431001105361'
-  loginForm.password = '1357452o268yzas'
+const accountStore = localStorage.getItem('rememberPassWord')
+// 恢复之前记住的密码
+if(accountStore) {
+  let account:iLoginForm = JSON.parse(accountStore)
+  loginForm.username = account.username
+  remePassword.value = true
 }
 
 onMounted(() => {
-  checkUpdate()
+  // checkUpdate()
 })
 
 // 登录
 const onSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
 
+  !remePassword.value && localStorage.removeItem('rememberPassWord')
+
   await formEl.validate(async (valid, _fields) => {
     if(!valid) return
-    console.log('valid', valid);
 
     setLoading(true)
 
     try {
-      const loginRes = await licenceLogin(loginForm)
-      console.log('loginRes', loginRes);
-      if(loginRes.success === true) {
-        loading.value.setText('开始同步数据')
-
-        // 同步门店数据
-        await syncStoreData((index, total) => {
-          loading.value.setText(`门店数据同步中 ${index}/${total}`)
-        })
-        // 同步商品数据
-        await syncGoodsData((index, total) => {
-          loading.value.setText(`商品数据同步中 ${index}/${total}`)
-        })
+        setLicence({ license_code: loginForm.username } as iLicence)
 
         loading.value.setText('登录中...')
+        // 判断是否记住密码
+        if(remePassword.value) {
+          const accountStr = JSON.stringify(toRaw(loginForm))
+          localStorage.setItem('rememberPassWord', accountStr)
+        }
+
         // 登录操作
         handleLogin()
         ElMessage({
@@ -79,14 +76,6 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
           type: 'success'
         })
         logger.info('登录成功，用户：'+loginForm.username)
-      } else {
-        setLoading(false)
-        ElMessage({
-          message: '登录失败：'+loginRes.error,
-          type: 'error'
-        })
-        logger.error('登录失败：'+loginRes.error+' \n '+JSON.stringify(toRaw(loginForm)))
-      }
     } catch (err) {
       setLoading(false)
       ElMessage({
@@ -110,13 +99,16 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         label-width="80px"
         @submit.prevent.default="onSubmit(ruleFormRef)"
         >
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="许可证号" prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入烟草许可证号"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <!-- <el-form-item label="密码" prop="password">
           <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
+          <div>
+            <el-checkbox label="记住许可证号" v-model="remePassword"/>
+          </div>
           <div class="login-button">
             <el-button class="button" type="primary" size="large" native-type="submit" >登 录</el-button>
           </div>

@@ -68,7 +68,7 @@ export const useData = () => {
   // 插入数据方法封装
   const dbInsertData = (tableName: string, columns: any, sql: string='') => {
     const fields = Object.keys(columns);
-    const values = fields.map((field) => `'${columns[field]}'`).join(", ");
+    const values = fields.map((field) => `"${columns[field]}"`).join(", ");
     const insertQuery = `INSERT INTO ${tableName} (${fields.join(
       ", "
     )}) VALUES (${values}) ${sql}`;
@@ -87,7 +87,18 @@ export const useData = () => {
   const dbUpdateData = (tableName: string, params: any, where?: string) => {
     return new Promise((resolve, reject) => {
       const fields = Object.keys(params)
-      const values = fields.map((field) => `${field} = "${params[field]}"`).join(", ");
+      const values = fields.map((field) => {
+        let fieldVal = params[field]
+        // 处理单双引号问题
+        if(typeof fieldVal === 'string') {
+          // 判断值中是否包含双引号，如果包含双引号就替换成单引号
+          // 示例：select * from table where id = "abc" and name = "Jack"
+          if(/".*?"/.test(fieldVal)){
+            fieldVal = fieldVal.replace(/"/g, "'")
+          }
+        }
+        return `${field} = "${fieldVal}"`
+      }).join(", ");
       where = where ? `WHERE ${where}` : ''
       const updateQuery = `
         UPDATE ${tableName} SET ${values}

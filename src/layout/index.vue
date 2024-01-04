@@ -5,34 +5,33 @@ import LayoutHeader from '@/components/LayoutHeader/LayoutHeader.vue'
 import LayoutMain from '@/components/LayoutMain/LayoutMain.vue'
 import DialogDbConfig from '@/components/DialogDbConfig/DialogDbConfig.vue';
 import { useHookDialog, useLoading} from '@/hooks'
-import { 
-  // useUpload,
-  useDataSync
-} from '@/hooks/uploadTimer'
+import { configType } from '@config/type.config'
+import { useConfig } from '@/pinia/config'
+import { useDataSync } from '@/hooks/uploadTimer'
 
+const config = useConfig()
 const { setLoading } = useLoading()
 const { setDialogVisable } = useHookDialog()
 
 const percentage = ref<number>(0)
 
-// 数据抽取
-// const { startUpload } = useUpload()
-// 数据同步
-const { syncTimerOpen } = useDataSync((index, total)=> {
-  percentage.value = index / total * 100
-  if(total <= index){ // 同步结束
-    percentage.value = 0
-  }
+const { syncTimerOpen } = useDataSync()
+
+window.electronAPI.getConfig().then((res: configType) => {
+  config.setConfig(res)
 })
+
+// 同步数据
+const syncData = () => {
+  syncTimerOpen()
+}
 
 onMounted(async () => {
   setLoading(false)
-  // 开启定时数据同步
-  syncTimerOpen()
-
   // const boo = await window.serverAPI.isConnection()
   // 开启定时数据抽取
   // boo && startUpload()
+  setDialogVisable(true)
 })
 
 </script>
@@ -50,6 +49,7 @@ onMounted(async () => {
     <LayoutBarMenu />
     <div class="fixed-bottom">
       <el-button type="primary" plain @click="setDialogVisable(true)">数据库连接</el-button>
+      <el-button type="success" plain @click="syncData()">数据同步</el-button>
     </div>
   </el-scrollbar>
   <div class="layout-main">
@@ -57,7 +57,7 @@ onMounted(async () => {
       <LayoutMain />
     </div>
   </div>
-  <DialogDbConfig />
+  <DialogDbConfig ref="dbConfigRef" />
 </template>
 
 <style scoped lang="scss">

@@ -1,4 +1,4 @@
-const publicConfig = require('./config/config.json')
+const $config = require('./config/config.json')
 
 /**
  * electron-builder打包配置
@@ -7,7 +7,7 @@ const publicConfig = require('./config/config.json')
 const config = {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.dataextractor.app",
-  "productName": publicConfig.title,
+  "productName": $config.title,
   "copyright":"海晟融创", //版权  信息
   "asar": true, // 是否把app文件夹压缩成app.asar
   "asarUnpack": [ // 解压到应用程序包的根目录下的文件，对外部可见
@@ -34,12 +34,6 @@ const config = {
       "to": "./assets"
     }
   ],
-  "mac": {
-    "artifactName": "${productName}_${version}.${ext}",
-    "target": [
-      "dmg"
-    ]
-  },
   "win": {
     "icon": "public/logo.png", // 设置 Windows 平台的图标路径
     "target": [
@@ -47,11 +41,12 @@ const config = {
         "target": "nsis",
         "arch": [
           "x64",
+          // "ia32"
         ]
       }
     ],
     "artifactName": "${productName}_${version}.${ext}",
-    "requestedExecutionLevel": "requireAdministrator"
+    // "requestedExecutionLevel": "requireAdministrator"
   },
   "nsis": {
     "oneClick": false,  // 是否一键安装
@@ -70,7 +65,28 @@ const config = {
     "installerIcon": 'public/icon.ico', // 安装图标
     "uninstallerIcon": 'public/icon.ico', //卸载图标
     "installerHeaderIcon": 'public/icon.ico', // 安装时头部图标
-  }
+  },
+  // Linux 特定配置
+  linux: {
+    target: 'AppImage', // 打包目标，这里使用 AppImage，也可选其他目标
+    category: "Utility", // 在应用菜单中显示的类别
+    maintainer: "Hs",
+    vendor: "Hs",
+    executableName: "myapp", // 生成的可执行文件的名称
+    desktop: { // 桌面文件相关配置
+      name: "第三方零消数据抽取系统",
+      comment: "第三方零消数据抽取系统 App",
+      exec: "linux-${productName}-${version}-${arch}.${ext}", // 可执行文件的名称
+      terminal: false, // 是否在终端中运行
+      type: "Application", // 应用类型
+      icon: "public/logo.png", // 你的图标路径
+    },
+    mimeTypes: [ // 关联的 MIME 类型
+      "text/plain",
+      "application/vnd.myapp.custom",
+    ],
+    artifactName: "linux-${productName}-${version}-${arch}.${ext}", // 生成的安装包文件名格式
+  },
 };
 
 module.exports = config

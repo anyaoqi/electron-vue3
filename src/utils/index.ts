@@ -1,4 +1,6 @@
 import { columnType } from '@type/index'
+import { useConfig } from '@/pinia/config'
+import { useNow, useDateFormat } from "@vueuse/core";
 
 /**
  * 将数据按照字段映射规则进行转换
@@ -26,6 +28,9 @@ export const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] 
       if(mapping[key].fv === 'is_active') {
         val = String(val)
       }
+      if(val===0) {
+        val = String(val)
+      }
       newItem[key] = val||''
       // 赋值默认值
       // 最终值不存在 && 最终值不为0 && 赋值存在或者为0
@@ -33,9 +38,17 @@ export const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] 
         newItem[key] = mapping[key].dv
       }
     }
-    newItem.created_at = data.createDate
-    newItem.updated_at = data.modifyDate
+    const nowDate = useDateFormat(useNow(), "YYYYMMDD").value
+    newItem.created_at = nowDate
+    newItem.updated_at = nowDate
     return newItem as T
   })
   return result
+}
+
+
+// 获取全局配置
+export const getConfig =  () => {
+  const configStore = useConfig()
+  return configStore.config
 }

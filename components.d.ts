@@ -16,6 +16,7 @@ declare module 'vue' {
     DialogDbConfig: typeof import('./src/components/DialogDbConfig/DialogDbConfig.vue')['default']
     ElAutoResizer: typeof import('element-plus/es')['ElAutoResizer']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElForm: typeof import('element-plus/es')['ElForm']
@@ -42,6 +43,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TableReporting: typeof import('./src/components/TableReporting/TableReporting.vue')['default']
+    TableV2: typeof import('./src/components/TableV2/TableV2.vue')['default']
     VersionUpdate: typeof import('./src/components/versionUpdate/versionUpdate.vue')['default']
   }
 }

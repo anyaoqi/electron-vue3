@@ -16,11 +16,6 @@ app.use(router)
 app.use(pinia)
 app.use(ElementPlus, {locale})
 
-// 获取全局配置 通过provide提供到全局，使用的时候通过Inject注入
-window.electronAPI.getConfig().then((config: any) => {
-  // 提供全局config配置对象
-  app.provide('config', config)
-})
 // 监听程序关闭
 window.electronAPI.appClose((event:any) => {
   const { isOpenTimer, stopUpload } = useUpload()
@@ -41,4 +36,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.mount('#app').$nextTick(() => {
   postMessage({ payload: 'removeLoading' }, '*')
+
 })

@@ -10,7 +10,7 @@ import { useUpload, useDataSync } from '@/hooks/uploadTimer'
 
 /**
  * 登录相关操作
- * @returns { isLogin, licenceLogin, handleLogin, handleLogout }
+ * @returns { isLogin, licenceLogin, handleLogin }
  */
 export const useLogin = () => {
   const router = useRouter()
@@ -25,7 +25,7 @@ export const useLogin = () => {
         const mac:string = await window.electronAPI.getMac()
         let device_no = await window.electronAPI.md5(mac + loginForm.username)
         console.log('device_no', device_no);
-        const r = await api4G61(loginForm.username, loginForm.password)
+        const r = await api4G61(loginForm.username, loginForm.password) as any
 
         if (r['ALInfoError']['Sucess'] !== '1') {
           const message = r['ALInfoError']['Description'] || '登陆失败'
@@ -86,6 +86,9 @@ export const useLogout = ()=> {
       isOpenTimer.value && stopUpload()
       // 停止数据同步
       isSyncTimer.value && syncTimerStop()
+
+      // 关闭数据库连接
+      window.serverAPI.close()
 
       // 设置登录状态
       store.setLogin(false)

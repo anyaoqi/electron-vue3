@@ -272,3 +272,151 @@ export const extrTypeDatas: ExtrDataType[] = [
     ],
   },
 ];
+
+// 陕西抽取数据
+export const extrDatas_shanxi: ExtrDataType[] = [
+  // 订单
+  {
+    name: "销售订单信息",
+    key: "retail_order",
+    apiFilds: [
+      { name: "客户ID", filed: "customersid", description: "必须" },
+      { name: "销售单ID", filed: "clientorderid", description: "必须" },
+      {
+        name: "销售时间",
+        filed: "inputtime",
+        description: "必须，销售单发生的实际时间yyyyMMddHHmmss",
+      },
+      { name: "业务日期", filed: "bizdate", description: "yyyyMMdd" },
+      { name: "条形码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+      {
+        name: "消费者标识",
+        filed: "consumersid",
+        description: "销售单对应的消费者",
+      },
+      {
+        name: "消费者手机",
+        filed: "mobilephone",
+        description: "当“消费者标识”和“消费者手机”都传时“消费者手机”优先",
+      },
+      { name: "商品记录数", filed: "dtlcount", description: "必须" },
+      {
+        name: "商品标识",
+        filed: "dtl_goodsisn",
+        type: 'Array',
+        description: "必须，1G05返回卷烟代码和非烟档案上传商品标识",
+      },
+      {
+        name: "是否卷烟商品",
+        filed: "dtl_istobacco",
+        type: 'Array',
+        description: "必须，1-卷烟0-非卷烟",
+      },
+      { name: "销售单位", filed: "dtl_unitid", type: 'Array', description: "" },
+      // { name: "条形码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+      { name: "零售价", filed: "dtl_saleprice", type: 'Array', description: "必须" },
+      { name: "购入价", filed: "dtl_buyprice", type: 'Array', description: "" },
+      { name: "销售数量", filed: "dtl_quantity", type: 'Array', description: "必须" },
+      { name: "支付明细数", filed: "paydtlcount", description: "" },
+      {
+        name: "支付渠道",
+        filed: "paydtl_fund_channel",
+        type: 'Array',
+        description: "CASH-现金 ALIPAY-支付宝 WEIXIN-微信 CREDITCADE-信用卡 JFEXCHANGE-积分抵扣",
+      },
+      { name: "支付金额", filed: "paydtl_amount", type: 'Array', description: "" },
+      { name: "支付说明", filed: "paydtl_remark", type: 'Array', description: "" },
+      { name: "支付宝交易号", filed: "trade_no", description: "" },
+      {
+        name: "买家支付宝用户号",
+        filed: "buyer_user_id",
+        description: "买家在支付宝的用户id",
+      },
+      {
+        name: "买家支付宝账号",
+        filed: "buyer_logon_id",
+        description: "如：159****5620",
+      },
+      { name: "交易金额", filed: "total_amount", description: "" },
+      { name: "实收金额", filed: "receipt_amount", description: "" },
+      {
+        name: "付款时间",
+        filed: "gmt_payment",
+        description: "如：2014-11-27 15:45:57",
+      },
+    ],
+  },
+  // 进销存
+  {
+    name: "进销存日报信息抽取",
+    key: "day_invoicing",
+    apiFilds: [
+      { name: "客户ID", filed: "customersid", description: "必须" },
+      { name: "业务日期", filed: "reqdate", description: "YYYY-MM-dd" },
+      { name: "商品记录数", filed: "dtlcount",  description: "" },
+      { name: "商品ID", filed: "dtl_productid", type: 'Array', description: "必须" },
+      { name: "条形码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+      // { name: "商品条码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+          {
+        name: "是否卷烟商品",
+        filed: "dtl_istobacco",
+        type: 'Array',
+        description: "必须，1-卷烟0-非卷烟",
+      },
+      // {
+      //   name: "商品标识",
+      //   filed: "dtl_goodsisn",
+      //   type: 'Array',
+      //   description: "必须，1G05返回卷烟代码和非烟档案上传商品标识",
+      // },
+      { name: "期初数量", filed: "dtl_lastqty", type: 'Array', description: "必须" },
+      { name: "购入数量", filed: "dtl_buyqty", type: 'Array', description: "必须" },
+      { name: "销售数量", filed: "dtl_saleqty", type: 'Array', description: "必须" },
+      { name: "损益数量", filed: "dtl_correctqty", type: 'Array', description: "必须" },
+      // { name: "其他出入库数量", filed: "dtl_otherqty", type: 'Array', description: "必须" },
+      { name: "剩余数量", filed: "dtl_restqty", type: 'Array', description: "必须" },
+    ],
+  },
+  // 损益单
+  {
+    name: "损溢单信息抽取",
+    key: "loss_order",
+    apiFilds: [
+      { name: "客户ID", filed: "customersid", description: "必须" },
+      { name: "损益记录标识", filed: "storchecksid", description: "必填" },
+      { name: "业务日期", filed: "bizdate", description: "YYYY-MM-dd" },
+      { name: "明细记录数", filed: "dtlcount", description: "" },
+      {
+        name: "是否卷烟商品",
+        filed: "dtl_istobacco",
+        type: 'Array',
+        description: "必须, 1-卷烟、0-非烟",
+      },
+      { name: "卷烟ID", filed: "dtl_productid", type: 'Array', description: "必须" },
+      { name: "条形码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+      // { name: "条形码", filed: "dtl_barcode", type: 'Array', description: "必须" },
+      {
+        name: "损溢数量",
+        filed: "dtl_stockqty",
+        type: 'Array',
+        description: "以包为单位 允许正负值 正数为报溢 负数为报损",
+      },
+    ],
+  },
+  {
+    name: "卷烟商品对照数据源",
+    key: "tb_goods",
+    apiFilds: [
+      { name: "商品id", filed: "goods_id", description: "同商品唯一" },
+      { name: "商品编码", filed: "goods_code", description: "同商品唯一" },
+      { name: "商品名称", filed: "goods_name", description: "必须" },
+      {
+        name: "商品类别",
+        filed: "goods_category",
+        description: "",
+      },
+      { name: "条形码", filed: "bitcode", description: "必须" },
+      { name: "计量单位", filed: "unitname", description: "" },
+    ]
+  },
+]

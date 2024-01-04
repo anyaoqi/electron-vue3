@@ -41,7 +41,7 @@ export const api3G72 = async (cust_uuid: string, device_no: string) => {
 // 门店信息下载/客户信息同步请求
 export const api4G00 = async () => {
   const { cust_uuid } = useLicence()
-  
+
   return await requestSoap('4G00', {
     deviceid: deviceid,
     cust_uuid: cust_uuid

@@ -9,6 +9,7 @@ export const useLicence = () => {
   const licence = computed(() => store.licenceInfo)
   const cust_uuid = licence.value ? licence.value.cust_uuid : ''
   const cust_code = licence.value ? licence.value.cust_code : ''
+  const license_code = licence.value ? licence.value.license_code : ''
   // 设置许可证信息
   const setLicence = (licenceInfo: iLicence) => {
     store.licenceInfo = licenceInfo
@@ -22,6 +23,7 @@ export const useLicence = () => {
     licence: licence,
     cust_uuid: cust_uuid,
     cust_code: cust_code,
+    license_code: license_code,
     setLicence,
     removeLicence
   }

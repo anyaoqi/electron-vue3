@@ -4,13 +4,16 @@ import logger from '../../logger';
 let connection:Connection|null = null;
 
 // 数据库配置项
-// 数据库配置项
 export interface dbConfigType {
   host: string
   user: string
   password: string
   port: number
   database: string
+}
+
+export interface iInsertType {
+  table: string, dataArray: Record<string, any>[], primaryKey:string
 }
 
 // 连接数据库
@@ -62,11 +65,12 @@ export const query = (sql: string) => {
       const [results, columns] = await db.query(sql)
       resolve({ results, columns })
     } catch (error) {
-      logger.error(`mysql查询失败：${error} \n sql语句：${sql}`)
+      logger.error(`[mysql]query语句执行失败：${error} \n sql语句：${sql}`)
       reject(error)
     }
   })
 }
+
 
 /**
  * 数据库当前是否连接

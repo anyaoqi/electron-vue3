@@ -1,3 +1,14 @@
 {
-  "title": "第三方零消数据抽取系统"
+  "title": "第三方零消数据抽取系统",
+  "server": {
+    "url": "http://10.104.61.79/proxy/cis/process",
+    "syscode": "0002",
+    "factorycode": "M031",
+    "devicetypecode": "M004",
+    "secret": "17fd22a2cf1c645ae98d20f906b4cce8",
+    "deviceid": "SXHS"
+  },
+  "queryStoreSql":"select a.license from bas_store a where license is not null",
+  "uploadDataSql1": "INSERT INTO cc_order_temp (ORG_CODE,ORDER_ID,OPERATE_DATE,OPERATE_TIME,ORDER_DATE,ORDER_TIME,CUST_LICENSE_CODE,QTY_DEMAND_SUM,QTY_ORDER_SUM,AMT_ORDER_SUM,SALE_MODE_CODE,DELIVER_POINT_FLAG,BY_DELIVER_POINT_FLAG,CUST_NAME) SELECT '',a.order_id,DATE_FORMAT(a.inputtime,'%Y%m%d'),DATE_FORMAT(a.inputtime,'%Y%m%d%H%i%s'),DATE_FORMAT(a.bizdate,'%Y%m%d%H%i%s'),DATE_FORMAT(a.bizdate,'%Y%m%d'),b.license_code,a.reqtotal_qty,a.totaldef_qty,a.total_amt,'','','',b.cust_name FROM sync_tbc_order a INNER JOIN sync_customer b ON a.customer_id=b.customer_id LEFT JOIN cc_order_temp c ON a.order_id=c.ORDER_ID WHERE c.ORDER_ID IS NULL",
+  "uploadDataSql2": ""
 }

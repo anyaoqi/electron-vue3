@@ -77,3 +77,29 @@
 #### 预览：npm run preview
 
 打包后在浏览器中预览查看项目
+
+## sqlite本地数据库表
+
+* ds_comparison_store => 门店对照关系表
+* ds_comparison_goods => 商品对照关系表
+* ds_extraction => 数据抽取对照字段表
+* ds_extraction_list =>数据抽取分类表
+
+**烟草信息同步**
+
+* ds_store_list  => 烟草门店表
+* ds_goods_list  => 烟草商品表
+
+**商超数据抽取**
+
+* ds_store => 门店信息抽取
+* ds_supplier  => 供应商信息抽取
+* ds_notb_category => 非烟商品类别抽取
+* ds_notb_goods =>  非烟商品信息抽取
+* ds_tb_goods => 卷烟商品信息抽取
+* ds_member_info => 会员信息抽取
+* ds_retail_order => 零售订单信息抽取
+* ds_in_order => 入库单信息抽取
+* ds_loss_order => 损溢单信息抽取
+* ds_out_order => 其他出入库单信息抽取
+* ds_day_invoicing => 日结进销存信息抽取
