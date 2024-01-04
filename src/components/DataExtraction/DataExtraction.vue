@@ -35,7 +35,7 @@ const dataTable = reactive<dataTableType>({
 
 // 接口对照数据
 const columnsInfo = reactive({
-  columns: [],
+  columns: [] as any,
   // 接口中传过来的字段
   apiFilds: props.apiFilds,
   tableData: [] as columnType[]
@@ -74,6 +74,9 @@ const previewData = (sql: string) => {
     dataTable.data = tableData
     dataTable.columns = tableColumns
     columnsInfo.columns  = filedList
+    columnsInfo.columns.unshift({
+      Filed: ''
+    })
     ElMessage.success('查询成功')
     toPrviewData()
   }).catch((err: any) => {

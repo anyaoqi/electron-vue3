@@ -101,7 +101,10 @@ const createDsComparisonStore  = () => {
   const tableName = 'ds_comparison_store';
   const tableColumns = `
       store_id TEXT NOT NULL UNIQUE,
+      cust_uuid TEXT,
       store_name TEXT,
+      cust_code TEXT,
+      cust_name TEXT,
       license_code TEXT
   `;
   return createTable(tableName, tableColumns)

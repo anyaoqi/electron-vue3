@@ -16,7 +16,7 @@ const pageChange = (index: number) => {
 <template>
   <div class="table-reporting">
     <el-table :data="data" class="table" >
-      <el-table-column prop="upload_date" label="操作日期" ></el-table-column>
+      <el-table-column prop="upload_time" label="操作日期" ></el-table-column>
       <el-table-column prop="shopName" label="店面名称" >
         <template #default="{}">
           {{ shopName }}
@@ -25,7 +25,7 @@ const pageChange = (index: number) => {
       <el-table-column prop="license_code" label="许可证号" ></el-table-column>
       <el-table-column prop="totalNum" label="总笔数" >
         <template #default="{row}">
-          {{ row.batch_success_num + row.batch_fail_num }}
+          {{ Number(row.batch_success_num) + Number(row.batch_fail_num) }}
         </template>
       </el-table-column>
       <el-table-column prop="batch_success_num" label="成功笔数" ></el-table-column>

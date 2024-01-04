@@ -26,6 +26,9 @@ export const findFiledValues = <T>(datas: Array<any>, fileds: columnType[]):T[] 
       if(mapping[key].fv === 'is_active') {
         val = String(val)
       }
+      if(val===0) {
+        val = String(val)
+      }
       newItem[key] = val||''
       // 赋值默认值
       // 最终值不存在 && 最终值不为0 && 赋值存在或者为0

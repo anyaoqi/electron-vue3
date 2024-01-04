@@ -1,33 +1,33 @@
 <script lang="ts" setup>
-import { reactive, ref, toRaw, inject } from 'vue'
+import { reactive, ref, toRaw } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useHookDialog } from '@/hooks/index'
 import type { iDatabase } from '@type/index'
 import { useDbConfig } from '@/hooks'
 import logger from '@/utils/logger'
-// import { useUpload } from '@/hooks/uploadTimer'
-
-const publicConfig:any = inject('config')
 const { config, setConfig } = useDbConfig()
 const { dialogVisable, setDialogVisable } = useHookDialog()
-// const { startUpload, isOpenTimer } = useUpload()
 
+// 是否已连接
 const isConnection = ref(false)
 
 // 表单Ref对象
 const formRef = ref<FormInstance>()
 
+// 记住配置
+const remeConfig = ref(false)
+
+// 恢复之前记住的配置
+const databaseInfo = localStorage.getItem('databaseInfo')
+if(databaseInfo && typeof databaseInfo == 'string') {
+  let databaseConfig:iDatabase = JSON.parse(databaseInfo)
+  databaseConfig && setConfig(databaseConfig)
+  remeConfig.value = true
+}
+
 // 表单
 const form = reactive<iDatabase>(config.value)
 
-if(import.meta.env.DEV || publicConfig.debug === true) {
-  form.type = "mysql"
-  form.host = "172.50.80.188"
-  form.user = "root"
-  form.password = "Hsrc@20230612"
-  form.port = 3306
-  form.database = "tobacco"
-}
 // 表单校验规则
 const formRules = reactive<FormRules<iDatabase>>({
   type: [
@@ -49,6 +49,7 @@ const formRules = reactive<FormRules<iDatabase>>({
     {  required: true, message: '请输入数据名称', trigger: 'blur' },
   ],
 })
+
 // 支持的数据库列表
 enum databaseList {
   mysql = "Mysql",
@@ -56,16 +57,24 @@ enum databaseList {
 
 // 连接数据库
 const connectDatabase = () => {
+  !remeConfig.value && localStorage.removeItem('databaseInfo')
+
+  const configParams = toRaw(form)
   // 这里传参需要通过toRaw转换为普通的js对象，reactive对象无法传参
-  window.serverAPI.connectDatabase(toRaw(form)).then(() => {
+  window.serverAPI.connectDatabase(configParams).then(() => {
     setConfig(form)
-    logger.info('数据库连接成功：'+JSON.stringify(toRaw(form)))
+    // 判断是否需要记住配置信息
+    if(remeConfig.value){
+      localStorage.setItem('databaseInfo', JSON.stringify(configParams))
+    } else {
+      localStorage.removeItem('databaseInfo')
+    }
+    logger.info('数据库连接成功：'+JSON.stringify(configParams))
     ElMessage.success('连接成功')
     setDialogVisable(false)
-    // !isOpenTimer.value && startUpload()
   }).catch((err: any) => {
     isConnection.value = false
-    logger.warn(`数据库连接失败：${err}, \n 数据库配置：${JSON.stringify(toRaw(form))}`)
+    logger.warn(`数据库连接失败：${err}, \n 数据库配置：${JSON.stringify(configParams)}`)
     ElMessage.error('连接数据库失败:' + err)
   })
 }
@@ -150,6 +159,9 @@ const onDialogOpen = () => {
             >
             连接
           </el-button>
+          <div class="reme-config">
+            <el-checkbox label="记住配置" v-model="remeConfig" />
+          </div>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -157,5 +169,8 @@ const onDialogOpen = () => {
 </template>
 
 <style lang="scss" scoped>
-
+.reme-config {
+ position: absolute;
+ right: 20px;
+}
 </style>

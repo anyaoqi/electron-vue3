@@ -33,10 +33,11 @@ export const useData = () => {
     })
     // 循环保存接口对照
     console.log('tableData', tableData);
-    
+
     for (const row of tableData) {
-      console.log('row', row);
-      
+      if(!row.filedValue) {
+        row.filedValue = ""
+      }
       window.sqliteAPI.saveExtrMappData({
         filed: row.filed,  // 接口字段key
         name: row.name,  // 接口字段名称

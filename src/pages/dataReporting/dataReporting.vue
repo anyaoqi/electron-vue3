@@ -4,9 +4,16 @@ import type { TabsPaneContext } from 'element-plus'
 // import { extrTypeDatas } from '../../../config/data.config'
 import TableReporting from '@/components/TableReporting/TableReporting.vue';
 import { api4G08 } from '@/apis'
-import { FieldReportingForm, LicenseOptionType } from '@type/index'
+import { 
+  FieldReportingForm,
+  LicenseOptionType,
+  FieldsStore,
+  StoreCompType
+} from '@type/index'
 import { useLicence } from '@/hooks/user'
 import { useNow, useDateFormat } from "@vueuse/core";
+import { useData } from "@/hooks/dataExtraction";
+import { findFiledValues } from "@/utils";
 
 // tree类型
 interface TreeType {
@@ -80,6 +87,8 @@ const data = reactive<Data>({
   ]
 })
 
+const { getSql, getTableData, viewData } = useData();
+
 const { tableData, treeData } = toRefs(data)
 const shopName = ref('')
 // 门店点击查询
@@ -90,12 +99,14 @@ const handleNodeClick = (data: TreeType) => {
     shopName.value = data.label
 
     getData()
+  } else {
+    ElMessage.warning('请先在【数据对照配置】中对照该门店数据')
   }
 }
 
 // 抽取类型查询
 const handleTabClick = (_tab: TabsPaneContext, _event: Event) => {
-  form.biz_type = activeTab.value
+  form.biz_type = _tab.paneName as string
   getData()
 }
 
@@ -106,7 +117,7 @@ function getData(){
     return
   }
   console.log('form', form);
-  
+  data.tableData = []
   api4G08(form).then((res) => {
     console.log('api4G08', res);
     if(res && res?.ALInfoError?.Sucess === '1') {
@@ -143,13 +154,60 @@ function pageChange(index: number) {
 
 // 获取门店列表
 async function getStoreTree() {
+  // 获取抽取sql语句
+  const sql:string = await getSql('store')
+  if(!sql){
+    ElMessage.warning('请先配置门店抽取信息')
+    return
+  }
+  // 获取商超门店抽取数据
+  const { tableData: queryData }:any = await viewData(sql)
+  if(!queryData) return
+
+  // 拼装接口字段数据
+  const columnsData = await getTableData('store');
+  const storeInfos = findFiledValues<FieldsStore>(queryData, columnsData);
+
+  // 获取烟草门店数据
   const storeList: LicenseOptionType[] = await window.sqliteAPI.getStoreList()
-  data.treeData[0].children = storeList.map(store => {
-    return {
-      label: store.cust_name,
-      cust_uuid: store.cust_uuid,
+
+  console.log('商超抽取的门店数据', storeInfos);
+  console.log('烟草的门店数据', storeList);
+
+  // 获取对照关系
+  const storeComplist:Array<StoreCompType> = await window.sqliteAPI.getStoreComp()
+  console.log('对照关系的门店数据', storeComplist);
+  // 保留商超和烟草许可证号相同的门店
+  const storesFilter = storeInfos.reduce((prev: any[], curr: FieldsStore) => {
+    // 从烟草门店中匹配
+    let findStore = storeList.find(item => item.license_code == curr.license_code)
+    // 从门店对照关系中匹配
+    let findStoreComp = storeComplist.find(item => item.store_id == curr.store_id)
+    // cust_uuid-如果从烟草门店中匹配到了就取烟草门店的cust_uuid
+    let cust_uuid: string = findStore ? findStore.cust_uuid : ''
+    let license_code: string = findStore ? findStore.license_code : ''
+    // 如果烟草门店中没有匹配到就使用门店对照关系匹配到的cust_uuid
+    if(!cust_uuid && findStoreComp) {
+      cust_uuid = findStoreComp.cust_uuid
+      license_code = findStoreComp.license_code
     }
-  })
+    prev.push({
+      label: curr.cust_name,
+      cust_uuid: cust_uuid,
+      tobaccoNo: license_code,
+    })
+
+    // if(curr.tobaccoNo) {
+    //   prev.push({
+    //     label: curr.shopName,
+    //     cust_uuid: curr.tobaccoNo,
+    //     tobaccoNo: curr.tobaccoNo,
+    //   })
+    // }
+    return prev
+  }, [])
+
+  data.treeData[0].children = storesFilter
 }
 
 // 获取数据

@@ -198,7 +198,10 @@ export interface FieldDayInvoicing {
 export interface StoreCompType {
   store_name: string,
   store_id: string,
-  license_code: string
+  cust_uuid: string,
+  cust_code: string,
+  cust_name: string,
+  license_code: string,
 }
 
 // 同步门店数据接口类型

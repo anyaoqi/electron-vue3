@@ -103,6 +103,23 @@ export const useUpload = () => {
   }
   let updateDateTime = upTime;
 
+  // 递归触发上传数据接口
+  // 因为接口限制每次最多上传2000条数据，所以需要递归触发接口
+  async function handleApiFunc<T>(
+    updateData: T[],
+    apiFunc: (FieldsStore: T[]) => Promise<any>,
+    callback: (r: any) => void) {
+    let _datas = updateData.splice(0, 2000)
+    // 最终接口上传数据
+    console.log(apiFunc.name+"接口上传数据：", _datas.length, _datas);
+    const updateRes = await apiFunc(_datas);
+    console.log(apiFunc.name+'接口上传结果：', _datas.length, updateRes);
+    if(updateData.length > 0) {
+      handleApiFunc(updateData, apiFunc, callback)
+    }
+    callback && callback(updateRes)
+  }
+
   const uploadData = async <T>(
     type: string,
     apiFunc: (FieldsStore: T[]) => Promise<any>,
@@ -114,18 +131,38 @@ export const useUpload = () => {
       // 数据库表名
       const tableName:string = 'ds_'+type
       // 先抽取数据
-      const querySql = await getSql(type);
+      let querySql = await getSql(type);
       if(!querySql) {
         console.log(`${extrTypeName}: sql查询条件不存在`);
         return
       }
+      // 获取上次抽取成功时间
+      let UDT = localStorage.getItem('updateDateTime')
+      try {
+        updateDateTime[type] = UDT ? JSON.parse(UDT)[type] : ''
+      } catch (err) {
+        updateDateTime[type] = ''
+      }
+      // sql拼接时间条件，防止查询数据量过大导致程序崩溃
+      if(updateDateTime[type]) {
+        // 若以分号结尾先去掉分号再拼接时间
+        if(querySql.endsWith(';')) {
+          querySql = querySql.slice(0, querySql.length-1)
+        }
+        // 拼接时间条件
+        if(querySql.indexOf('where') == -1) {
+          querySql = `${querySql} where modifyDate >= '${updateDateTime[type]}'`
+        } else {
+          querySql = `${querySql} and modifyDate >= '${updateDateTime[type]}'`
+        }
+      }
       const { tableData: queryData }: any = await viewData(querySql);
       const columnsData = await getTableData(type);
-      console.log("查询抽取的数据：", querySql, queryData);
+      console.log(type+"1.从商超查询抽取的数据=>", querySql, queryData);
 
       // 拼装接口字段数据
       const storeInfos = findFiledValues<T>(queryData, columnsData);
-      console.log("拼接数据保存本地", storeInfos);
+      console.log(type+"2.将拼接好的数据循环保存到本地数据库=>", storeInfos);
       // 循环插入保存到本地
       for (const item of storeInfos) {
         const whereValue = (item as any)[whereKey]
@@ -139,20 +176,14 @@ export const useUpload = () => {
         await window.sqliteAPI.saveStoreData(params, item);
       }
       // 后上传数据
+      console.log(type+'3.根据上次同步时间从本地查询数据=>', updateDateTime[type]);
       // 获取需要更新的数据
-      let UDT = localStorage.getItem('updateDateTime')
-      try {
-        updateDateTime[type] = UDT ? JSON.parse(UDT)[type] : ''
-      } catch (err) {
-        updateDateTime[type] = ''
-      }
-      console.log('updateDateTime', updateDateTime[type]);
       const uploadDataList: T[] = await window.sqliteAPI.getStoreData({
         uploadDate: updateDateTime[type],
         tableName: tableName
       });
       const apiFilds = o?.apiFilds||[]
-      console.log('上传数据', uploadDataList);
+      console.log(type+'4.从本地数据库取出来的数据，开始对数据进行过滤=>', uploadDataList);
       if (uploadDataList && uploadDataList.length) {
         const apiData: T[] = uploadDataList.map((data) => {
           const obj: Record<any, any> = {};
@@ -165,8 +196,20 @@ export const useUpload = () => {
             const filed = apiFilds.find(item => item.filed === key)
             if(filed && filed.type) {
               // 数组类型-将字符串转为数组
-              if(filed.type === 'Array' && val && typeof val === 'string') {
-                val = val.split(',')
+              if(filed.type === 'Array') {
+                if(val && typeof val === 'string') {
+                  val = val.split(',')
+                } else {
+                  val = ['']
+                }
+                // // 销售单位单独处理 传空字符串数组
+                if(filed.filed== 'dtl_unitid') {
+                  const istobacco = (data as any).dtl_istobacco
+                  const istobaArr = istobacco.split(',')
+                  val = val.map((v, i) => {
+                    return istobaArr  && istobaArr[i] == 1 ? '' : v
+                  })
+                }
               }
             }
 
@@ -183,33 +226,73 @@ export const useUpload = () => {
             findStore && findStore.license_code ? item['license_code'] = findStore.license_code : ''
           })
         }
-        // 最终接口上传数据
-        console.log("接口上传数据", apiData);
-        const updateRes = await apiFunc(apiData);
-        console.log('上传结果：',updateRes);
-        if(updateRes?.ALInfoError?.Sucess === '1'){
-          // 更新上传时间
-          updateDateTime[type] = useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value
-          localStorage.setItem('updateDateTime', JSON.stringify(updateDateTime))
+        // 零售订单信息抽取 数据过滤
+        if(type == 'retail_order') {
+          // 获取同步商品列表
+          const goodsData = await window.sqliteAPI.getGoodsList()
+
+          apiData.map((item: any, itemIndex:number) => {
+            let barcodeArr = item.dtl_barcode
+            let istobacco = item.dtl_istobacco // 是否卷烟 1卷烟 0非烟
+            if(Array.isArray(barcodeArr) && istobacco==1) {
+              let isDelete = true
+              barcodeArr.forEach((code:string, index: number) => {
+                // 获取到条码相同的商品
+                let findGoods = goodsData.find((gItem: any) => {
+                  // 条 条形码 或者 包 条形码
+                  return gItem.barcode == code || gItem.pack_barcode == code
+                })
+                if(findGoods) {
+                  // dtl_goodsisn赋值为卷烟代码goods_code
+                  item.dtl_goodsisn[index] = findGoods.goods_code
+                  isDelete = false
+                } else {
+                  // 所有字段中删掉这条数据
+                  for (const key in item) {
+                    if(Array.isArray(item[key])) {
+                      item[key].splice(index, 1)
+                    }
+                  }
+                  item.dtlcount = item.dtl_goodsisn.length
+                }
+              });
+              if(!item.dtl_goodsisn.length || isDelete) {
+                apiData.splice(itemIndex, 1)
+              }
+            }
+
+            // 处理时间格式
+            if(item.bizdate) {
+              item.bizdate = useDateFormat(item.bizdate, "YYYYMMDD").value
+            }
+            if(item.inputtime) {
+              item.inputtime = useDateFormat(item.inputtime, "YYYYMMDDHHmmss").value
+            }
+          })
+        }
+        console.log(type+"5.过滤好的最终数据,开始递归上传", apiData);
+        handleApiFunc<T>(apiData, apiFunc, (updateRes) => {
           const ids = uploadDataList.map((item: any) => item.id);
-          // 删除已上传成功的数据
+          // 删除上传数据
           window.sqliteAPI.delStoreData({
             tableName: tableName,
             ids: ids,
           });
-          return apiData;
-        } else if(updateRes?.ALInfoError?.Sucess === '0') {  // 上传失败
-          let errMes = `${extrTypeName}数据抽取失败：${updateRes.ALInfoError?.Description}`
-          logger.warn(errMes)
-          ElMessage.warning(errMes)
-          return updateRes
-        } else {
-          let errRes = updateRes ? JSON.stringify(updateRes) : updateRes
-          let errMes = `${extrTypeName}数据抽取失败：${errRes}`
-          logger.warn(errMes)
-          ElMessage.warning(errMes)
-          return updateRes
-        }
+          if(updateRes?.ALInfoError?.Sucess === '1'){
+            // 更新上传时间
+            updateDateTime[type] = useDateFormat(useNow(), "YYYY-MM-DD HH:mm:ss").value
+            localStorage.setItem('updateDateTime', JSON.stringify(updateDateTime))
+          } else if(updateRes?.ALInfoError?.Sucess === '0') {  // 上传失败
+            let errMes = `${extrTypeName}数据抽取失败：${updateRes.ALInfoError?.Description}`
+            logger.warn(errMes)
+            ElMessage.warning(errMes)
+          } else {
+            let errRes = updateRes ? JSON.stringify(updateRes) : updateRes
+            let errMes = `${extrTypeName}数据抽取失败：${errRes}`
+            logger.warn(errMes)
+            ElMessage.warning(errMes)
+          }
+        })
       }
     } catch (error: any) {
       console.log(`${extrTypeName}数据抽取失败：`, error);

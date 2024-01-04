@@ -115,12 +115,20 @@ function xml2arr(xml: any) {
  * 解析返回的body
  */
 async function parseBody(body: any) {
-  let r:any = await xml2arr(body)
-  // console.log('r', r);
-  let str = Buffer.from(r, 'base64')
-  let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()
-  res = res.substring(res.indexOf('{'))
-  return JSON.parse(res)
+  // 后端都TM有病，自己不处理后端报错，非让前端在这加try catch，靠！
+  try {
+    let r:any = await xml2arr(body)
+    let str = Buffer.from(r, 'base64')
+    let res = encodingConvert.convert(str, 'UTF8', 'GBK').toString()
+    res = res.substring(res.indexOf('{'))
+    return JSON.parse(res)
+  } catch (err) {
+    logger.error(`
+      parseBody解析错误：${err}\n
+      body: ${body}
+    `)
+    throw Error('parseBody解析错误：'+err+'  body:'+body)
+  }
 }
 
 export async function requestSoap(code: any, data: any) {
@@ -136,7 +144,6 @@ export async function requestSoap(code: any, data: any) {
       timeout: 1000 * 60,
     })
     const { body, statusCode } = response
-
     if (statusCode == 200) {
       const bd =  await parseBody(body)
       if(bd && bd?.ALInfoError?.Sucess != '1') {
@@ -148,6 +155,8 @@ export async function requestSoap(code: any, data: any) {
         `)
       }
       return bd
+    } else {
+      return response
     }
   } catch (err) {
     logger.error(`
@@ -156,5 +165,6 @@ export async function requestSoap(code: any, data: any) {
       参数:${JSON.stringify(data)} \n
       签名: ${sign}
     `)
+    return err
   }
 }

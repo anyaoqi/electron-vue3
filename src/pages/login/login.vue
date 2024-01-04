@@ -5,7 +5,7 @@ import { useLogin } from '@/hooks/login'
 import { useDataSync } from '@/hooks/uploadTimer'
 import type { FormInstance, FormRules } from 'element-plus'
 import { iLoginForm } from '@type/index'
-import { checkUpdate } from '@/utils/autoUpdater'
+// import { checkUpdate } from '@/utils/autoUpdater'
 import logger from '@/utils/logger'
 
 const ruleFormRef = ref<FormInstance>()
@@ -24,6 +24,8 @@ const loginForm = reactive<iLoginForm>({
   username: '',
   password: '',
 })
+// 记住密码
+const remePassword = ref(false)
 
 const title:string = config.title
 
@@ -37,22 +39,27 @@ const rules = reactive<FormRules<iLoginForm>>({
   ],
 })
 
-if(import.meta.env.DEV || config.debug === true) {
-  loginForm.username = '431001105361'
-  loginForm.password = '1357452o268yzas'
+const accountStore = localStorage.getItem('rememberPassWord')
+// 恢复之前记住的密码
+if(accountStore) {
+  let account:iLoginForm = JSON.parse(accountStore)
+  loginForm.username = account.username
+  loginForm.password = account.password
+  remePassword.value = true
 }
 
 onMounted(() => {
-  checkUpdate()
+  // checkUpdate()
 })
 
 // 登录
 const onSubmit = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
 
+  !remePassword.value && localStorage.removeItem('rememberPassWord')
+
   await formEl.validate(async (valid, _fields) => {
     if(!valid) return
-    console.log('valid', valid);
 
     setLoading(true)
 
@@ -72,6 +79,11 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         })
 
         loading.value.setText('登录中...')
+        // 判断是否记住密码
+        if(remePassword.value) {
+          const accountStr = JSON.stringify(toRaw(loginForm))
+          localStorage.setItem('rememberPassWord', accountStr)
+        }
         // 登录操作
         handleLogin()
         ElMessage({
@@ -117,6 +129,9 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
           <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item>
+          <div>
+            <el-checkbox label="记住密码" v-model="remePassword"/>
+          </div>
           <div class="login-button">
             <el-button class="button" type="primary" size="large" native-type="submit" >登 录</el-button>
           </div>
