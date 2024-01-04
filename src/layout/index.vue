@@ -8,15 +8,6 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <!-- 头部 -->
-      <el-header class="header">
-        <div class="header-left">
-          123
-        </div>
-        <div class="header-right">
-          456
-        </div>
-      </el-header>
       <!-- 主体内容 -->
       <el-container>
         <!-- 左侧菜单区域 -->
@@ -52,6 +43,15 @@
         </el-aside>
         <!-- 右侧页面区域 -->
         <el-main>
+            <!-- 头部 -->
+            <el-header class="header">
+              <div class="header-left">
+                header-left
+              </div>
+              <div class="header-right">
+                header-right
+              </div>
+            </el-header>
           <RouterView></RouterView>
         </el-main>
       </el-container>

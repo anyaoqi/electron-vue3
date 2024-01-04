@@ -6,6 +6,7 @@ const routes:RouteRecordRaw[] = [
     path: '/',
     name: 'layout',
     component: () => import('@/layout/index.vue'),
+    redirect: '/home',
     children: [
       {
         path:'/home',
@@ -21,7 +22,7 @@ const routes:RouteRecordRaw[] = [
     component: () => import('@/pages/login/login.vue'),
   },
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     name: '404',
     component: () => import('@/pages/404/404.vue'),
   },
